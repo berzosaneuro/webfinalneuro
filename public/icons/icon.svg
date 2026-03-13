@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fondo oscuro redondeado -->
+  <rect width="512" height="512" rx="115" fill="#0a0b14"/>
+  <!-- Círculo exterior con borde violeta -->
+  <circle cx="256" cy="210" r="118" fill="none" stroke="#7C3AED" stroke-width="8"/>
+  <!-- Círculo interior sutil -->
+  <circle cx="256" cy="210" r="118" fill="#7C3AED" opacity="0.08"/>
+  <!-- Letra N -->
+  <text x="256" y="265" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="150" fill="#ffffff">N</text>
+  <!-- NEURO -->
+  <text x="256" y="390" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="52" letter-spacing="8" fill="#ffffff">NEURO</text>
+  <!-- PRESENCIA -->
+  <text x="256" y="440" text-anchor="middle" font-family="Arial,sans-serif" font-weight="300" font-size="28" letter-spacing="6" fill="#8892a4">PRESENCIA</text>
+</svg>

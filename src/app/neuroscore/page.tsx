@@ -1,0 +1,335 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import Container from '@/components/Container'
+import FadeInSection from '@/components/FadeInSection'
+import { useUser } from '@/context/UserContext'
+import { Activity, Flame, Brain, Target, TrendingUp, ChevronRight, Trophy, Zap } from 'lucide-react'
+import Link from 'next/link'
+import EmailCapture from '@/components/EmailCapture'
+
+const STORAGE_KEY = 'neuroscore_data'
+
+type DayLog = {
+  date: string
+  meditated: boolean
+  exerciseDone: boolean
+  testDone: boolean
+  despertarDone: boolean
+  journalDone: boolean
+}
+
+function getToday() {
+  return new Date().toISOString().split('T')[0]
+}
+
+function loadData(): { logs: DayLog[]; streak: number } {
+  if (typeof window === 'undefined') return { logs: [], streak: 0 }
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw) return JSON.parse(raw)
+  } catch {}
+  return { logs: [], streak: 0 }
+}
+
+function saveData(data: { logs: DayLog[]; streak: number }) {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+}
+
+function calculateScore(log: DayLog): number {
+  let score = 0
+  if (log.meditated) score += 30
+  if (log.exerciseDone) score += 25
+  if (log.testDone) score += 15
+  if (log.despertarDone) score += 15
+  if (log.journalDone) score += 15
+  return score
+}
+
+function calculateStreak(logs: DayLog[]): number {
+  let streak = 0
+  const sorted = [...logs].sort((a, b) => b.date.localeCompare(a.date))
+  const today = new Date()
+
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    const dateStr = d.toISOString().split('T')[0]
+    const log = sorted.find((l) => l.date === dateStr)
+    if (log && calculateScore(log) > 0) {
+      streak++
+    } else if (i > 0) {
+      break
+    }
+  }
+  return streak
+}
+
+type NeuroRow = { date: string; meditated: boolean; exercise_done: boolean; test_done: boolean; despertar_done: boolean; journal_done: boolean }
+
+function apiToDayLog(row: NeuroRow): DayLog {
+  return {
+    date: row.date,
+    meditated: row.meditated ?? false,
+    exerciseDone: row.exercise_done ?? false,
+    testDone: row.test_done ?? false,
+    despertarDone: row.despertar_done ?? false,
+    journalDone: row.journal_done ?? false,
+  }
+}
+
+export default function NeuroScorePage() {
+  const { user } = useUser()
+  const [data, setData] = useState<{ logs: DayLog[]; streak: number }>({ logs: [], streak: 0 })
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const load = async () => {
+      if (user?.email) {
+        try {
+          const res = await fetch(`/api/neuroscore?email=${encodeURIComponent(user.email)}`)
+          if (res.ok) {
+            const rows: NeuroRow[] = await res.json()
+            const logs = rows.map(apiToDayLog)
+            const streak = calculateStreak(logs)
+            setData({ logs, streak })
+            return
+          }
+        } catch {}
+      }
+      setData(loadData())
+    }
+    load()
+  }, [user?.email])
+
+  const today = getToday()
+  const todayLog = data.logs.find((l) => l.date === today) || {
+    date: today,
+    meditated: false,
+    exerciseDone: false,
+    testDone: false,
+    despertarDone: false,
+    journalDone: false,
+  }
+
+  const todayScore = calculateScore(todayLog)
+  const streak = calculateStreak(data.logs)
+  const circumference = 2 * Math.PI * 80
+  const scoreOffset = circumference * (1 - todayScore / 100)
+
+  const toggleTask = async (key: keyof Omit<DayLog, 'date'>) => {
+    const updated = { ...todayLog, [key]: !todayLog[key] }
+    const newLogs = data.logs.filter((l) => l.date !== today)
+    newLogs.push(updated)
+    const newStreak = calculateStreak(newLogs)
+    const newData = { logs: newLogs, streak: newStreak }
+    setData(newData)
+    if (user?.email) {
+      try {
+        const res = await fetch('/api/neuroscore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: user.email,
+            date: today,
+            meditated: updated.meditated,
+            exerciseDone: updated.exerciseDone,
+            testDone: updated.testDone,
+            despertarDone: updated.despertarDone,
+            journalDone: updated.journalDone,
+          }),
+        })
+        if (!res.ok) throw new Error()
+      } catch {
+        saveData(newData)
+      }
+    } else {
+      saveData(newData)
+    }
+  }
+
+  const tasks = [
+    { key: 'meditated' as const, label: 'Meditar', desc: 'Cualquier sesión', icon: Brain, points: 30, href: '/meditacion' },
+    { key: 'exerciseDone' as const, label: 'Ejercicio NEURO', desc: 'Método o metacognición', icon: Target, points: 25, href: '/metodo' },
+    { key: 'testDone' as const, label: 'Test completado', desc: 'Test de ruido mental', icon: Activity, points: 15, href: '/test' },
+    { key: 'despertarDone' as const, label: 'Despertar', desc: 'Claridad vital', icon: Zap, points: 15, href: '/despertar' },
+    { key: 'journalDone' as const, label: 'Diario', desc: 'Reflexión escrita', icon: TrendingUp, points: 15, href: '/diario' },
+  ]
+
+  // Weekly mini-chart
+  const last7 = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - (6 - i))
+    const dateStr = d.toISOString().split('T')[0]
+    const log = data.logs.find((l) => l.date === dateStr)
+    return {
+      day: ['D', 'L', 'M', 'X', 'J', 'V', 'S'][d.getDay()],
+      score: log ? calculateScore(log) : 0,
+      isToday: dateStr === today,
+    }
+  })
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-accent-blue border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative overflow-hidden">
+      <div className="orb w-72 h-72 bg-green-600 top-10 -right-24" />
+
+      <section className="pt-8 md:pt-16 pb-4">
+        <Container>
+          <h1 className="font-heading text-3xl md:text-5xl font-bold tracking-tight text-white mb-1 animate-fade-in">
+            NeuroScore
+          </h1>
+          <p className="text-text-secondary text-sm animate-fade-in-up">
+            Tu rendimiento mental, medido.
+          </p>
+        </Container>
+      </section>
+
+      {/* Score + Streak */}
+      <section className="pb-6">
+        <Container>
+          <FadeInSection>
+            <div className="glass rounded-3xl p-6 flex flex-col items-center">
+              {/* Circular score */}
+              <div className="relative inline-flex items-center justify-center mb-4">
+                <svg className="w-44 h-44 -rotate-90" viewBox="0 0 176 176">
+                  <circle cx="88" cy="88" r="80" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="8" />
+                  <circle
+                    cx="88" cy="88" r="80"
+                    fill="none"
+                    stroke={todayScore >= 70 ? '#22c55e' : todayScore >= 40 ? '#eab308' : '#ef4444'}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={scoreOffset}
+                    className="transition-all duration-1000 ease-out"
+                    style={{ filter: `drop-shadow(0 0 10px ${todayScore >= 70 ? 'rgba(34,197,94,0.4)' : todayScore >= 40 ? 'rgba(234,179,8,0.3)' : 'rgba(239,68,68,0.3)'})` }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="font-heading text-4xl font-bold text-white">{todayScore}</span>
+                  <span className="text-text-muted text-xs">/ 100</span>
+                </div>
+              </div>
+
+              {/* Streak */}
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <Flame className={`w-5 h-5 ${streak > 0 ? 'text-orange-400' : 'text-text-muted'}`} />
+                  <div>
+                    <span className="text-white font-bold text-lg">{streak}</span>
+                    <span className="text-text-muted text-xs ml-1">días racha</span>
+                  </div>
+                </div>
+                <div className="w-px h-8 bg-white/10" />
+                <div className="flex items-center gap-2">
+                  <Trophy className={`w-5 h-5 ${todayScore === 100 ? 'text-emerald-400' : 'text-text-muted'}`} />
+                  <div>
+                    <span className="text-white font-bold text-lg">{data.logs.filter(l => calculateScore(l) === 100).length}</span>
+                    <span className="text-text-muted text-xs ml-1">días perfectos</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </FadeInSection>
+        </Container>
+      </section>
+
+      {/* Weekly chart */}
+      <section className="pb-6">
+        <Container>
+          <FadeInSection>
+            <h2 className="font-heading font-semibold text-white text-lg mb-3">Esta semana</h2>
+            <div className="glass rounded-2xl p-4">
+              <div className="flex items-end justify-between gap-2 h-24">
+                {last7.map((day, i) => (
+                  <div key={i} className="flex flex-col items-center gap-1 flex-1">
+                    <div className="w-full flex items-end justify-center h-16">
+                      <div
+                        className={`w-6 rounded-t-lg transition-all duration-500 ${
+                          day.score >= 70 ? 'bg-green-500/60' : day.score >= 40 ? 'bg-cyan-500/60' : day.score > 0 ? 'bg-red-500/40' : 'bg-white/5'
+                        }`}
+                        style={{ height: `${Math.max(day.score * 0.64, 4)}px` }}
+                      />
+                    </div>
+                    <span className={`text-[10px] font-medium ${day.isToday ? 'text-accent-blue' : 'text-text-muted'}`}>
+                      {day.day}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </FadeInSection>
+        </Container>
+      </section>
+
+      {/* Daily tasks */}
+      <section className="pb-12">
+        <Container>
+          <FadeInSection>
+            <h2 className="font-heading font-semibold text-white text-lg mb-3">Entrenamiento de hoy</h2>
+            <div className="space-y-2.5">
+              {tasks.map((task) => {
+                const done = todayLog[task.key]
+                return (
+                  <div key={task.key} className="glass rounded-2xl p-4 flex items-center gap-3">
+                    <button
+                      onClick={() => toggleTask(task.key)}
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all active:scale-90 ${
+                        done
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-white/5 text-text-muted'
+                      }`}
+                    >
+                      <task.icon className="w-5 h-5" />
+                    </button>
+                    <div className="flex-1">
+                      <p className={`text-sm font-medium ${done ? 'text-green-400 line-through' : 'text-white'}`}>
+                        {task.label}
+                      </p>
+                      <p className="text-text-muted text-xs">{task.desc}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs font-semibold ${done ? 'text-green-400' : 'text-text-muted'}`}>
+                        +{task.points}
+                      </span>
+                      {task.href !== '#' && (
+                        <Link href={task.href}>
+                          <ChevronRight className="w-4 h-4 text-text-muted" />
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </FadeInSection>
+        </Container>
+      </section>
+
+      {/* Email capture for progress sync */}
+      <section className="pb-12">
+        <Container>
+          <FadeInSection>
+            <EmailCapture
+              source="neuroscore"
+              title="Sincroniza tu progreso"
+              subtitle="Recibe un resumen semanal de tu NeuroScore y racha."
+              buttonText="Activar"
+              extraData={{ todayScore, streak, perfectDays: data.logs.filter(l => calculateScore(l) === 100).length }}
+            />
+          </FadeInSection>
+        </Container>
+      </section>
+    </div>
+  )
+}
