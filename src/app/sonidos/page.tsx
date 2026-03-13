@@ -233,12 +233,12 @@ export default function SonidosPage() {
 
   activeSoundsRef.current = activeSounds
 
-  const getOrCreateCtx = useCallback(() => {
+  const getOrCreateCtx = useCallback(async () => {
     if (!audioCtxRef.current) {
       audioCtxRef.current = new AudioContext()
     }
     if (audioCtxRef.current.state === 'suspended') {
-      audioCtxRef.current.resume()
+      await audioCtxRef.current.resume()
     }
     return audioCtxRef.current
   }, [])
@@ -254,8 +254,9 @@ export default function SonidosPage() {
     }
   }, [])
 
-  const toggleSound = (sound: SoundConfig) => {
-    const ctx = getOrCreateCtx()
+  const toggleSound = async (sound: SoundConfig) => {
+    const ctx = await getOrCreateCtx()
+    if (!ctx) return
 
     if (activeSounds[sound.id]) {
       stopSound(activeSounds[sound.id], ctx)
@@ -283,16 +284,17 @@ export default function SonidosPage() {
     setVolumes(prev => ({ ...prev, [sound.id]: DEFAULT_VOLUME }))
   }
 
-  const updateVolume = (soundId: string, value: number) => {
+  const updateVolume = async (soundId: string, value: number) => {
     setVolumes(prev => ({ ...prev, [soundId]: value }))
     if (activeSounds[soundId] && !muted) {
-      const ctx = getOrCreateCtx()
-      activeSounds[soundId].gain.gain.setTargetAtTime(value * VOLUME_MULT, ctx.currentTime, 0.1)
+      const ctx = await getOrCreateCtx()
+      if (ctx) activeSounds[soundId].gain.gain.setTargetAtTime(value * VOLUME_MULT, ctx.currentTime, 0.1)
     }
   }
 
-  const toggleMute = () => {
-    const ctx = getOrCreateCtx()
+  const toggleMute = async () => {
+    const ctx = await getOrCreateCtx()
+    if (!ctx) return
     const newMuted = !muted
     setMuted(newMuted)
     Object.entries(activeSounds).forEach(([id, sound]) => {
@@ -323,7 +325,8 @@ export default function SonidosPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-heading text-3xl font-bold text-white mb-1 animate-fade-in">Sonidos</h1>
-              <p className="text-text-secondary text-sm animate-fade-in-up">Mezcla tu ambiente perfecto. Toca para activar.</p>
+              <p className="text-text-secondary text-sm animate-fade-in-up">Mezcla tu ambiente perfecto. Toca un icono para activar.</p>
+              <p className="text-text-muted text-[11px] mt-0.5">En móvil: el primer toque puede desbloquear el audio del navegador.</p>
             </div>
             {activeCount > 0 && (
               <div className="flex items-center gap-2">
