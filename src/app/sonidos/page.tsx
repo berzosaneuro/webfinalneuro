@@ -29,19 +29,23 @@ const sounds: SoundConfig[] = [
   { id: 'brown', label: 'Ruido marrón', emoji: '🌫', icon: Wind, color: 'text-stone-400 bg-stone-500/15', desc: 'Graves profundos y relajantes' },
 ]
 
+type StoppableNode = AudioBufferSourceNode | OscillatorNode
+
 type ActiveNode = {
   nodes: AudioNode[]
+  stoppable: StoppableNode[]
   gain: GainNode
   volume: number
   intervalId?: ReturnType<typeof setInterval>
 }
 
-function buildSound(ctx: AudioContext, id: string): { nodes: AudioNode[], gain: GainNode } {
+function buildSound(ctx: AudioContext, id: string): { nodes: AudioNode[]; stoppable: StoppableNode[]; gain: GainNode } {
   const masterGain = ctx.createGain()
   masterGain.gain.value = 0
   masterGain.connect(ctx.destination)
 
   const nodes: AudioNode[] = [masterGain]
+  const stoppable: StoppableNode[] = []
 
   const makeNoise = (color: 'white' | 'brown' | 'pink' = 'brown', freq?: number, q?: number) => {
     const bufferSize = ctx.sampleRate * 3
@@ -77,17 +81,18 @@ function buildSound(ctx: AudioContext, id: string): { nodes: AudioNode[], gain: 
       src.connect(masterGain)
     }
     src.start()
+    stoppable.push(src)
     return src
   }
 
   switch (id) {
     case 'rain': {
-      // Soft rain: filtered brown noise high-passed
       const buf = ctx.createBuffer(1, ctx.sampleRate * 3, ctx.sampleRate)
       const d = buf.getChannelData(0)
       for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1
       const src = ctx.createBufferSource()
       src.buffer = buf; src.loop = true; nodes.push(src)
+      stoppable.push(src)
       const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1200; nodes.push(hp)
       const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 8000; nodes.push(lp)
       src.connect(hp); hp.connect(lp); lp.connect(masterGain); src.start()
@@ -105,10 +110,10 @@ function buildSound(ctx: AudioContext, id: string): { nodes: AudioNode[], gain: 
       break
     }
     case 'waves': {
-      // Waves: oscillating brown noise
       makeNoise('brown', 200, 0.8)
       const lfo = ctx.createOscillator()
       lfo.frequency.value = 0.15
+      stoppable.push(lfo)
       const lfoGain = ctx.createGain()
       lfoGain.gain.value = 0.08
       lfo.connect(lfoGain); lfoGain.connect(masterGain.gain)
@@ -153,12 +158,12 @@ function buildSound(ctx: AudioContext, id: string): { nodes: AudioNode[], gain: 
       break
     }
     case 'bowl': {
-      // Tibetan bowl: 432 Hz fundamental + harmonics with slow decay and re-excitation
       const freqs = [432, 864, 1296]
       freqs.forEach((f, i) => {
         const osc = ctx.createOscillator()
         osc.type = 'sine'
         osc.frequency.value = f
+        stoppable.push(osc)
         const g = ctx.createGain()
         g.gain.value = 0.15 / (i + 1)
         osc.connect(g); g.connect(masterGain)
@@ -167,11 +172,11 @@ function buildSound(ctx: AudioContext, id: string): { nodes: AudioNode[], gain: 
       break
     }
     case 'binaural': {
-      // Binaural 40Hz: left 200Hz, right 240Hz (gamma)
       const left = ctx.createOscillator()
       left.frequency.value = 200
       const right = ctx.createOscillator()
       right.frequency.value = 240
+      stoppable.push(left, right)
       const merger = ctx.createChannelMerger(2)
       const gl = ctx.createGain(); gl.gain.value = 0.12
       const gr = ctx.createGain(); gr.gain.value = 0.12
@@ -192,7 +197,8 @@ function buildSound(ctx: AudioContext, id: string): { nodes: AudioNode[], gain: 
       const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate)
       const d = buf.getChannelData(0)
       for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1
-      const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true; nodes.push(src)
+      const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true
+      stoppable.push(src); nodes.push(src)
       src.connect(masterGain); src.start()
       break
     }
@@ -202,14 +208,30 @@ function buildSound(ctx: AudioContext, id: string): { nodes: AudioNode[], gain: 
     }
   }
 
-  return { nodes, gain: masterGain }
+  return { nodes, stoppable, gain: masterGain }
 }
+
+function stopSound(active: ActiveNode, ctx: AudioContext) {
+  try {
+    if ((active.gain as any).__interval) clearInterval((active.gain as any).__interval)
+    active.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.05)
+    active.stoppable.forEach(n => {
+      try { n.stop(ctx.currentTime + 0.1) } catch {}
+    })
+  } catch {}
+}
+
+const DEFAULT_VOLUME = 0.7
+const VOLUME_MULT = 0.85
 
 export default function SonidosPage() {
   const [volumes, setVolumes] = useState<Record<string, number>>({})
   const [muted, setMuted] = useState(false)
   const [activeSounds, setActiveSounds] = useState<Record<string, ActiveNode>>({})
+  const activeSoundsRef = useRef<Record<string, ActiveNode>>({})
   const audioCtxRef = useRef<AudioContext | null>(null)
+
+  activeSoundsRef.current = activeSounds
 
   const getOrCreateCtx = useCallback(() => {
     if (!audioCtxRef.current) {
@@ -223,51 +245,49 @@ export default function SonidosPage() {
 
   useEffect(() => {
     return () => {
-      Object.values(activeSounds).forEach(s => {
-        if ((s.gain as any).__interval) clearInterval((s.gain as any).__interval)
-        s.nodes.forEach(n => { try { (n as any).stop?.() } catch {} })
-      })
-      audioCtxRef.current?.close()
+      const ctx = audioCtxRef.current
+      if (ctx) {
+        Object.values(activeSoundsRef.current).forEach(s => stopSound(s, ctx))
+        ctx.close()
+      }
+      audioCtxRef.current = null
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const toggleSound = (sound: SoundConfig) => {
     const ctx = getOrCreateCtx()
 
     if (activeSounds[sound.id]) {
-      const active = activeSounds[sound.id]
-      if ((active.gain as any).__interval) clearInterval((active.gain as any).__interval)
-      active.nodes.forEach(n => { try { (n as any).stop?.() } catch {} })
-      const newActive = { ...activeSounds }
-      delete newActive[sound.id]
-      setActiveSounds(newActive)
-      const newVolumes = { ...volumes }
-      delete newVolumes[sound.id]
-      setVolumes(newVolumes)
+      stopSound(activeSounds[sound.id], ctx)
+      setActiveSounds(prev => {
+        const next = { ...prev }
+        delete next[sound.id]
+        return next
+      })
+      setVolumes(prev => {
+        const next = { ...prev }
+        delete next[sound.id]
+        return next
+      })
       return
     }
 
-    const defaultVolume = 0.6
-    const { nodes, gain } = buildSound(ctx, sound.id)
-    if ((gain as any).__interval) {
-      // transfer interval reference
-    }
-    gain.gain.setTargetAtTime(muted ? 0 : defaultVolume * 0.35, ctx.currentTime, 0.3)
+    const { nodes, stoppable, gain } = buildSound(ctx, sound.id)
+    gain.gain.setTargetAtTime(muted ? 0 : DEFAULT_VOLUME * VOLUME_MULT, ctx.currentTime, 0.2)
 
     const intervalId = (gain as any).__interval
     setActiveSounds(prev => ({
       ...prev,
-      [sound.id]: { nodes, gain, volume: defaultVolume, intervalId }
+      [sound.id]: { nodes, stoppable, gain, volume: DEFAULT_VOLUME, intervalId }
     }))
-    setVolumes(prev => ({ ...prev, [sound.id]: defaultVolume }))
+    setVolumes(prev => ({ ...prev, [sound.id]: DEFAULT_VOLUME }))
   }
 
   const updateVolume = (soundId: string, value: number) => {
     setVolumes(prev => ({ ...prev, [soundId]: value }))
     if (activeSounds[soundId] && !muted) {
       const ctx = getOrCreateCtx()
-      activeSounds[soundId].gain.gain.setTargetAtTime(value * 0.35, ctx.currentTime, 0.1)
+      activeSounds[soundId].gain.gain.setTargetAtTime(value * VOLUME_MULT, ctx.currentTime, 0.1)
     }
   }
 
@@ -277,11 +297,19 @@ export default function SonidosPage() {
     setMuted(newMuted)
     Object.entries(activeSounds).forEach(([id, sound]) => {
       sound.gain.gain.setTargetAtTime(
-        newMuted ? 0 : (volumes[id] || 0.5) * 0.35,
+        newMuted ? 0 : (volumes[id] || DEFAULT_VOLUME) * VOLUME_MULT,
         ctx.currentTime,
         0.1
       )
     })
+  }
+
+  const stopAll = () => {
+    const ctx = audioCtxRef.current
+    if (!ctx) return
+    Object.values(activeSounds).forEach(s => stopSound(s, ctx))
+    setActiveSounds({})
+    setVolumes({})
   }
 
   const activeCount = Object.keys(activeSounds).length
@@ -298,12 +326,20 @@ export default function SonidosPage() {
               <p className="text-text-secondary text-sm animate-fade-in-up">Mezcla tu ambiente perfecto. Toca para activar.</p>
             </div>
             {activeCount > 0 && (
-              <button
-                onClick={toggleMute}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 text-text-secondary active:scale-90 transition-transform"
-              >
-                {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={stopAll}
+                  className="px-3 py-1.5 rounded-lg bg-rose-500/20 text-rose-400 text-xs font-medium active:scale-95"
+                >
+                  Parar todo
+                </button>
+                <button
+                  onClick={toggleMute}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 text-text-secondary active:scale-90 transition-transform"
+                >
+                  {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                </button>
+              </div>
             )}
           </div>
         </Container>
@@ -338,11 +374,11 @@ export default function SonidosPage() {
                         type="range"
                         min="0"
                         max="100"
-                        value={(volumes[sound.id] || 0.6) * 100}
+                        value={(volumes[sound.id] ?? DEFAULT_VOLUME) * 100}
                         onChange={(e) => updateVolume(sound.id, parseInt(e.target.value) / 100)}
                         className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
                         style={{
-                          background: `linear-gradient(to right, rgba(255,255,255,0.4) ${(volumes[sound.id] || 0.6) * 100}%, rgba(255,255,255,0.06) ${(volumes[sound.id] || 0.6) * 100}%)`,
+                          background: `linear-gradient(to right, rgba(255,255,255,0.4) ${(volumes[sound.id] ?? DEFAULT_VOLUME) * 100}%, rgba(255,255,255,0.06) ${(volumes[sound.id] ?? DEFAULT_VOLUME) * 100}%)`,
                         }}
                       />
                     )}
