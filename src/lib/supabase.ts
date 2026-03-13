@@ -5,10 +5,9 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 let _supabase: SupabaseClient | null = null
 
-export function getSupabase(): SupabaseClient {
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase no configurado. Añade NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY en .env.local')
-  }
+/** Devuelve el cliente Supabase o null si no está configurado (ej. en Vercel sin vars) */
+export function getSupabase(): SupabaseClient | null {
+  if (!supabaseUrl || !supabaseAnonKey) return null
   if (!_supabase) {
     _supabase = createClient(supabaseUrl, supabaseAnonKey)
   }

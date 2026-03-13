@@ -3,7 +3,9 @@ import { getSupabase } from '@/lib/supabase'
 import { sendNotification } from '@/lib/mailer'
 
 export async function GET() {
-  const { data, error } = await getSupabase()
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { data, error } = await supabase
     .from('leads')
     .select('*')
     .order('created_at', { ascending: false })
@@ -16,7 +18,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json()
+  let body: { email?: string; name?: string; nombre?: string; source?: string; fuente?: string }
+  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
   const { email, name, nombre, source, fuente } = body
 
   if (!email) {
@@ -26,7 +29,9 @@ export async function POST(request: Request) {
   const origen = fuente || source || 'web'
   const nombreFinal = name ?? nombre ?? ''
 
-  const { error } = await getSupabase().from('leads').insert({
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { error } = await supabase.from('leads').insert({
     email,
     name: nombreFinal,
     source: origen,

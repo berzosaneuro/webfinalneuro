@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
 
 export async function GET() {
-  const { data, error } = await getSupabase()
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { data, error } = await supabase
     .from('subscribers')
     .select('*')
     .order('created_at', { ascending: false })
@@ -15,7 +17,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json()
+  let body: { email?: string; nombre?: string; source?: string; data?: unknown }
+  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { email, nombre, source, data: extraData } = body
   const sourceFinal = source || 'registro'
 
@@ -24,7 +29,7 @@ export async function POST(request: Request) {
   }
 
   // Upsert: if email exists, update source and data
-  const { data: existing } = await getSupabase()
+  const { data: existing } = await supabase
     .from('subscribers')
     .select('id, sources')
     .eq('email', email)
@@ -37,7 +42,7 @@ export async function POST(request: Request) {
       ? currentSources
       : [...currentSources, sourceFinal]
 
-    const { error } = await getSupabase()
+    const { error } = await supabase
       .from('subscribers')
       .update({
         nombre: nombre || undefined,
@@ -55,7 +60,7 @@ export async function POST(request: Request) {
   }
 
   // New subscriber
-  const { error } = await getSupabase().from('subscribers').insert({
+  const { error } = await supabase.from('subscribers').insert({
     email,
     nombre: nombre || '',
     sources: [sourceFinal],

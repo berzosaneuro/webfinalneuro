@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
 
 export async function GET() {
-  const { data, error } = await getSupabase()
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { data, error } = await supabase
     .from('calls')
     .select('*')
     .order('fecha', { ascending: true })
@@ -28,14 +30,17 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json()
+  let body: { clienteNombre?: string; telefono?: string; fecha?: string; hora?: string; notas?: string; motivo?: string }
+  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
   const { clienteNombre, telefono, fecha, hora, notas, motivo } = body
 
   if (!clienteNombre || !fecha || !hora) {
     return NextResponse.json({ error: 'Nombre, fecha y hora son obligatorios' }, { status: 400 })
   }
 
-  const { data, error } = await getSupabase().from('calls').insert({
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { data, error } = await supabase.from('calls').insert({
     cliente_nombre: clienteNombre,
     telefono: telefono || '',
     fecha,
@@ -65,7 +70,10 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const body = await request.json()
+  let body: { id?: string; tipo?: string; duracion?: number }
+  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { id, tipo, duracion } = body
 
   if (!id) {
@@ -76,7 +84,7 @@ export async function PATCH(request: Request) {
   if (tipo) updates.tipo = tipo
   if (duracion !== undefined) updates.duracion = duracion
 
-  const { error } = await getSupabase()
+  const { error } = await supabase
     .from('calls')
     .update(updates)
     .eq('id', id)

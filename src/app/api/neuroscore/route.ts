@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
 
 export async function GET(request: Request) {
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { searchParams } = new URL(request.url)
   const email = searchParams.get('email')
 
@@ -9,7 +11,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Email requerido' }, { status: 400 })
   }
 
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('neuroscore_entries')
     .select('*')
     .eq('user_email', email)
@@ -23,7 +25,8 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json()
+  let body: { email?: string; date?: string; meditated?: boolean; exerciseDone?: boolean; testDone?: boolean; despertarDone?: boolean; journalDone?: boolean }
+  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
   const { email, date, meditated, exerciseDone, testDone, despertarDone, journalDone } = body
 
   if (!email || !date) {
@@ -37,7 +40,9 @@ export async function POST(request: Request) {
   if (despertarDone) score += 15
   if (journalDone) score += 15
 
-  const { data: existing } = await getSupabase()
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { data: existing } = await supabase
     .from('neuroscore_entries')
     .select('id')
     .eq('user_email', email)
@@ -54,7 +59,7 @@ export async function POST(request: Request) {
   }
 
   if (existing) {
-    const { error } = await getSupabase()
+    const { error } = await supabase
       .from('neuroscore_entries')
       .update(entry)
       .eq('id', existing.id)
@@ -65,7 +70,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true })
   }
 
-  const { error } = await getSupabase().from('neuroscore_entries').insert({
+  const { error } = await supabase.from('neuroscore_entries').insert({
     user_email: email,
     date,
     ...entry,

@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
 
 export async function GET() {
-  const { data, error } = await getSupabase()
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { data, error } = await supabase
     .from('community_posts')
     .select('*')
     .order('created_at', { ascending: false })
@@ -15,14 +17,17 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json()
+  let body: { autor?: string; avatar?: string; nivel?: string; texto?: string; tag?: string }
+  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
   const { autor, avatar, nivel, texto, tag } = body
 
   if (!texto) {
     return NextResponse.json({ error: 'El texto es obligatorio' }, { status: 400 })
   }
 
-  const { data, error } = await getSupabase().from('community_posts').insert({
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { data, error } = await supabase.from('community_posts').insert({
     autor: autor || 'Anónimo',
     avatar: avatar || '🌟',
     nivel: nivel || 'Observador',
@@ -38,14 +43,17 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const body = await request.json()
+  let body: { id?: string; likes?: number }
+  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { id, likes } = body
 
   if (!id) {
     return NextResponse.json({ error: 'ID es obligatorio' }, { status: 400 })
   }
 
-  const { error } = await getSupabase()
+  const { error } = await supabase
     .from('community_posts')
     .update({ likes })
     .eq('id', id)

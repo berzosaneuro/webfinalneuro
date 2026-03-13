@@ -3,7 +3,9 @@ import { getSupabase } from '@/lib/supabase'
 import { sendNotification } from '@/lib/mailer'
 
 export async function GET() {
-  const { data, error } = await getSupabase()
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { data, error } = await supabase
     .from('contacts')
     .select('*')
     .order('created_at', { ascending: false })
@@ -28,7 +30,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Todos los campos son obligatorios' }, { status: 400 })
   }
 
-  const { error } = await getSupabase().from('contacts').insert({ name, email, message })
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { error } = await supabase.from('contacts').insert({ name, email, message })
 
   if (error) {
     return NextResponse.json({ error: 'Error al guardar el mensaje' }, { status: 500 })

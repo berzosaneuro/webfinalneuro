@@ -20,8 +20,10 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'Tabla no permitida' }, { status: 400 })
   }
 
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   try {
-    const { error } = await getSupabase().from(table).delete().eq('id', id)
+    const { error } = await supabase.from(table).delete().eq('id', id)
     if (error) {
       return NextResponse.json({ error: 'Error al eliminar' }, { status: 500 })
     }

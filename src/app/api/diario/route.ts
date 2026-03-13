@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
 
 export async function GET(request: Request) {
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { searchParams } = new URL(request.url)
   const email = searchParams.get('email')
 
@@ -9,7 +11,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Email requerido' }, { status: 400 })
   }
 
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('diary_entries')
     .select('*')
     .eq('user_email', email)
@@ -35,7 +37,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Email y fecha requeridos' }, { status: 400 })
   }
 
-  const { data: existing } = await getSupabase()
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const { data: existing } = await supabase
     .from('diary_entries')
     .select('id')
     .eq('user_email', email)
@@ -43,7 +47,7 @@ export async function POST(request: Request) {
     .single()
 
   if (existing) {
-    const { error } = await getSupabase()
+    const { error } = await supabase
       .from('diary_entries')
       .update({
         presence_level: presenceLevel,
@@ -58,7 +62,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, updated: true })
   }
 
-  const { error } = await getSupabase().from('diary_entries').insert({
+  const { error } = await supabase.from('diary_entries').insert({
     user_email: email,
     date,
     presence_level: presenceLevel,

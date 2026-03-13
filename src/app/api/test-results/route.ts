@@ -14,8 +14,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'score y level requeridos' }, { status: 400 })
   }
 
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   try {
-    const supabase = getSupabase()
     const { error } = await supabase.from('test_results').insert({
       user_email: userEmail || '',
       score: Number(score),

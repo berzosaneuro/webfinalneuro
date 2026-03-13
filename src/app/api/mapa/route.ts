@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
 
 export async function GET(request: Request) {
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { searchParams } = new URL(request.url)
   const email = searchParams.get('email')
 
@@ -9,7 +11,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Email requerido' }, { status: 400 })
   }
 
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('mapa_entries')
     .select('*')
     .eq('user_email', email)
@@ -23,7 +25,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json()
+  const supabase = getSupabase()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  let body: { email?: string; date?: string; dimensions?: Record<string, number>; nota?: string }
+  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
   const { email, date, dimensions, nota } = body
 
   if (!email || !date) {
@@ -41,7 +46,7 @@ export async function POST(request: Request) {
     : { presencia: 5, calma: 5, claridad: 5, energia: 5, conexion: 5 }
   const nivel = (dims.presencia + dims.calma + dims.claridad + dims.energia + dims.conexion) / 5
 
-  const { data: existing } = await getSupabase()
+  const { data: existing } = await supabase
     .from('mapa_entries')
     .select('id')
     .eq('user_email', email)
@@ -59,7 +64,7 @@ export async function POST(request: Request) {
   }
 
   if (existing) {
-    const { error } = await getSupabase()
+    const { error } = await supabase
       .from('mapa_entries')
       .update(entry)
       .eq('id', existing.id)
@@ -70,7 +75,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true })
   }
 
-  const { error } = await getSupabase().from('mapa_entries').insert({
+  const { error } = await supabase.from('mapa_entries').insert({
     user_email: email,
     date,
     ...entry,
