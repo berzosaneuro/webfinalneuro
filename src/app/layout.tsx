@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import BottomTabBar from '@/components/BottomTabBar'
 import PWARegister from '@/components/PWARegister'
+import AudioRouteHandler from '@/components/AudioRouteHandler'
 import { PremiumProvider } from '@/context/PremiumContext'
 import { AdminProvider } from '@/context/AdminContext'
 import { UserProvider } from '@/context/UserContext'
@@ -51,11 +52,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/icons/logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/icons/logo.png" />
       </head>
-      <body>
+      <body className="overflow-x-hidden min-h-screen">
         <AdminProvider>
           <UserProvider>
           <PremiumProvider>
             <PWARegister />
+            <AudioRouteHandler />
             <Navbar />
             <main className="min-h-screen pb-20 md:pb-0">{children}</main>
             <Footer />

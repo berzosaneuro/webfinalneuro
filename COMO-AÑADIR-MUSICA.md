@@ -1,6 +1,6 @@
 # Cómo añadir música a las meditaciones
 
-Tienes 5 archivos descargados. Haz lo siguiente:
+Los archivos MP3 deben estar en `public/` y en el repositorio para que funcionen en local Y en Vercel.
 
 ## Paso 1: Renombrar los archivos
 
@@ -36,6 +36,18 @@ public/
   ambient5.mp3
   ...
 ```
+
+## Paso 3 (Vercel): Asegúrate de que están en git
+
+Para que la música suene en la web desplegada:
+
+1. Coloca los MP3 en `public/` (como en el Paso 2)
+2. En la terminal: `git add public/*.mp3` y `git commit -m "Añadir música"` y `git push`
+3. Vercel volverá a desplegar y ya tendrás la música online
+
+Si los archivos no están en el repo, Vercel no los incluye y solo sonará la música sintética de fallback.
+
+---
 
 ## ¿Qué hace la app?
 

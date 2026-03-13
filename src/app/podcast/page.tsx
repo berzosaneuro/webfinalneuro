@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { claimAndPlay, unregister } from '@/lib/audio-manager'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
 import { Play, Pause, Headphones, Clock, Square } from 'lucide-react'
@@ -48,15 +49,22 @@ export default function PodcastPage() {
 
   const filtered = filter === 'Todos' ? episodes : episodes.filter(e => e.category === filter)
 
+  const stopPodcast = useCallback(() => {
+    window.speechSynthesis?.cancel()
+    setPlaying(null)
+    setIsPaused(false)
+  }, [])
+
   useEffect(() => {
     if (typeof window !== 'undefined') window.speechSynthesis?.getVoices()
     const loadVoices = () => window.speechSynthesis?.getVoices()
     window.speechSynthesis?.addEventListener?.('voiceschanged', loadVoices)
     return () => {
       window.speechSynthesis?.removeEventListener?.('voiceschanged', loadVoices)
-      window.speechSynthesis?.cancel()
+      unregister('podcast')
+      stopPodcast()
     }
-  }, [])
+  }, [stopPodcast])
 
   const handlePlay = useCallback((ep: Episode) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return
@@ -66,7 +74,7 @@ export default function PodcastPage() {
     let i = 0
     const next = () => {
       if (genRef.current !== gen) return
-      if (i >= lines.length) { setPlaying(null); setIsPaused(false); return }
+      if (i >= lines.length) { stopPodcast(); return }
       const utt = new SpeechSynthesisUtterance(lines[i] + '.')
       utt.lang = 'es-ES'
       utt.rate = 0.78
@@ -85,10 +93,8 @@ export default function PodcastPage() {
   }, [])
 
   const handleStop = useCallback(() => {
-    window.speechSynthesis?.cancel()
-    setPlaying(null)
-    setIsPaused(false)
-  }, [])
+    stopPodcast()
+  }, [stopPodcast])
 
   const handlePause = useCallback(() => {
     window.speechSynthesis?.pause()

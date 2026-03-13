@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { claimAndPlay, unregister, stopAll } from '@/lib/audio-manager'
 import PremiumLock from '@/components/PremiumLock'
 import PremiumBadge from '@/components/PremiumBadge'
 import { Brain, Timer, Moon, Crosshair, Play, Pause, Heart, Shield, Wind, Eye, Sun, Zap, Target, Clock, Tag, Leaf, Sparkles, Hand, Lightbulb } from 'lucide-react'
@@ -146,7 +147,7 @@ type AmbientRef = { type: 'file'; audio: HTMLAudioElement } | { type: 'synth'; c
 
 function createAmbientPad(ctx: AudioContext): { gain: GainNode; oscs: OscillatorNode[] } {
   const gain = ctx.createGain()
-  gain.gain.value = 0.4
+  gain.gain.value = 0.28
   gain.connect(ctx.destination)
   const freqs = [65.41, 82.41, 98, 130.81, 164.81]
   const oscs: OscillatorNode[] = []
@@ -155,7 +156,7 @@ function createAmbientPad(ctx: AudioContext): { gain: GainNode; oscs: Oscillator
     osc.type = 'triangle'
     osc.frequency.value = f
     const g = ctx.createGain()
-    g.gain.value = 0.45 / (i + 1)
+    g.gain.value = 0.3 / (i + 1)
     osc.connect(g)
     g.connect(gain)
     osc.start()
@@ -164,7 +165,14 @@ function createAmbientPad(ctx: AudioContext): { gain: GainNode; oscs: Oscillator
   return { gain, oscs }
 }
 
-const DEFAULT_TRACKS = ['/ambient1.mp3', '/ambient2.mp3', '/ambient3.mp3', '/ambient4.mp3', '/ambient5.mp3', '/ambient.mp3']
+const DEFAULT_TRACKS = [
+  '/ambient1.mp3', '/ambient2.mp3', '/ambient3.mp3', '/ambient4.mp3', '/ambient5.mp3', '/ambient.mp3',
+  '/Calm-ambient-music-ocean-waves-for-sleep-and-relaxation.mp3',
+  '/Calm-ambient-music-ocean-waves-for-sleep-and-relaxation (1).mp3',
+  '/Free-meditation-music.mp3', '/Free-meditation-music (1).mp3',
+  '/Relaxing-analog-synth-piano-music.mp3',
+  '/Warm-ambient-relaxing-synth-pad-music.mp3',
+]
 
 async function getAmbientTracks(): Promise<string[]> {
   try {
@@ -180,7 +188,7 @@ function startAmbientMusic(tracks: string[], onFallback: () => void): AmbientRef
   const src = tracks[Math.floor(Math.random() * tracks.length)] || DEFAULT_TRACKS[0]
   const audio = new Audio(src)
   audio.loop = true
-  audio.volume = 0.4
+  audio.volume = 0.28
   audio.onerror = onFallback
   audio.play().catch(onFallback)
   return { type: 'file', audio }
@@ -196,6 +204,7 @@ function stopAmbient(ambient: AmbientRef) {
     ambient.oscs.forEach(o => {
       try { o.stop(ambient.ctx.currentTime + 0.5) } catch { /* ignore */ }
     })
+    try { ambient.ctx.close() } catch { /* ignore */ }
   }
 }
 
@@ -208,7 +217,7 @@ function pauseAmbient(ambient: AmbientRef) {
 function resumeAmbient(ambient: AmbientRef) {
   if (!ambient) return
   if (ambient.type === 'file') ambient.audio.play().catch(() => {})
-  else ambient.gain.gain.setTargetAtTime(0.4, ambient.ctx.currentTime, 0.1)
+  else ambient.gain.gain.setTargetAtTime(0.28, ambient.ctx.currentTime, 0.1)
 }
 
 export default function MeditationCards() {
@@ -224,17 +233,27 @@ export default function MeditationCards() {
     getAmbientTracks().then(setAmbientTracks)
   }, [])
 
+  const stopMeditation = useCallback(() => {
+    if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
+    stopAmbient(ambientRef.current)
+    ambientRef.current = null
+    setPlaying(null)
+    setIsPaused(false)
+  }, [])
+
   useEffect(() => {
     return () => {
-      if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
-      stopAmbient(ambientRef.current)
+      unregister('meditation')
+      stopMeditation()
     }
-  }, [])
+  }, [stopMeditation])
 
   const handlePlay = useCallback((m: Meditation) => {
     if (typeof window === 'undefined' || !window.speechSynthesis || !m.script) return
+    claimAndPlay('meditation', stopMeditation)
     window.speechSynthesis.cancel()
     stopAmbient(ambientRef.current)
+    ambientRef.current = null
     const useSynthFallback = () => {
       const ctx = new AudioContext()
       const createPad = () => {
@@ -254,17 +273,17 @@ export default function MeditationCards() {
       const next = () => {
       if (generationRef.current !== generation) return
       if (i >= lines.length) {
-        stopAmbient(ambientRef.current)
-        ambientRef.current = null
-        setPlaying(null)
-        setIsPaused(false)
+        stopMeditation()
         return
       }
       const utt = new SpeechSynthesisUtterance(lines[i++])
-      utt.lang = 'es-ES'; utt.rate = 0.62; utt.pitch = 0.88; utt.volume = 1
-      // Select a calm Spanish voice if available
+      utt.lang = 'es-ES'
+      utt.rate = 0.55
+      utt.pitch = 0.92
+      utt.volume = 1
       const voices = window.speechSynthesis.getVoices()
-      const esVoice = voices.find(v => v.lang.startsWith('es') && (v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Jorge') || v.name.includes('female') || v.name.includes('Female')))
+      const esVoice = voices.find(v => v.lang.startsWith('es') && (v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Microsoft') || v.name.includes('Google')))
+        || voices.find(v => v.lang.startsWith('es') && v.name.includes('female'))
         || voices.find(v => v.lang.startsWith('es'))
       if (esVoice) utt.voice = esVoice
       utt.onend = next
@@ -273,7 +292,7 @@ export default function MeditationCards() {
       next()
     }
     startTTS(m)
-  }, [ambientTracks])
+  }, [ambientTracks, stopMeditation])
 
   const handlePause = useCallback(() => {
     window.speechSynthesis?.pause()

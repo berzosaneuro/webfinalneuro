@@ -123,10 +123,21 @@ export default function Plan7DiasPage() {
   useEffect(() => {
     setMounted(true)
     if (typeof window !== 'undefined') {
-      setSubscribed(localStorage.getItem(SUB_KEY) === 'true')
+      const sub = localStorage.getItem(SUB_KEY) === 'true'
+      setSubscribed(sub)
       try {
         const raw = localStorage.getItem(STORAGE_KEY)
-        if (raw) setData(JSON.parse(raw))
+        if (raw) {
+          const parsed = JSON.parse(raw) as PlanData
+          if (sub && !parsed.startDate) {
+            const today = new Date().toISOString().split('T')[0]
+            const fixed = { ...parsed, startDate: today }
+            setData(fixed)
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(fixed))
+          } else {
+            setData(parsed)
+          }
+        }
       } catch {}
     }
   }, [])
@@ -181,11 +192,7 @@ export default function Plan7DiasPage() {
   const getDayStatus = (dayNum: number): 'completed' | 'current' | 'locked' => {
     if (data.completedDays.includes(dayNum)) return 'completed'
     const unlocked = getCurrentUnlockedDay()
-    if (data.startDate) {
-      if (dayNum <= unlocked) return 'current'
-      return 'locked'
-    }
-    if (dayNum === 1 || data.completedDays.includes(dayNum - 1)) return 'current'
+    if (dayNum <= unlocked) return 'current'
     return 'locked'
   }
 

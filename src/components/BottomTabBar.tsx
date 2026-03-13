@@ -2,14 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Brain, Headphones, Flame, Activity, Wand2 } from 'lucide-react'
+import { Brain, Headphones, Volume2, Flame, Activity, Wand2 } from 'lucide-react'
 import { usePremium } from '@/context/PremiumContext'
 
 const tabs = [
   { href: '/', label: 'Inicio', icon: Brain },
-  { href: '/meditacion', label: 'Meditación', icon: Headphones },
+  { href: '/meditacion', label: 'Meditar', icon: Headphones },
+  { href: '/sonidos', label: 'Sonidos', icon: Volume2 },
   { href: '/retos', label: 'Retos', icon: Flame },
-  { href: '/plan-7-dias', label: '7 Días', icon: Activity },
   { href: '/ia-coach', label: 'IA Coach', icon: Wand2 },
 ]
 

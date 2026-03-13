@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { claimAndPlay, unregister } from '@/lib/audio-manager'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
 import { CloudRain, Wind, Waves, Flame, TreePine, Bird, Volume2, VolumeX, Moon, Zap, Coffee, Music } from 'lucide-react'
@@ -233,47 +234,41 @@ export default function SonidosPage() {
 
   activeSoundsRef.current = activeSounds
 
-  const [showUnlock, setShowUnlock] = useState(true)
+  const [unlocked, setUnlocked] = useState(false)
 
-  const unlockOnTouch = useCallback(() => {
-    if (!audioCtxRef.current) {
-      audioCtxRef.current = new AudioContext()
-    }
+  const stopAllSonidos = useCallback(() => {
     const ctx = audioCtxRef.current
-    if (ctx.state === 'suspended') {
-      ctx.resume().then(() => setShowUnlock(false)).catch(() => {})
-    } else {
-      setShowUnlock(false)
+    if (ctx) {
+      Object.values(activeSoundsRef.current).forEach(s => stopSound(s, ctx))
+      try { ctx.close() } catch {}
     }
+    audioCtxRef.current = null
+    setActiveSounds({})
+    setVolumes({})
   }, [])
 
+  // Crear/reanudar contexto. Debe iniciarse de forma síncrona en el gesto del usuario.
   const getOrCreateCtx = useCallback(async () => {
-    if (!audioCtxRef.current) {
-      audioCtxRef.current = new AudioContext()
+    if (!audioCtxRef.current) audioCtxRef.current = new AudioContext()
+    const ctx = audioCtxRef.current
+    if (ctx.state === 'suspended') {
+      const p = ctx.resume() // iniciar resume de forma síncrona
+      await p
     }
-    if (audioCtxRef.current.state === 'suspended') {
-      await audioCtxRef.current.resume()
-    }
-    return audioCtxRef.current
+    return ctx
   }, [])
 
   useEffect(() => {
     return () => {
-      const ctx = audioCtxRef.current
-      if (ctx) {
-        Object.values(activeSoundsRef.current).forEach(s => stopSound(s, ctx))
-        ctx.close()
-      }
-      audioCtxRef.current = null
+      unregister('sonidos')
+      stopAllSonidos()
     }
-  }, [])
+  }, [stopAllSonidos])
 
   const toggleSound = async (sound: SoundConfig) => {
-    const ctx = await getOrCreateCtx()
-    if (!ctx) return
-
     if (activeSounds[sound.id]) {
-      stopSound(activeSounds[sound.id], ctx)
+      const ctx = await getOrCreateCtx()
+      if (ctx) stopSound(activeSounds[sound.id], ctx)
       setActiveSounds(prev => {
         const next = { ...prev }
         delete next[sound.id]
@@ -287,6 +282,12 @@ export default function SonidosPage() {
       return
     }
 
+    // Crear y reanudar AudioContext en el mismo gesto del usuario (necesario en móvil)
+    const ctx = await getOrCreateCtx()
+    if (!ctx) return
+    setUnlocked(true)
+
+    claimAndPlay('sonidos', stopAllSonidos)
     const { nodes, stoppable, gain } = buildSound(ctx, sound.id)
     gain.gain.setTargetAtTime(muted ? 0 : DEFAULT_VOLUME * VOLUME_MULT, ctx.currentTime, 0.2)
 
@@ -320,35 +321,12 @@ export default function SonidosPage() {
     })
   }
 
-  const stopAll = () => {
-    const ctx = audioCtxRef.current
-    if (!ctx) return
-    Object.values(activeSounds).forEach(s => stopSound(s, ctx))
-    setActiveSounds({})
-    setVolumes({})
-  }
+  const stopAll = stopAllSonidos
 
   const activeCount = Object.keys(activeSounds).length
 
   return (
     <div className="relative overflow-hidden">
-      {showUnlock && (
-        <button
-          onClick={unlockOnTouch}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-dark-primary/95 backdrop-blur-sm"
-          type="button"
-        >
-          <div className="w-20 h-20 rounded-2xl bg-accent-blue/20 flex items-center justify-center">
-            <Volume2 className="w-10 h-10 text-accent-blue" />
-          </div>
-          <p className="text-white font-semibold text-lg px-6 text-center">
-            Toca para activar los sonidos
-          </p>
-          <p className="text-text-muted text-sm px-8 text-center">
-            En móvil el navegador bloquea el audio hasta la primera interacción
-          </p>
-        </button>
-      )}
       <div className="orb w-72 h-72 bg-blue-600 top-10 -left-24" />
 
       <section className="pt-8 md:pt-16 pb-4">
@@ -357,7 +335,9 @@ export default function SonidosPage() {
             <div>
               <h1 className="font-heading text-3xl font-bold text-white mb-1 animate-fade-in">Sonidos</h1>
               <p className="text-text-secondary text-sm animate-fade-in-up">Mezcla tu ambiente perfecto. Toca un icono para activar.</p>
-              <p className="text-text-muted text-[11px] mt-0.5">En móvil: el primer toque puede desbloquear el audio del navegador.</p>
+              <p className="text-text-muted text-[11px] mt-0.5">
+                {unlocked ? 'Audio activado.' : 'Toca cualquier sonido para activar el audio (requerido en móvil).'}
+              </p>
             </div>
             {activeCount > 0 && (
               <div className="flex items-center gap-2">
@@ -388,8 +368,9 @@ export default function SonidosPage() {
                 return (
                   <div key={sound.id} className={`glass rounded-2xl p-4 transition-all ${isActive ? 'ring-1 ring-white/20' : ''}`}>
                     <button
+                      type="button"
                       onClick={() => toggleSound(sound)}
-                      className="w-full flex flex-col items-center gap-2.5 mb-3 active:scale-95 transition-transform"
+                      className="w-full flex flex-col items-center gap-2.5 mb-3 active:scale-95 transition-transform touch-manipulation"
                     >
                       <div className={`w-14 h-14 rounded-2xl ${sound.color} flex items-center justify-center transition-all ${
                         isActive ? 'scale-110 ring-2 ring-white/15' : ''
