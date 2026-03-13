@@ -25,8 +25,6 @@ const moreLinks = [
   { href: '/retos', label: 'Retos' },
   { href: '/biblioteca', label: 'Biblioteca' },
   { href: '/certificacion', label: 'Certificación' },
-  { href: '/clientes', label: 'Clientes' },
-  { href: '/llamadas', label: 'Llamadas' },
   { href: '/metodo', label: 'El Método' },
   { href: '/sobre', label: 'Sobre Berzosa' },
 ]
@@ -64,8 +62,6 @@ const mobileLinks = [
     { href: '/notificaciones', label: 'Notificaciones' },
   ]},
   { category: 'Profesional', items: [
-    { href: '/clientes', label: 'Clientes' },
-    { href: '/llamadas', label: 'Llamadas' },
     { href: '/captacion', label: 'Captación' },
     { href: '/certificacion', label: 'Certificación' },
     { href: '/corporativo', label: 'Empresas' },

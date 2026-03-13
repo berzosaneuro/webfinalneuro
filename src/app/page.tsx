@@ -332,7 +332,7 @@ export default function Home() {
               {[
                 { href: '/retos', label: 'Retos', icon: Trophy, color: 'bg-emerald-500/15 text-emerald-400' },
                 { href: '/masterclass', label: 'Masterclass', icon: Video, color: 'bg-violet-500/15 text-violet-400' },
-                { href: '/podcast', label: 'Podcast', icon: Podcast, color: 'bg-rose-500/15 text-rose-400' },
+                { href: '/podcast', label: 'NeuroPodcast', icon: Podcast, color: 'bg-rose-500/15 text-rose-400' },
                 { href: '/circulos', label: 'Círculos', icon: Users, color: 'bg-teal-500/15 text-teal-400' },
                 { href: '/leaderboard', label: 'Ranking', icon: Trophy, color: 'bg-emerald-500/15 text-emerald-400' },
                 { href: '/referidos', label: 'Referidos', icon: Gift, color: 'bg-pink-500/15 text-pink-400' },

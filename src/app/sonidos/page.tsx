@@ -233,6 +233,20 @@ export default function SonidosPage() {
 
   activeSoundsRef.current = activeSounds
 
+  const [showUnlock, setShowUnlock] = useState(true)
+
+  const unlockOnTouch = useCallback(() => {
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new AudioContext()
+    }
+    const ctx = audioCtxRef.current
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(() => setShowUnlock(false)).catch(() => {})
+    } else {
+      setShowUnlock(false)
+    }
+  }, [])
+
   const getOrCreateCtx = useCallback(async () => {
     if (!audioCtxRef.current) {
       audioCtxRef.current = new AudioContext()
@@ -318,6 +332,23 @@ export default function SonidosPage() {
 
   return (
     <div className="relative overflow-hidden">
+      {showUnlock && (
+        <button
+          onClick={unlockOnTouch}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-dark-primary/95 backdrop-blur-sm"
+          type="button"
+        >
+          <div className="w-20 h-20 rounded-2xl bg-accent-blue/20 flex items-center justify-center">
+            <Volume2 className="w-10 h-10 text-accent-blue" />
+          </div>
+          <p className="text-white font-semibold text-lg px-6 text-center">
+            Toca para activar los sonidos
+          </p>
+          <p className="text-text-muted text-sm px-8 text-center">
+            En móvil el navegador bloquea el audio hasta la primera interacción
+          </p>
+        </button>
+      )}
       <div className="orb w-72 h-72 bg-blue-600 top-10 -left-24" />
 
       <section className="pt-8 md:pt-16 pb-4">
