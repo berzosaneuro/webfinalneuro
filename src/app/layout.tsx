@@ -48,8 +48,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es">
       <head>
-        <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/icons/icon.svg" />
+        <link rel="icon" href="/icons/logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/icons/logo.png" />
       </head>
       <body>
         <AdminProvider>

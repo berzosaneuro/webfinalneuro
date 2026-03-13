@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Brain, Crown, Shield, ChevronDown } from 'lucide-react'
+import { Menu, X, Crown, Shield, ChevronDown } from 'lucide-react'
 import { usePremium } from '@/context/PremiumContext'
 import { useAdmin } from '@/context/AdminContext'
 
@@ -88,9 +89,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-14">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <div className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                <Brain className="w-4 h-4 text-white" />
-              </div>
+              <Image src="/icons/logo.png" alt="Berzosa Neuro" width={28} height={28} className="rounded-lg" />
               <span className="font-heading font-bold text-base text-white">Berzosa Neuro</span>
             </Link>
 
@@ -181,9 +180,7 @@ export default function Navbar() {
       <div className="md:hidden sticky top-0 z-50 ios-header">
         <div className="flex items-center justify-between px-5 py-3">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
-              <Brain className="w-4 h-4 text-white" />
-            </div>
+            <Image src="/icons/logo.png" alt="Berzosa Neuro" width={32} height={32} className="rounded-xl" />
             <span className="font-heading font-semibold text-white">Berzosa Neuro</span>
           </Link>
           <button
