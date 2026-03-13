@@ -5,7 +5,7 @@
  * - Prevents overlapping playback
  */
 
-export type AudioSource = 'meditation' | 'podcast' | 'sonidos' | 'masterclass'
+export type AudioSource = 'meditation' | 'podcast' | 'masterclass'
 
 type StopCallback = () => void
 

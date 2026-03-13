@@ -26,7 +26,6 @@ Herramientas de la app que puedes recomendar:
 - /programa - Programa de 21 días
 - /diario - Diario de presencia
 - /neuroscore - Puntuación diaria de hábitos
-- /sonidos - Sonidos ambientales para meditar
 - /ejercicios - Ejercicios de metacognición`
 
 // Smart local response system when no API key is available
@@ -48,7 +47,7 @@ const SMART_RESPONSES: Record<string, string[]> = {
     '**Técnica del Observador Consciente** (la base de todo):\n\n**Nivel 1 - Observar pensamientos:**\nSiéntate 2 min. Solo observa qué pensamientos aparecen. Di "pensamiento" y suelta.\n\n**Nivel 2 - Observar emociones:**\nCuando sientas algo fuerte, di "Hay tristeza" en vez de "Estoy triste". Esto activa la corteza prefrontal.\n\n**Nivel 3 - Observar al observador:**\nPregunta: "¿Quién observa?" No busques respuesta. La pregunta ES la práctica.\n\nPractica en **/ejercicios** con el Contador de Pensamientos.',
   ],
   dormir: [
-    'El insomnio es tu mente en modo default: rumiación sobre el pasado y preocupación por el futuro. Vamos a cortarlo.\n\n**Protocolo pre-sueño:**\n1. **Relajación muscular progresiva:** Tensa cada grupo muscular 5 seg, suelta. De pies a cabeza.\n2. **Respiración 4-7-8:** Inhala 4s, retén 7s, exhala 8s. Esto activa el parasimpático.\n3. **Dump mental:** Escribe TODO lo que te preocupa en una nota. Tu cerebro puede soltar lo que ya está registrado.\n\nTambién prueba los sonidos ambientales en **/sonidos** mientras te duermes.',
+    'El insomnio es tu mente en modo default: rumiación sobre el pasado y preocupación por el futuro. Vamos a cortarlo.\n\n**Protocolo pre-sueño:**\n1. **Relajación muscular progresiva:** Tensa cada grupo muscular 5 seg, suelta. De pies a cabeza.\n2. **Respiración 4-7-8:** Inhala 4s, retén 7s, exhala 8s. Esto activa el parasimpático.\n3. **Dump mental:** Escribe TODO lo que te preocupa en una nota. Tu cerebro puede soltar lo que ya está registrado.\n\nCrea un ambiente tranquilo para favorecer el sueño.',
   ],
   estres: [
     'El estrés crónico literalmente encoge tu hipocampo (memoria) y agranda tu amígdala (miedo). Pero es reversible con práctica.\n\n**Reset de estrés en 2 minutos:**\n1. Pon una mano en el pecho y otra en el abdomen\n2. Respira solo con el abdomen (la mano del pecho no se mueve)\n3. Exhala el doble de lo que inhalas (4 seg dentro, 8 seg fuera)\n4. Haz 10 ciclos\n\nEsto estimula el nervio vago y reduce cortisol en sangre. Hazlo 3 veces al día.\n\nPara emergencias: **/sos**',

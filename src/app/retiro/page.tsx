@@ -355,7 +355,7 @@ export default function RetiroPage() {
                 { icon: Smartphone, text: 'Pon el teléfono en modo avión o no molestar' },
                 { icon: Bell, text: 'Desactiva todas las notificaciones' },
                 { icon: Lock, text: 'Busca un lugar donde nadie te interrumpa' },
-                { icon: Volume2, text: 'Si quieres, pon sonidos de fondo desde /sonidos' },
+                { icon: Volume2, text: 'Ambiente tranquilo recomendado' },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">

@@ -41,7 +41,6 @@ const mobileLinks = [
   { category: 'Practicar', items: [
     { href: '/', label: 'Inicio' },
     { href: '/meditacion', label: 'Meditar' },
-    { href: '/sonidos', label: 'Sonidos' },
     { href: '/ejercicios', label: 'Ejercicios' },
     { href: '/sos', label: 'SOS' },
     { href: '/plan-7-dias', label: '7 Días Gratis' },
