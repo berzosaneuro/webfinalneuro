@@ -3,32 +3,34 @@ import { notFound } from 'next/navigation'
 import Container from '@/components/Container'
 import Card from '@/components/Card'
 import Button from '@/components/Button'
-import { posts, getPostBySlug } from '@/data/posts'
+import { getPostBySlug } from '@/data/posts'
 import { ArrowLeft, Lightbulb } from 'lucide-react'
 
-type Props = {
-  params: { slug: string }
+type Props = { params: Promise<{ slug: string }> }
+
+async function fetchPost(slug: string) {
+  try {
+    const { getSupabase } = await import('@/lib/supabase')
+    const sb = getSupabase()
+    if (sb) {
+      const { data } = await sb.from('biblioteca_posts').select('*').eq('slug', slug).single()
+      if (data) return { slug: data.slug, title: data.title, date: data.date || '', summary: data.summary || '', content: data.content || '', exercise: data.exercise || '' }
+    }
+  } catch {}
+  return getPostBySlug(slug) ?? null
 }
 
-export function generateStaticParams() {
-  return posts.map((post) => ({ slug: post.slug }))
-}
-
-export function generateMetadata({ params }: Props): Metadata {
-  const post = getPostBySlug(params.slug)
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const post = await fetchPost(slug)
   if (!post) return { title: 'No encontrado — Berzosa Neuro' }
-  return {
-    title: `${post.title} — Berzosa Neuro`,
-    description: post.summary,
-  }
+  return { title: `${post.title} — Berzosa Neuro`, description: post.summary }
 }
 
-export default function PostPage({ params }: Props) {
-  const post = getPostBySlug(params.slug)
-
-  if (!post) {
-    notFound()
-  }
+export default async function PostPage({ params }: Props) {
+  const { slug } = await params
+  const post = await fetchPost(slug)
+  if (!post) notFound()
 
   return (
     <>
@@ -49,7 +51,7 @@ export default function PostPage({ params }: Props) {
             </p>
 
             <div className="prose-custom space-y-4">
-              {post.content.split('\n\n').map((paragraph, i) => (
+              {post.content.split('\n\n').map((paragraph: string, i: number) => (
                 <p key={i} className="text-text-secondary leading-relaxed text-base">
                   {paragraph}
                 </p>

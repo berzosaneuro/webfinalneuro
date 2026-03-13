@@ -1,17 +1,36 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Container from '@/components/Container'
 import Card from '@/components/Card'
 import FadeInSection from '@/components/FadeInSection'
 import PremiumLock from '@/components/PremiumLock'
 import PremiumBadge from '@/components/PremiumBadge'
-import { posts } from '@/data/posts'
-import { BookOpen } from 'lucide-react'
+import { posts as fallbackPosts } from '@/data/posts'
+import { BookOpen, Loader2 } from 'lucide-react'
 
-const FREE_SLUGS = ['por-que-tu-mente-no-se-calla', 'ego-mecanismo-defensivo']
+type PostItem = { slug: string; title: string; date: string; summary: string; free?: boolean }
 
 export default function BibliotecaPage() {
+  const [posts, setPosts] = useState<PostItem[]>(fallbackPosts)
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    fetch('/api/biblioteca')
+      .then(r => r.ok ? r.json() : fallbackPosts)
+      .then(data => setPosts(Array.isArray(data) ? data : fallbackPosts))
+      .catch(() => setPosts(fallbackPosts))
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-[40vh] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-accent-blue animate-spin" />
+      </div>
+    )
+  }
+
   return (
     <>
       <section className="pt-24 pb-16">
@@ -31,7 +50,7 @@ export default function BibliotecaPage() {
         <Container>
           <div className="max-w-3xl mx-auto space-y-6">
             {posts.map((post) => {
-              const isFree = FREE_SLUGS.includes(post.slug)
+              const isFree = !!post.free || ['por-que-tu-mente-no-se-calla', 'ego-mecanismo-defensivo'].includes(post.slug)
               const cardContent = (
                 <Link href={`/biblioteca/${post.slug}`}>
                   <Card className="group cursor-pointer">

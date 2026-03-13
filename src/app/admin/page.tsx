@@ -7,10 +7,11 @@ import Container from '@/components/Container'
 import {
   Users, Mail, Phone, MessageSquare, BarChart3, LogOut,
   Loader2, Trash2, UserCheck, Crown, Download, RefreshCw,
-  PhoneCall, PhoneMissed, Star
+  PhoneCall, PhoneMissed, Star, BookOpen, Map as MapIcon, Activity, Calendar, ClipboardList, ExternalLink, Pencil, X, Music
 } from 'lucide-react'
 
-type Tab = 'resumen' | 'suscriptores' | 'clientes' | 'leads' | 'contactos' | 'llamadas' | 'comunidad'
+type Tab = 'resumen' | 'usuarios' | 'audios' | 'biblioteca' | 'suscriptores' | 'clientes' | 'leads' | 'contactos' | 'llamadas' | 'comunidad'
+  | 'diario' | 'mapa' | 'neuroscore' | 'programa' | 'test'
 
 type Cliente = {
   id: string; nombre: string; email: string; telefono: string
@@ -30,6 +31,66 @@ type Post = {
 type Subscriber = {
   id: string; email: string; nombre: string; sources: string[]
   extra_data: Record<string, unknown>; created_at: string; updated_at: string
+}
+type DiarioEntry = { id: string; user_email: string; date: string; presence_level: number; mood: string; insight: string }
+type MapaEntry = { id: string; user_email: string; date: string; presencia: number; calma: number; claridad: number; energia: number; conexion: number; nivel: number; nota: string }
+type NeuroEntry = { id: string; user_email: string; date: string; score: number; meditated: boolean; exercise_done: boolean; test_done: boolean; despertar_done: boolean; journal_done: boolean }
+type ProgramaEntry = { id: string; user_email: string; start_date: string; completed_days: number[] }
+type TestResult = { id: string; user_email: string; score: number; level: string; created_at: string }
+type UserRow = { id: string; email: string; nombre: string; last_login_at: string; created_at: string }
+type BiblioPost = { id: string; slug: string; title: string; date: string; summary: string; content: string; exercise: string; free: boolean }
+
+function EditBiblioForm({ post, onSave, onCancel }: { post: BiblioPost; onSave: (d: Partial<BiblioPost>) => void; onCancel: () => void }) {
+  const [form, setForm] = useState({ slug: post.slug, title: post.title, date: post.date, summary: post.summary, content: post.content, exercise: post.exercise, free: post.free })
+  return (
+    <form className="space-y-3" onSubmit={e => { e.preventDefault(); onSave(form) }}>
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-heading font-semibold text-white">Editar artículo</h3>
+        <button type="button" onClick={onCancel} className="p-2 rounded-lg hover:bg-white/10 text-text-muted"><X className="w-4 h-4" /></button>
+      </div>
+      <div><label className="text-text-muted text-xs block mb-1">Slug</label><input value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm" /></div>
+      <div><label className="text-text-muted text-xs block mb-1">Título</label><input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm" /></div>
+      <div><label className="text-text-muted text-xs block mb-1">Fecha</label><input value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm" placeholder="2026-02-10" /></div>
+      <div><label className="text-text-muted text-xs block mb-1">Resumen</label><textarea value={form.summary} onChange={e => setForm(f => ({ ...f, summary: e.target.value }))} rows={2} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm resize-none" /></div>
+      <div><label className="text-text-muted text-xs block mb-1">Contenido</label><textarea value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} rows={8} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm resize-none font-mono text-xs" /></div>
+      <div><label className="text-text-muted text-xs block mb-1">Ejercicio práctico</label><textarea value={form.exercise} onChange={e => setForm(f => ({ ...f, exercise: e.target.value }))} rows={2} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm resize-none" /></div>
+      <label className="flex items-center gap-2 text-sm text-text-secondary"><input type="checkbox" checked={form.free} onChange={e => setForm(f => ({ ...f, free: e.target.checked }))} /> Artículo gratis</label>
+      <div className="flex gap-2 pt-2"><button type="submit" className="flex-1 py-2.5 rounded-xl bg-accent-blue text-white text-sm font-medium">Guardar</button><button type="button" onClick={onCancel} className="px-4 py-2.5 rounded-xl glass text-text-secondary text-sm">Cancelar</button></div>
+    </form>
+  )
+}
+
+function EditPostForm({ post, onSave, onCancel }: { post: Post; onSave: (d: { autor: string; avatar: string; nivel: string; texto: string; tag: string }) => void; onCancel: () => void }) {
+  const [form, setForm] = useState({ autor: post.autor, avatar: post.avatar, nivel: post.nivel, texto: post.texto, tag: post.tag })
+  const [saving, setSaving] = useState(false)
+  return (
+    <form className="space-y-3" onSubmit={e => { e.preventDefault(); setSaving(true); onSave(form); setSaving(false) }}>
+      <div>
+        <label className="text-text-muted text-xs block mb-1">Autor</label>
+        <input value={form.autor} onChange={e => setForm(f => ({ ...f, autor: e.target.value }))} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm" />
+      </div>
+      <div>
+        <label className="text-text-muted text-xs block mb-1">Avatar (emoji)</label>
+        <input value={form.avatar} onChange={e => setForm(f => ({ ...f, avatar: e.target.value }))} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm" placeholder="🧘" />
+      </div>
+      <div>
+        <label className="text-text-muted text-xs block mb-1">Nivel</label>
+        <input value={form.nivel} onChange={e => setForm(f => ({ ...f, nivel: e.target.value }))} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm" placeholder="Observador" />
+      </div>
+      <div>
+        <label className="text-text-muted text-xs block mb-1">Tag</label>
+        <input value={form.tag} onChange={e => setForm(f => ({ ...f, tag: e.target.value }))} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm" placeholder="experiencia" />
+      </div>
+      <div>
+        <label className="text-text-muted text-xs block mb-1">Texto</label>
+        <textarea value={form.texto} onChange={e => setForm(f => ({ ...f, texto: e.target.value }))} rows={4} className="w-full px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm resize-none" />
+      </div>
+      <div className="flex gap-2 pt-2">
+        <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-xl bg-accent-blue text-white text-sm font-medium disabled:opacity-60">Guardar</button>
+        <button type="button" onClick={onCancel} className="px-4 py-2.5 rounded-xl glass text-text-secondary text-sm">Cancelar</button>
+      </div>
+    </form>
+  )
 }
 
 function downloadCSV(data: Record<string, unknown>[], filename: string) {
@@ -66,17 +127,41 @@ export default function AdminPage() {
   const [llamadas, setLlamadas] = useState<Llamada[]>([])
   const [posts, setPosts] = useState<Post[]>([])
   const [subscribers, setSubscribers] = useState<Subscriber[]>([])
+  const [diario, setDiario] = useState<DiarioEntry[]>([])
+  const [mapa, setMapa] = useState<MapaEntry[]>([])
+  const [neuroscore, setNeuroscore] = useState<NeuroEntry[]>([])
+  const [programa, setPrograma] = useState<ProgramaEntry[]>([])
+  const [testResults, setTestResults] = useState<TestResult[]>([])
+  const [usuarios, setUsuarios] = useState<UserRow[]>([])
+  const [editingPost, setEditingPost] = useState<Post | null>(null)
+  const [audioConfig, setAudioConfig] = useState<{ slot: string; url: string }[]>([])
+  const [audioSaving, setAudioSaving] = useState(false)
+  const [biblioteca, setBiblioteca] = useState<BiblioPost[]>([])
+  const [editingBiblio, setEditingBiblio] = useState<BiblioPost | null>(null)
+
+  const supabaseUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_SUPABASE_URL || '') : ''
+  const supabaseDashboardUrl = supabaseUrl
+    ? `https://supabase.com/dashboard/project/${supabaseUrl.replace(/^https?:\/\//, '').replace(/\.supabase\.co.*$/, '')}`
+    : ''
 
   const fetchAll = useCallback(async () => {
     setLoading(true)
     try {
-      const [cRes, lRes, coRes, llRes, pRes, sRes] = await Promise.allSettled([
+      const [cRes, lRes, coRes, llRes, pRes, sRes, uRes, aRes, bRes, dRes, mRes, nRes, progRes, tRes] = await Promise.allSettled([
         fetch('/api/clients'),
         fetch('/api/leads'),
         fetch('/api/contact'),
         fetch('/api/calls'),
         fetch('/api/community'),
         fetch('/api/subscribers'),
+        fetch('/api/admin/users'),
+        fetch('/api/admin/audio-config'),
+        fetch('/api/admin/biblioteca'),
+        fetch('/api/admin/diario'),
+        fetch('/api/admin/mapa'),
+        fetch('/api/admin/neuroscore'),
+        fetch('/api/admin/programa'),
+        fetch('/api/admin/test-results'),
       ])
       if (cRes.status === 'fulfilled' && cRes.value.ok) setClientes(await cRes.value.json())
       if (lRes.status === 'fulfilled' && lRes.value.ok) setLeads(await lRes.value.json())
@@ -84,6 +169,13 @@ export default function AdminPage() {
       if (llRes.status === 'fulfilled' && llRes.value.ok) setLlamadas(await llRes.value.json())
       if (pRes.status === 'fulfilled' && pRes.value.ok) setPosts(await pRes.value.json())
       if (sRes.status === 'fulfilled' && sRes.value.ok) setSubscribers(await sRes.value.json())
+      if (uRes.status === 'fulfilled' && uRes.value.ok) setUsuarios(await uRes.value.json())
+      if (aRes.status === 'fulfilled' && aRes.value.ok) setAudioConfig(await aRes.value.json())
+      if (dRes.status === 'fulfilled' && dRes.value.ok) setDiario(await dRes.value.json())
+      if (mRes.status === 'fulfilled' && mRes.value.ok) setMapa(await mRes.value.json())
+      if (nRes.status === 'fulfilled' && nRes.value.ok) setNeuroscore(await nRes.value.json())
+      if (progRes.status === 'fulfilled' && progRes.value.ok) setPrograma(await progRes.value.json())
+      if (tRes.status === 'fulfilled' && tRes.value.ok) setTestResults(await tRes.value.json())
     } catch (err) {
       console.error('Error al cargar datos del admin:', err)
     } finally {
@@ -106,6 +198,20 @@ export default function AdminPage() {
     router.push('/admin/login')
   }
 
+  const updatePost = async (id: string, data: { autor?: string; avatar?: string; nivel?: string; texto?: string; tag?: string }) => {
+    try {
+      const res = await fetch('/api/community', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...data }),
+      })
+      if (res.ok) {
+        setPosts(prev => prev.map(p => p.id === id ? { ...p, ...data } : p))
+        setEditingPost(null)
+      }
+    } catch (err) { console.error(err) }
+  }
+
   const deleteItem = async (table: string, id: string) => {
     try {
       await fetch('/api/admin/delete', {
@@ -119,6 +225,13 @@ export default function AdminPage() {
       if (table === 'calls') setLlamadas((prev) => prev.filter((l) => l.id !== id))
       if (table === 'community_posts') setPosts((prev) => prev.filter((p) => p.id !== id))
       if (table === 'subscribers') setSubscribers((prev) => prev.filter((s) => s.id !== id))
+      if (table === 'diary_entries') setDiario((prev) => prev.filter((d) => d.id !== id))
+      if (table === 'mapa_entries') setMapa((prev) => prev.filter((m) => m.id !== id))
+      if (table === 'neuroscore_entries') setNeuroscore((prev) => prev.filter((n) => n.id !== id))
+      if (table === 'programa_progress') setPrograma((prev) => prev.filter((p) => p.id !== id))
+      if (table === 'test_results') setTestResults((prev) => prev.filter((t) => t.id !== id))
+      if (table === 'users') setUsuarios((prev) => prev.filter((u) => u.id !== id))
+      if (table === 'biblioteca_posts') setBiblioteca((prev) => prev.filter((b) => b.id !== id))
     } catch (err) {
       console.error('Error al eliminar:', err)
     }
@@ -165,12 +278,20 @@ export default function AdminPage() {
 
   const tabs: { id: Tab; label: string; icon: typeof Users; count: number }[] = [
     { id: 'resumen', label: 'Resumen', icon: BarChart3, count: 0 },
+    { id: 'usuarios', label: 'Usuarios', icon: Users, count: usuarios.length },
+    { id: 'audios', label: 'Audios', icon: Music, count: 0 },
+    { id: 'biblioteca', label: 'Biblioteca', icon: BookOpen, count: biblioteca.length },
     { id: 'suscriptores', label: 'Emails', icon: Star, count: totalEmails },
     { id: 'clientes', label: 'Clientes', icon: Users, count: clientes.length },
     { id: 'leads', label: 'Leads', icon: Mail, count: leads.length },
     { id: 'contactos', label: 'Mensajes', icon: MessageSquare, count: contactos.length },
     { id: 'llamadas', label: 'Llamadas', icon: Phone, count: llamadas.length },
     { id: 'comunidad', label: 'Comunidad', icon: Users, count: posts.length },
+    { id: 'diario', label: 'Diario', icon: BookOpen, count: diario.length },
+    { id: 'mapa', label: 'Mapa', icon: MapIcon, count: mapa.length },
+    { id: 'neuroscore', label: 'NeuroScore', icon: Activity, count: neuroscore.length },
+    { id: 'programa', label: 'Programa 21', icon: Calendar, count: programa.length },
+    { id: 'test', label: 'Test', icon: ClipboardList, count: testResults.length },
   ]
 
   if (loading) {
@@ -197,6 +318,18 @@ export default function AdminPage() {
               <p className="text-text-secondary text-sm">Gestiona toda tu plataforma</p>
             </div>
             <div className="flex items-center gap-2">
+              {supabaseDashboardUrl && (
+                <a
+                  href={supabaseDashboardUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl glass text-accent-blue hover:text-accent-blue-hover transition-colors"
+                  title="Abrir Supabase"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span className="hidden sm:inline text-sm">Supabase</span>
+                </a>
+              )}
               <button
                 onClick={fetchAll}
                 className="p-2.5 rounded-xl glass text-text-secondary hover:text-white transition-colors active:scale-90"
@@ -244,16 +377,59 @@ export default function AdminPage() {
       {/* Content */}
       <section className="pb-16">
         <Container>
+          {/* USUARIOS */}
+          {tab === 'usuarios' && (
+            <div className="space-y-2 animate-fade-in">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-text-secondary text-sm">Usuarios registrados o que han accedido</p>
+                <div className="flex items-center gap-2">
+                  {usuarios.length > 0 && (
+                    <button onClick={() => downloadCSV(usuarios.map(u => ({ email: u.email, nombre: u.nombre, ultimo_acceso: u.last_login_at, creado: u.created_at })), 'usuarios')} className="flex items-center gap-1.5 px-3 py-1.5 bg-accent-blue/10 text-accent-blue rounded-lg text-[10px] font-medium">
+                      <Download className="w-3 h-3" /> CSV
+                    </button>
+                  )}
+                </div>
+              </div>
+              {usuarios.length === 0 ? (
+                <div className="glass rounded-2xl p-8 text-center">
+                  <Users className="w-10 h-10 text-text-muted mx-auto mb-3" />
+                  <p className="text-text-secondary text-sm">No hay usuarios registrados</p>
+                  <p className="text-text-muted text-xs mt-1">Se guardan al registrarse o acceder</p>
+                </div>
+              ) : (
+                usuarios.map((u) => (
+                  <div key={u.id} className="glass rounded-2xl p-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center shrink-0">
+                      <Users className="w-5 h-5 text-accent-blue" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-medium truncate">{u.email}</p>
+                      <p className="text-text-muted text-xs">{u.nombre || '—'} · Último acceso: {u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('es') : '—'}</p>
+                    </div>
+                    <button onClick={() => deleteItem('users', u.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
           {/* RESUMEN */}
           {tab === 'resumen' && (
             <div className="space-y-4 animate-fade-in">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 {[
-                  { label: 'Emails totales', value: totalEmails, icon: Star, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+                  { label: 'Emails', value: totalEmails, icon: Star, color: 'text-violet-400', bg: 'bg-violet-500/10' },
                   { label: 'Clientes', value: clientes.length, icon: Users, color: 'text-accent-blue', bg: 'bg-accent-blue/10' },
                   { label: 'Leads', value: leads.length, icon: Mail, color: 'text-green-400', bg: 'bg-green-500/10' },
                   { label: 'Mensajes', value: contactos.length, icon: MessageSquare, color: 'text-purple-400', bg: 'bg-purple-500/10' },
                   { label: 'Llamadas', value: llamadas.length, icon: Phone, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
+                  { label: 'Diario', value: diario.length, icon: BookOpen, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+                  { label: 'Mapa', value: mapa.length, icon: MapIcon, color: 'text-teal-400', bg: 'bg-teal-500/10' },
+                  { label: 'NeuroScore', value: neuroscore.length, icon: Activity, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+                  { label: 'Programa 21', value: programa.length, icon: Calendar, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+                  { label: 'Tests', value: testResults.length, icon: ClipboardList, color: 'text-violet-400', bg: 'bg-violet-500/10' },
                 ].map((s) => (
                   <div key={s.label} className="glass rounded-2xl p-4">
                     <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center mb-3`}>
@@ -359,7 +535,90 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* SUSCRIPTORES / TODOS LOS EMAILS */}
+          {/* AUDIOS */}
+          {tab === 'audios' && (
+            <div className="space-y-4 animate-fade-in">
+              <p className="text-text-secondary text-sm">URLs de música ambiente para meditaciones. Vacío = usa /ambient1.mp3, etc.</p>
+              <div className="space-y-3">
+                {['ambient1','ambient2','ambient3','ambient4','ambient5','ambient'].map((slot) => {
+                  const item = audioConfig.find(a => a.slot === slot) || { slot, url: '' }
+                  return (
+                    <div key={slot} className="glass rounded-2xl p-4">
+                      <label className="text-text-muted text-xs block mb-1">{slot}</label>
+                      <input
+                        type="text"
+                        value={item.url}
+                        onChange={(e) => {
+                          const next = [...audioConfig]
+                          const idx = next.findIndex(x => x.slot === slot)
+                          const val = e.target.value
+                          if (idx >= 0) next[idx] = { slot, url: val }
+                          else next.push({ slot, url: val })
+                          setAudioConfig(next)
+                        }}
+                        placeholder={`/${slot}.mp3`}
+                        className="w-full px-4 py-2.5 rounded-xl bg-dark-surface border border-dark-border text-white text-sm"
+                      />
+                    </div>
+                  )
+                })}
+              </div>
+              <button
+                onClick={async () => {
+                  setAudioSaving(true)
+                  try {
+                    const items = ['ambient1','ambient2','ambient3','ambient4','ambient5','ambient'].map(s => {
+                      const found = audioConfig.find(a => a.slot === s)
+                      return { slot: s, url: found?.url ?? '' }
+                    })
+                    const res = await fetch('/api/admin/audio-config', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items }) })
+                    if (res.ok) fetchAll()
+                  } finally { setAudioSaving(false) }
+                }}
+                disabled={audioSaving}
+                className="px-5 py-2.5 rounded-xl bg-accent-blue text-white text-sm font-medium disabled:opacity-60"
+              >
+                {audioSaving ? 'Guardando…' : 'Guardar URLs'}
+              </button>
+            </div>
+          )}
+
+          {/* BIBLIOTECA */}
+          {tab === 'biblioteca' && (
+            <div className="space-y-2 animate-fade-in">
+              <p className="text-text-secondary text-sm mb-2">Artículos de la biblioteca. Si la tabla está vacía, se usan los de código. Ejecuta la migración y rellena datos.</p>
+              {biblioteca.length === 0 ? (
+                <div className="glass rounded-2xl p-8 text-center">
+                  <BookOpen className="w-10 h-10 text-text-muted mx-auto mb-3" />
+                  <p className="text-text-secondary text-sm">No hay artículos en Supabase</p>
+                </div>
+              ) : (
+                biblioteca.map((b) => (
+                  <div key={b.id} className="glass rounded-2xl p-4 flex items-center gap-3">
+                    <BookOpen className="w-5 h-5 text-accent-blue shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-medium">{b.title}</p>
+                      <p className="text-text-muted text-xs">{b.slug} · {b.date}</p>
+                    </div>
+                    <button onClick={() => setEditingBiblio(b)} className="p-2 rounded-lg hover:bg-accent-blue/10 text-text-muted hover:text-accent-blue" title="Editar"><Pencil className="w-4 h-4" /></button>
+                    <button onClick={() => deleteItem('biblioteca_posts', b.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+                ))
+              )}
+              {editingBiblio && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={() => setEditingBiblio(null)}>
+                  <div className="glass rounded-2xl p-5 w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                    <EditBiblioForm post={editingBiblio} onSave={async (data) => {
+                      const res = await fetch('/api/admin/biblioteca', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: editingBiblio.id, ...data }) })
+                      if (res.ok) { setBiblioteca(prev => prev.map(p => p.id === editingBiblio.id ? { ...p, ...data } : p)); setEditingBiblio(null); fetchAll() }
+                    }} onCancel={() => setEditingBiblio(null)} />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* SUSCRIPTORES */}
           {tab === 'suscriptores' && (
             <div className="space-y-3 animate-fade-in">
               <div className="flex items-center justify-between">
@@ -586,10 +845,183 @@ export default function AdminPage() {
                           <span className="text-text-muted text-[10px]">{p.replies} respuestas</span>
                         </div>
                       </div>
-                      <button onClick={() => deleteItem('community_posts', p.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 transition-colors shrink-0">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex gap-1 shrink-0">
+                        <button onClick={() => setEditingPost(p)} className="p-2 rounded-lg hover:bg-accent-blue/10 text-text-muted hover:text-accent-blue transition-colors" title="Editar">
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => deleteItem('community_posts', p.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 transition-colors">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* Modal editar post comunidad */}
+          {editingPost && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60" onClick={() => setEditingPost(null)}>
+              <div className="glass rounded-2xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-heading font-semibold text-white">Editar post</h3>
+                  <button onClick={() => setEditingPost(null)} className="p-2 rounded-lg hover:bg-white/10 text-text-muted"><X className="w-4 h-4" /></button>
+                </div>
+                <EditPostForm
+                  post={editingPost}
+                  onSave={(data) => updatePost(editingPost.id, data)}
+                  onCancel={() => setEditingPost(null)}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* DIARIO */}
+          {tab === 'diario' && (
+            <div className="space-y-2 animate-fade-in">
+              <div className="flex justify-end mb-1">
+                <button onClick={() => downloadCSV(diario, 'diario')} className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-400 rounded-lg text-[10px] font-medium">
+                  <Download className="w-3 h-3" /> CSV
+                </button>
+              </div>
+              {diario.length === 0 ? (
+                <div className="glass rounded-2xl p-8 text-center">
+                  <BookOpen className="w-10 h-10 text-text-muted mx-auto mb-3" />
+                  <p className="text-text-secondary text-sm">No hay entradas de diario</p>
+                </div>
+              ) : (
+                diario.map((d) => (
+                  <div key={d.id} className="glass rounded-2xl p-4 flex items-center gap-3">
+                    <BookOpen className="w-5 h-5 text-amber-400 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm truncate">{d.user_email}</p>
+                      <p className="text-text-muted text-xs">{d.date} · Presencia: {d.presence_level} · {d.mood || '—'}</p>
+                      {d.insight && <p className="text-text-secondary text-xs mt-1 line-clamp-2">{d.insight}</p>}
+                    </div>
+                    <button onClick={() => deleteItem('diary_entries', d.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* MAPA */}
+          {tab === 'mapa' && (
+            <div className="space-y-2 animate-fade-in">
+              <div className="flex justify-end mb-1">
+                <button onClick={() => downloadCSV(mapa, 'mapa')} className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-500/10 text-teal-400 rounded-lg text-[10px] font-medium">
+                  <Download className="w-3 h-3" /> CSV
+                </button>
+              </div>
+              {mapa.length === 0 ? (
+                <div className="glass rounded-2xl p-8 text-center">
+                  <MapIcon className="w-10 h-10 text-text-muted mx-auto mb-3" />
+                  <p className="text-text-secondary text-sm">No hay entradas del mapa</p>
+                </div>
+              ) : (
+                mapa.map((m) => (
+                  <div key={m.id} className="glass rounded-2xl p-4 flex items-center gap-3">
+                    <MapIcon className="w-5 h-5 text-teal-400 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm truncate">{m.user_email}</p>
+                      <p className="text-text-muted text-xs">{m.date} · Nivel: {m.nivel?.toFixed(1) || '—'}</p>
+                    </div>
+                    <button onClick={() => deleteItem('mapa_entries', m.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* NEUROSCORE */}
+          {tab === 'neuroscore' && (
+            <div className="space-y-2 animate-fade-in">
+              <div className="flex justify-end mb-1">
+                <button onClick={() => downloadCSV(neuroscore, 'neuroscore')} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg text-[10px] font-medium">
+                  <Download className="w-3 h-3" /> CSV
+                </button>
+              </div>
+              {neuroscore.length === 0 ? (
+                <div className="glass rounded-2xl p-8 text-center">
+                  <Activity className="w-10 h-10 text-text-muted mx-auto mb-3" />
+                  <p className="text-text-secondary text-sm">No hay entradas de NeuroScore</p>
+                </div>
+              ) : (
+                neuroscore.map((n) => (
+                  <div key={n.id} className="glass rounded-2xl p-4 flex items-center gap-3">
+                    <Activity className="w-5 h-5 text-emerald-400 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm truncate">{n.user_email}</p>
+                      <p className="text-text-muted text-xs">{n.date} · Score: {n.score}</p>
+                    </div>
+                    <button onClick={() => deleteItem('neuroscore_entries', n.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* PROGRAMA 21 DÍAS */}
+          {tab === 'programa' && (
+            <div className="space-y-2 animate-fade-in">
+              <div className="flex justify-end mb-1">
+                <button onClick={() => downloadCSV(programa, 'programa')} className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-400 rounded-lg text-[10px] font-medium">
+                  <Download className="w-3 h-3" /> CSV
+                </button>
+              </div>
+              {programa.length === 0 ? (
+                <div className="glass rounded-2xl p-8 text-center">
+                  <Calendar className="w-10 h-10 text-text-muted mx-auto mb-3" />
+                  <p className="text-text-secondary text-sm">No hay progreso del programa</p>
+                </div>
+              ) : (
+                programa.map((p) => (
+                  <div key={p.id} className="glass rounded-2xl p-4 flex items-center gap-3">
+                    <Calendar className="w-5 h-5 text-blue-400 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm truncate">{p.user_email}</p>
+                      <p className="text-text-muted text-xs">Inicio: {p.start_date} · Días: {(p.completed_days || []).length}/21</p>
+                    </div>
+                    <button onClick={() => deleteItem('programa_progress', p.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* TEST RESULTADOS */}
+          {tab === 'test' && (
+            <div className="space-y-2 animate-fade-in">
+              <div className="flex justify-end mb-1">
+                <button onClick={() => downloadCSV(testResults, 'test-results')} className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-500/10 text-violet-400 rounded-lg text-[10px] font-medium">
+                  <Download className="w-3 h-3" /> CSV
+                </button>
+              </div>
+              {testResults.length === 0 ? (
+                <div className="glass rounded-2xl p-8 text-center">
+                  <ClipboardList className="w-10 h-10 text-text-muted mx-auto mb-3" />
+                  <p className="text-text-secondary text-sm">No hay resultados del test</p>
+                </div>
+              ) : (
+                testResults.map((t) => (
+                  <div key={t.id} className="glass rounded-2xl p-4 flex items-center gap-3">
+                    <ClipboardList className="w-5 h-5 text-violet-400 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm truncate">{t.user_email || 'Anónimo'}</p>
+                      <p className="text-text-muted text-xs">{t.level} · Score: {t.score}</p>
+                    </div>
+                    <button onClick={() => deleteItem('test_results', t.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 shrink-0">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 ))
               )}

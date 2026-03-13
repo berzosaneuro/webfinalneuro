@@ -131,7 +131,37 @@ create table if not exists test_results (
   created_at timestamptz default now()
 );
 
--- 11. Tabla de suscriptores (emails de todas las fuentes)
+-- 11. Tabla de usuarios (registro / acceso)
+create table if not exists users (
+  id uuid default gen_random_uuid() primary key,
+  email text not null unique,
+  nombre text default '',
+  last_login_at timestamptz default now(),
+  created_at timestamptz default now()
+);
+create unique index if not exists users_email_unique on users (lower(email));
+
+-- 12. Configuración de audios (meditaciones)
+create table if not exists audio_config (
+  slot text primary key,
+  url text default ''
+);
+
+-- 13. Biblioteca (artículos)
+create table if not exists biblioteca_posts (
+  id uuid default gen_random_uuid() primary key,
+  slug text not null unique,
+  title text not null,
+  date text default '',
+  summary text default '',
+  content text default '',
+  exercise text default '',
+  free boolean default false,
+  created_at timestamptz default now()
+);
+create unique index if not exists biblioteca_slug_unique on biblioteca_posts (slug);
+
+-- 14. Tabla de suscriptores (emails de todas las fuentes)
 create table if not exists subscribers (
   id uuid default gen_random_uuid() primary key,
   email text not null,
@@ -174,6 +204,14 @@ create policy "Full access clients" on clients for all using (true);
 
 -- Calls: acceso completo
 create policy "Full access calls" on calls for all using (true);
+
+-- Users: acceso completo
+alter table users enable row level security;
+create policy "Full access users" on users for all using (true);
+
+-- Audio config: acceso completo
+alter table audio_config enable row level security;
+create policy "Full access audio_config" on audio_config for all using (true);
 
 -- Subscribers: acceso completo
 alter table subscribers enable row level security;

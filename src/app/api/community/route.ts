@@ -43,24 +43,25 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  let body: { id?: string; likes?: number }
+  let body: { id?: string; likes?: number; autor?: string; avatar?: string; nivel?: string; texto?: string; tag?: string }
   try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
-  const { id, likes } = body
+  const { id, likes, autor, avatar, nivel, texto, tag } = body
 
-  if (!id) {
-    return NextResponse.json({ error: 'ID es obligatorio' }, { status: 400 })
-  }
+  if (!id) return NextResponse.json({ error: 'ID es obligatorio' }, { status: 400 })
 
-  const { error } = await supabase
-    .from('community_posts')
-    .update({ likes })
-    .eq('id', id)
+  const updates: Record<string, unknown> = {}
+  if (typeof likes === 'number') updates.likes = likes
+  if (autor != null) updates.autor = String(autor)
+  if (avatar != null) updates.avatar = String(avatar)
+  if (nivel != null) updates.nivel = String(nivel)
+  if (texto != null) updates.texto = String(texto)
+  if (tag != null) updates.tag = String(tag)
 
-  if (error) {
-    return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
-  }
+  if (Object.keys(updates).length === 0) return NextResponse.json({ error: 'Sin campos a actualizar' }, { status: 400 })
 
+  const { error } = await supabase.from('community_posts').update(updates).eq('id', id)
+  if (error) return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
   return NextResponse.json({ success: true })
 }
