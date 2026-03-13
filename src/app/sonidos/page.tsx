@@ -247,12 +247,11 @@ export default function SonidosPage() {
     setVolumes({})
   }, [])
 
-  // Crear/reanudar contexto. Debe iniciarse de forma síncrona en el gesto del usuario.
   const getOrCreateCtx = useCallback(async () => {
     if (!audioCtxRef.current) audioCtxRef.current = new AudioContext()
     const ctx = audioCtxRef.current
     if (ctx.state === 'suspended') {
-      const p = ctx.resume() // iniciar resume de forma síncrona
+      const p = ctx.resume()
       await p
     }
     return ctx
@@ -265,38 +264,42 @@ export default function SonidosPage() {
     }
   }, [stopAllSonidos])
 
-  const toggleSound = async (sound: SoundConfig) => {
-    if (activeSounds[sound.id]) {
-      const ctx = await getOrCreateCtx()
-      if (ctx) stopSound(activeSounds[sound.id], ctx)
-      setActiveSounds(prev => {
-        const next = { ...prev }
-        delete next[sound.id]
-        return next
-      })
-      setVolumes(prev => {
-        const next = { ...prev }
-        delete next[sound.id]
-        return next
-      })
-      return
-    }
+  // CRÍTICO para iOS: crear contexto y llamar resume() SINCRÓNICAMENTE en el gesto del usuario.
+  // onClick en móvil llega 300ms tarde; onPointerDown/touchstart llega al instante.
+  const unlockAndPlay = useCallback((sound: SoundConfig) => {
+    if (!audioCtxRef.current) audioCtxRef.current = new AudioContext()
+    const ctx = audioCtxRef.current
+    const resumePromise = ctx.state === 'suspended' ? ctx.resume() : Promise.resolve()
+    resumePromise.then(() => {
+      setUnlocked(true)
+      if (activeSoundsRef.current[sound.id]) {
+        stopSound(activeSoundsRef.current[sound.id], ctx)
+        setActiveSounds(prev => {
+          const next = { ...prev }
+          delete next[sound.id]
+          return next
+        })
+        setVolumes(prev => {
+          const next = { ...prev }
+          delete next[sound.id]
+          return next
+        })
+        return
+      }
+      claimAndPlay('sonidos', stopAllSonidos)
+      const { nodes, stoppable, gain } = buildSound(ctx, sound.id)
+      gain.gain.setTargetAtTime(muted ? 0 : DEFAULT_VOLUME * VOLUME_MULT, ctx.currentTime, 0.2)
+      const intervalId = (gain as any).__interval
+      setActiveSounds(prev => ({
+        ...prev,
+        [sound.id]: { nodes, stoppable, gain, volume: DEFAULT_VOLUME, intervalId }
+      }))
+      setVolumes(prev => ({ ...prev, [sound.id]: DEFAULT_VOLUME }))
+    }).catch(() => {})
+  }, [muted, stopAllSonidos])
 
-    // Crear y reanudar AudioContext en el mismo gesto del usuario (necesario en móvil)
-    const ctx = await getOrCreateCtx()
-    if (!ctx) return
-    setUnlocked(true)
-
-    claimAndPlay('sonidos', stopAllSonidos)
-    const { nodes, stoppable, gain } = buildSound(ctx, sound.id)
-    gain.gain.setTargetAtTime(muted ? 0 : DEFAULT_VOLUME * VOLUME_MULT, ctx.currentTime, 0.2)
-
-    const intervalId = (gain as any).__interval
-    setActiveSounds(prev => ({
-      ...prev,
-      [sound.id]: { nodes, stoppable, gain, volume: DEFAULT_VOLUME, intervalId }
-    }))
-    setVolumes(prev => ({ ...prev, [sound.id]: DEFAULT_VOLUME }))
+  const toggleSound = (sound: SoundConfig) => {
+    unlockAndPlay(sound)
   }
 
   const updateVolume = async (soundId: string, value: number) => {
@@ -369,7 +372,13 @@ export default function SonidosPage() {
                   <div key={sound.id} className={`glass rounded-2xl p-4 transition-all ${isActive ? 'ring-1 ring-white/20' : ''}`}>
                     <button
                       type="button"
-                      onClick={() => toggleSound(sound)}
+                      onClick={(e) => { if (e.detail !== 0) toggleSound(sound) }}
+                      onPointerDown={(e) => {
+                        if (e.pointerType === 'touch') {
+                          e.preventDefault()
+                          toggleSound(sound)
+                        }
+                      }}
                       className="w-full flex flex-col items-center gap-2.5 mb-3 active:scale-95 transition-transform touch-manipulation"
                     >
                       <div className={`w-14 h-14 rounded-2xl ${sound.color} flex items-center justify-center transition-all ${
