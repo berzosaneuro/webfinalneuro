@@ -32,19 +32,26 @@ export default function RegistroPage() {
 
     setLoading(true)
     try {
-      // Register user as lead/subscriber
-      await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre: form.nombre, email: form.email, fuente: 'registro' }),
-      })
-      await fetch('/api/subscribers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre: form.nombre, email: form.email }),
-      })
-
-      setUser({ nombre: form.nombre, email: form.email })
+      const nombre = form.nombre.trim()
+      const email = form.email.trim()
+      await Promise.all([
+        fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, email, fuente: 'registro' }),
+        }),
+        fetch('/api/subscribers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, email }),
+        }),
+        fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, nombre }),
+        }),
+      ])
+      setUser({ nombre, email })
 
       setSuccess(true)
       setTimeout(() => router.push('/plan-7-dias'), 2000)

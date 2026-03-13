@@ -64,3 +64,7 @@ npm start
 4. Deploy — Vercel detecta Next.js automáticamente.
 
 **Base de datos:** Ejecuta `supabase/schema.sql` en el SQL Editor de tu proyecto Supabase antes del primer despliegue.
+
+### Música de meditaciones
+
+Para que las meditaciones guiadas tengan música ambiente, añade un archivo MP3 en `public/ambient.mp3`. Si no existe, se usará síntesis de audio (menos rica). Descargas gratuitas recomendadas: [Mixkit - Ambient/Meditation](https://mixkit.co/free-stock-music/ambient/).

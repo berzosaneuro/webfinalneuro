@@ -57,10 +57,10 @@ export default function Home() {
           <div className="flex items-center gap-5">
             <div className="flex-1">
               <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-4 animate-fade-in">
-                Recupera tu paz mental
+                Elimina el ruido de tu mente
               </h1>
               <p className="text-text-secondary text-base md:text-lg animate-fade-in-up max-w-lg">
-                Entrena tu cerebro. Sin misticismo, sin humo.
+                Entrenamiento Mental. Basado en neuroplasticidad.
               </p>
             </div>
             <div className="w-24 h-32 sm:w-32 sm:h-44 md:w-44 md:h-60 rounded-2xl overflow-hidden ring-2 ring-accent-blue/25 shrink-0 animate-fade-in shadow-xl">

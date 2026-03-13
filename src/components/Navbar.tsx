@@ -4,30 +4,38 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Crown, Shield, ChevronDown } from 'lucide-react'
+import { Menu, X, Crown, Shield, ChevronDown, Wind, BookOpen, Users, LayoutDashboard, Briefcase } from 'lucide-react'
 import { usePremium } from '@/context/PremiumContext'
 import { useAdmin } from '@/context/AdminContext'
 
 const mainLinks = [
   { href: '/', label: 'Inicio' },
-  { href: '/meditacion', label: 'Meditar' },
-  { href: '/plan-7-dias', label: '7 Días' },
-  { href: '/programa', label: '21 Días' },
-  { href: '/ia-coach', label: 'IA Coach' },
+  { href: '/meditacion', label: 'Meditación' },
+  { href: '/retos', label: 'Retos' },
+  { href: '/biblioteca', label: 'Biblioteca' },
+  { href: '/masterclass', label: 'Masterclass' },
+  { href: '/comunidad', label: 'Comunidad' },
+  { href: '/podcast', label: 'Podcast' },
 ]
 
 const moreLinks = [
-  { href: '/masterclass', label: 'Masterclass' },
-  { href: '/podcast', label: 'NeuroPodcast' },
-  { href: '/comunidad', label: 'Comunidad' },
+  { href: '/plan-7-dias', label: '7 Días' },
+  { href: '/programa', label: '21 Días' },
+  { href: '/ia-coach', label: 'IA Coach' },
   { href: '/circulos', label: 'Círculos' },
   { href: '/leaderboard', label: 'Ranking' },
-  { href: '/retos', label: 'Retos' },
-  { href: '/biblioteca', label: 'Biblioteca' },
   { href: '/certificacion', label: 'Certificación' },
   { href: '/metodo', label: 'El Método' },
   { href: '/sobre', label: 'Sobre Berzosa' },
 ]
+
+const mobileCategoryIcons: Record<string, typeof Wind> = {
+  Practicar: Wind,
+  Aprender: BookOpen,
+  Comunidad: Users,
+  Herramientas: LayoutDashboard,
+  Profesional: Briefcase,
+}
 
 const mobileLinks = [
   { category: 'Practicar', items: [
@@ -142,7 +150,13 @@ export default function Navbar() {
             </div>
 
             {/* Right side */}
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                href="/acceder"
+                className="px-3 py-1.5 text-text-secondary hover:text-white text-xs font-medium transition-all active:scale-95"
+              >
+                Acceder
+              </Link>
               {isPremium ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent-blue/15 text-accent-blue text-xs font-semibold rounded-full border border-accent-blue/20">
                   <Crown className="w-3 h-3" />
@@ -189,46 +203,65 @@ export default function Navbar() {
 
         {/* Mobile dropdown */}
         {open && (
-          <div className="absolute top-full left-0 right-0 p-4 animate-slide-up max-h-[80vh] overflow-y-auto" style={{ scrollbarWidth: 'none', background: '#050505', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-            <div className="space-y-4">
-              {mobileLinks.map((group) => (
-                <div key={group.category}>
-                  <p className="text-white/40 text-[10px] uppercase tracking-widest font-semibold px-3 mb-1">{group.category}</p>
-                  <div className="space-y-0.5">
-                    {group.items.map((link) => {
-                      const isActive = pathname === link.href
-                      return (
-                        <Link
-                          key={link.href}
-                          href={link.href}
-                          onClick={() => setOpen(false)}
-                          className={`block px-3 py-2 rounded-xl text-sm transition-all ${
-                            isActive
-                              ? 'text-white bg-white/10 font-medium'
-                              : 'text-text-secondary hover:text-white hover:bg-white/5'
-                          }`}
-                        >
-                          {link.label}
-                        </Link>
-                      )
-                    })}
+          <div className="absolute top-full left-0 right-0 z-40 animate-slide-up max-h-[85vh] overflow-y-auto overscroll-contain pb-8" style={{ scrollbarWidth: 'none', background: 'linear-gradient(180deg, #080B16 0%, #0a0e1a 100%)', borderBottom: '1px solid rgba(124,58,237,0.15)', boxShadow: '0 20px 60px -20px rgba(0,0,0,0.6)' }}>
+            <div className="p-4 space-y-5">
+              {mobileLinks.map((group) => {
+                const CatIcon = mobileCategoryIcons[group.category]
+                return (
+                  <div key={group.category} className="glass rounded-2xl p-3 overflow-hidden">
+                    <div className="flex items-center gap-2 px-2 py-1.5 mb-2">
+                      {CatIcon && (
+                        <div className="w-7 h-7 rounded-lg bg-accent-blue/15 flex items-center justify-center shrink-0">
+                          <CatIcon className="w-3.5 h-3.5 text-accent-blue" />
+                        </div>
+                      )}
+                      <p className="text-accent-blue/90 text-[11px] uppercase tracking-widest font-semibold">{group.category}</p>
+                    </div>
+                    <div className="space-y-0.5">
+                      {group.items.map((link) => {
+                        const isActive = pathname === link.href
+                        return (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setOpen(false)}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all active:scale-[0.98] ${
+                              isActive
+                                ? 'text-white bg-accent-blue/15 font-medium border border-accent-blue/20'
+                                : 'text-text-secondary active:text-white active:bg-white/5'
+                            }`}
+                          >
+                            {isActive && <div className="w-1.5 h-1.5 rounded-full bg-accent-blue shrink-0" />}
+                            <span className={isActive ? '' : 'pl-1'}>{link.label}</span>
+                          </Link>
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
-              <div className="border-t border-white/8 pt-3 flex gap-2">
+                )
+              })}
+              <div className="flex gap-3 pt-1">
+                <Link
+                  href="/acceder"
+                  onClick={() => setOpen(false)}
+                  className="py-3 px-5 rounded-xl text-sm font-medium text-text-secondary active:text-white glass"
+                >
+                  Acceder
+                </Link>
                 <Link
                   href="/registro"
                   onClick={() => setOpen(false)}
-                  className="flex-1 py-2.5 bg-white text-black text-sm font-bold rounded-xl text-center"
+                  className="flex-1 py-3 bg-accent-blue text-white text-sm font-bold rounded-xl text-center active:scale-[0.98] shadow-[0_0_20px_rgba(124,58,237,0.3)]"
                 >
                   Empezar gratis
                 </Link>
                 <Link
                   href={isAdmin ? '/admin' : '/admin/login'}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm text-text-secondary hover:text-white border border-white/10"
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm text-text-secondary active:text-white glass"
                 >
                   <Shield className="w-4 h-4" />
+                  Admin
                 </Link>
               </div>
             </div>

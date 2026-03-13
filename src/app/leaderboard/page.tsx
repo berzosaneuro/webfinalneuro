@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
-import { Trophy, Flame, Eye, Crown, TrendingUp, Medal, Shield } from 'lucide-react'
+import { useUser } from '@/context/UserContext'
+import { Trophy, Flame, Eye, TrendingUp, Medal, Loader2 } from 'lucide-react'
 
 type LeaderEntry = {
   rank: number
@@ -19,20 +20,6 @@ const levels = [
   'Practicante', 'Observador', 'Consciente', 'Despiert@', 'Maestr@',
 ]
 
-const leaderboard: LeaderEntry[] = [
-  { rank: 1, level: 'Maestr@', score: 97, streak: 180, badge: 'Nivel 10' },
-  { rank: 2, level: 'Despiert@', score: 94, streak: 142, badge: 'Nivel 9' },
-  { rank: 3, level: 'Despiert@', score: 91, streak: 98, badge: 'Nivel 9' },
-  { rank: 4, level: 'Consciente', score: 88, streak: 87, badge: 'Nivel 8' },
-  { rank: 5, level: 'Consciente', score: 85, streak: 76, badge: 'Nivel 8' },
-  { rank: 6, level: 'Observador', score: 82, streak: 65, badge: 'Nivel 7' },
-  { rank: 7, level: 'Observador', score: 79, streak: 54, badge: 'Nivel 7' },
-  { rank: 8, level: 'Practicante', score: 74, streak: 43, badge: 'Nivel 6' },
-  { rank: 9, level: 'Practicante', score: 71, streak: 38, badge: 'Nivel 6' },
-  { rank: 10, level: 'Aprendiz', score: 67, streak: 28, badge: 'Nivel 5' },
-  { rank: 47, level: 'Curioso', score: 34, streak: 5, badge: 'Nivel 3', isYou: true },
-]
-
 function RankBadge({ rank }: { rank: number }) {
   if (rank === 1) return <Trophy className="w-5 h-5 text-emerald-400" />
   if (rank === 2) return <Medal className="w-5 h-5 text-gray-300" />
@@ -42,6 +29,21 @@ function RankBadge({ rank }: { rank: number }) {
 
 export default function LeaderboardPage() {
   const [tab, setTab] = useState<'global' | 'semanal'>('global')
+  const [leaderboard, setLeaderboard] = useState<LeaderEntry[]>([])
+  const [loading, setLoading] = useState(true)
+  const { user } = useUser()
+
+  useEffect(() => {
+    setLoading(true)
+    const params = new URLSearchParams()
+    if (user?.email) params.set('email', user.email)
+    params.set('mode', tab)
+    fetch(`/api/leaderboard?${params}`)
+      .then(res => res.ok ? res.json() : [])
+      .then(data => setLeaderboard(Array.isArray(data) ? data : []))
+      .catch(() => setLeaderboard([]))
+      .finally(() => setLoading(false))
+  }, [tab, user?.email])
 
   const you = leaderboard.find(e => e.isYou)
 
@@ -121,6 +123,18 @@ export default function LeaderboardPage() {
       <section className="pb-12">
         <Container>
           <FadeInSection>
+            {loading ? (
+              <div className="flex items-center justify-center py-16 gap-2">
+                <Loader2 className="w-6 h-6 text-accent-blue animate-spin" />
+                <span className="text-text-muted text-sm">Cargando ranking...</span>
+              </div>
+            ) : leaderboard.length === 0 ? (
+              <div className="glass rounded-2xl p-8 text-center">
+                <Trophy className="w-12 h-12 text-text-muted mx-auto mb-3" />
+                <p className="text-text-secondary text-sm mb-1">Aún no hay datos</p>
+                <p className="text-text-muted text-xs">Completa el NeuroScore para aparecer en el ranking</p>
+              </div>
+            ) : (
             <div className="space-y-2">
               {leaderboard.map((entry) => (
                 <div
@@ -155,6 +169,7 @@ export default function LeaderboardPage() {
                 </div>
               ))}
             </div>
+            )}
           </FadeInSection>
         </Container>
       </section>

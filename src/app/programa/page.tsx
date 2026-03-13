@@ -266,8 +266,24 @@ export default function ProgramaPage() {
     setSelectedDay(null)
   }
 
+  const getCurrentUnlockedDay = (): number => {
+    if (!data.startDate) return 21
+    const startD = new Date(data.startDate)
+    const today = new Date()
+    startD.setHours(0, 0, 0, 0)
+    today.setHours(0, 0, 0, 0)
+    const diffMs = today.getTime() - startD.getTime()
+    const diffDays = Math.floor(diffMs / (24 * 60 * 60 * 1000))
+    return Math.min(21, Math.max(1, diffDays + 1))
+  }
+
   const getDayStatus = (dayNum: number): 'completed' | 'current' | 'locked' => {
     if (data.completedDays.includes(dayNum)) return 'completed'
+    const unlocked = getCurrentUnlockedDay()
+    if (data.startDate) {
+      if (dayNum <= unlocked) return 'current'
+      return 'locked'
+    }
     if (dayNum === 1 || data.completedDays.includes(dayNum - 1)) return 'current'
     return 'locked'
   }
