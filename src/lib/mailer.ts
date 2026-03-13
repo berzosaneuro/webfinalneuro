@@ -25,11 +25,15 @@ export async function sendNotification(subject: string, html: string) {
   const transporter = getTransporter()
   if (!transporter) return // Email not configured — silently skip
 
-  const to = process.env.EMAIL_NOTIFY_TO || process.env.EMAIL_SMTP_USER
-  await transporter.sendMail({
-    from: `"Berzosa Neuro Web" <${process.env.EMAIL_SMTP_USER}>`,
-    to,
-    subject,
-    html,
-  })
+  try {
+    const to = process.env.EMAIL_NOTIFY_TO || process.env.EMAIL_SMTP_USER
+    await transporter.sendMail({
+      from: `"Berzosa Neuro Web" <${process.env.EMAIL_SMTP_USER}>`,
+      to,
+      subject,
+      html,
+    })
+  } catch {
+    // Silently fail — email is optional
+  }
 }

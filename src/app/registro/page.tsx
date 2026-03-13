@@ -181,9 +181,9 @@ export default function RegistroPage() {
               </form>
 
               <p className="text-center text-text-muted text-xs mt-6">
-                ¿Ya tienes cuenta?{' '}
+                ¿Eres administrador?{' '}
                 <Link href="/admin/login" className="text-accent-blue hover:underline">
-                  Acceder
+                  Acceder al panel
                 </Link>
               </p>
 

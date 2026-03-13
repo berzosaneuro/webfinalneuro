@@ -113,7 +113,6 @@ El idioma de la app y todo su contenido es **español**. Mantén siempre el espa
 │   │   ├── PremiumLock.tsx     # Gate de contenido premium (overlay con blur)
 │   │   ├── PremiumBadge.tsx    # Insignia de estado Premium
 │   │   ├── EmailCapture.tsx    # Formulario de captura de email
-│   │   └── GenerateIcons.tsx   # Generador de iconos PWA
 │   │
 │   ├── context/                # React Context providers
 │   │   ├── PremiumContext.tsx  # Estado del plan (free/premium) en localStorage

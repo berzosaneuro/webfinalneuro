@@ -45,6 +45,7 @@ Si GitHub te pide usuario y contraseña, usa un **Personal Access Token** en lug
 4. En **Environment Variables** añade:
    - `NEXT_PUBLIC_SUPABASE_URL` = tu URL de Supabase
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = tu clave anónima de Supabase
+   - `NEXT_PUBLIC_ADMIN_PASSWORD` = (opcional) contraseña del panel admin
 
 5. Clic en **Deploy**.
 

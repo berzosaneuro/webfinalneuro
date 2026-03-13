@@ -15,7 +15,6 @@ const AdminContext = createContext<AdminContextType>({
 })
 
 const ADMIN_KEY = 'neuroconciencia-admin'
-const ADMIN_PASSWORD = 'berzosaneuro'
 
 export function AdminProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false)
@@ -26,7 +25,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const adminLogin = (password: string): boolean => {
-    if (password === ADMIN_PASSWORD) {
+    const expected = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'berzosaneuro'
+    if (password === expected) {
       setIsAdmin(true)
       localStorage.setItem(ADMIN_KEY, 'true')
       return true
