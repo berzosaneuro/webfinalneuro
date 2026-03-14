@@ -137,9 +137,16 @@ export default function PodcastPage() {
     setLoadingEpisode(ep.id)
     setIsPaused(false)
 
-    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+    const CtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    if (!CtxClass) {
+      setLoadingEpisode(null)
+      if (window.speechSynthesis) startTTS(ep)
+      else stopPodcast()
+      return
+    }
+    const ctx = new CtxClass()
+    if (ctx.state === 'suspended') await ctx.resume()
     const pad = createAmbientPad(ctx, 0.2)
-    if (ctx.state === 'suspended') ctx.resume().catch(() => {})
     ambientRef.current = { ...pad, ctx }
 
     try {

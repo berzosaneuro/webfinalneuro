@@ -14,12 +14,14 @@ export type VoiceRefs = {
   gain: GainNode
 }
 
-/** Play HTMLAudioElement with smooth fade-in via Web Audio API. Returns refs for fade-out. */
+/** Play HTMLAudioElement with smooth fade-in via Web Audio API. Returns refs for fade-out. Compatible con Safari/Chrome. */
 export async function playAudioWithFadeIn(audio: HTMLAudioElement): Promise<VoiceRefs> {
-  const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+  const CtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+  if (!CtxClass) throw new Error('Web Audio API no soportada')
+  const ctx = new CtxClass()
   const source = ctx.createMediaElementSource(audio)
   const gain = ctx.createGain()
-  gain.gain.value = 0
+  gain.gain.setValueAtTime(0, ctx.currentTime)
   source.connect(gain)
   gain.connect(ctx.destination)
   if (ctx.state === 'suspended') await ctx.resume()
@@ -56,25 +58,25 @@ export function stopVoiceWithFadeOut(
   }
 }
 
-/** Create ambient synth pad with fade-in. Volume 0.15–0.25. */
+/** Create ambient synth pad with smooth fade-in. Volume 0.15–0.25. Evita clicks en Safari/Chrome. */
 export function createAmbientPad(ctx: AudioContext, volume = 0.2): { gain: GainNode; oscs: OscillatorNode[]; stop: () => void } {
   const gain = ctx.createGain()
-  gain.gain.value = 0
+  gain.gain.setValueAtTime(0, ctx.currentTime)
   gain.connect(ctx.destination)
   const freqs = [65.41, 82.41, 98, 130.81, 164.81]
   const oscs: OscillatorNode[] = []
   freqs.forEach((f, i) => {
     const osc = ctx.createOscillator()
     osc.type = 'triangle'
-    osc.frequency.value = f
+    osc.frequency.setValueAtTime(f, ctx.currentTime)
     const g = ctx.createGain()
-    g.gain.value = (0.3 / (i + 1)) * (volume / 0.28)
+    g.gain.setValueAtTime((0.3 / (i + 1)) * (volume / 0.28), ctx.currentTime)
     osc.connect(g)
     g.connect(gain)
-    osc.start()
+    osc.start(ctx.currentTime + 0.02)
     oscs.push(osc)
   })
-  gain.gain.setTargetAtTime(volume, ctx.currentTime, 0.08)
+  gain.gain.setTargetAtTime(volume, ctx.currentTime + 0.05, 0.2)
 
   const stop = () => {
     gain.gain.setTargetAtTime(0, ctx.currentTime, FADE_OUT_DURATION * 0.4)

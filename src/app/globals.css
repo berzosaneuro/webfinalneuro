@@ -8,7 +8,8 @@
   html {
     scroll-behavior: smooth;
     overflow-x: hidden;
-    overscroll-behavior: none;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -18,7 +19,8 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
     overflow-x: hidden;
-    overscroll-behavior: none;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
     touch-action: manipulation;
   }

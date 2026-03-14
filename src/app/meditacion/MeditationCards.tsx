@@ -185,11 +185,12 @@ function fadeInAmbientMusic(audio: HTMLAudioElement, durationMs = 2500): void {
   }, stepMs)
 }
 
+/** Solo tracks que existen en public/ — evita 404, música sin voz y ruido de synth */
 const DEFAULT_TRACKS = [
-  '/ambient1.mp3', '/ambient2.mp3', '/ambient3.mp3', '/ambient4.mp3', '/ambient5.mp3', '/ambient.mp3',
   '/Calm-ambient-music-ocean-waves-for-sleep-and-relaxation.mp3',
   '/Calm-ambient-music-ocean-waves-for-sleep-and-relaxation (1).mp3',
-  '/Free-meditation-music.mp3', '/Free-meditation-music (1).mp3',
+  '/Free-meditation-music.mp3',
+  '/Free-meditation-music (1).mp3',
   '/Relaxing-analog-synth-piano-music.mp3',
   '/Warm-ambient-relaxing-synth-pad-music.mp3',
 ]
@@ -204,14 +205,38 @@ async function getAmbientTracks(): Promise<string[]> {
   } catch { return DEFAULT_TRACKS }
 }
 
-function startAmbientMusic(tracks: string[], onFallback: () => void): AmbientRef {
-  const src = tracks[Math.floor(Math.random() * tracks.length)] || DEFAULT_TRACKS[0]
-  const audio = new Audio(src)
-  audio.loop = true
-  audio.volume = 0
-  audio.onerror = onFallback
-  audio.play().then(() => fadeInAmbientMusic(audio, 2500)).catch(onFallback)
-  return { type: 'file', audio }
+function startAmbientMusic(
+  tracks: string[],
+  onFallback: () => void,
+  onSuccess: (ref: AmbientRef) => void,
+  isCancelled: () => boolean
+): AmbientRef {
+  const validTracks = tracks.filter(Boolean).length > 0 ? tracks : DEFAULT_TRACKS
+  const shuffled = [...validTracks].sort(() => Math.random() - 0.5)
+  const placeholder = { type: 'file' as const, audio: new Audio() }
+
+  const tryTrack = (idx: number): void => {
+    if (isCancelled()) return
+    if (idx >= shuffled.length) {
+      onFallback()
+      return
+    }
+    const src = shuffled[idx]
+    const audio = new Audio(src)
+    audio.loop = true
+    audio.volume = 0
+    audio.onerror = () => { if (!isCancelled()) tryTrack(idx + 1) }
+    audio.play()
+      .then(() => {
+        if (isCancelled()) return
+        fadeInAmbientMusic(audio, 2500)
+        onSuccess({ type: 'file', audio })
+      })
+      .catch(() => { if (!isCancelled()) tryTrack(idx + 1) })
+  }
+
+  tryTrack(0)
+  return placeholder
 }
 
 function stopAmbient(ambient: AmbientRef) {
@@ -260,6 +285,14 @@ export default function MeditationCards() {
 
   useEffect(() => {
     getAmbientTracks().then(setAmbientTracks)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.speechSynthesis?.getVoices()
+    const loadVoices = () => window.speechSynthesis?.getVoices()
+    window.speechSynthesis?.addEventListener?.('voiceschanged', loadVoices)
+    return () => window.speechSynthesis?.removeEventListener?.('voiceschanged', loadVoices)
   }, [])
 
   const stopMeditation = useCallback((currentTitle?: string) => {
@@ -373,8 +406,15 @@ export default function MeditationCards() {
         if (ctx.state === 'suspended') ctx.resume().then(createPad).catch(() => { try { ctx.close() } catch {} })
         else createPad()
       }
-      const music = startAmbientMusic(ambientTracks, fallbackToSynth)
-      ambientRef.current = music
+      const isCancelled = () => playIdRef.current !== thisPlayId
+      const onSuccess = (ref: AmbientRef) => {
+        if (isCancelled()) {
+          stopAmbient(ref)
+          return
+        }
+        ambientRef.current = ref
+      }
+      ambientRef.current = startAmbientMusic(ambientTracks, fallbackToSynth, onSuccess, isCancelled)
     }
     startAmbient()
 
@@ -420,7 +460,7 @@ export default function MeditationCards() {
     }
 
     tryElevenLabs()
-  }, [stopMeditation, startTTS])
+  }, [stopMeditation, startTTS, ambientTracks])
 
   const handlePause = useCallback(() => {
     if (ttsAudioRef.current) ttsAudioRef.current.audio.pause()
