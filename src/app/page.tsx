@@ -11,8 +11,8 @@ import { Brain, Headphones, BookOpen, ClipboardCheck, Crosshair, Timer, Moon, Za
 const quickActions = [
   { href: '/meditacion', label: 'Meditación', icon: Headphones, color: 'bg-blue-500/15 text-blue-400' },
   { href: '/retos', label: 'Retos', icon: Flame, color: 'bg-orange-500/15 text-orange-400' },
-  { href: '/plan-7-dias', label: '7 Días Gratis', icon: Sparkles, color: 'bg-emerald-500/15 text-emerald-400' },
-  { href: '/programa', label: 'Curso 21 días', icon: Activity, color: 'bg-violet-500/15 text-violet-400' },
+  { href: '/plan-7-dias', label: 'Reto 7 Días Gratis', icon: Sparkles, color: 'bg-emerald-500/15 text-emerald-400' },
+  { href: '/programa', label: 'Curso 21 Días', icon: Activity, color: 'bg-violet-500/15 text-violet-400' },
   { href: '/ejercicios', label: 'Ejercicios', icon: Dumbbell, color: 'bg-teal-500/15 text-teal-400' },
   { href: '/biblioteca', label: 'Biblioteca', icon: BookOpen, color: 'bg-sky-500/15 text-sky-400' },
   { href: '/sos', label: 'SOS Respira', icon: AlertCircle, color: 'bg-rose-500/15 text-rose-400' },
@@ -21,7 +21,7 @@ const quickActions = [
 ]
 
 const moreActions = [
-  { href: '/programa', label: '21 Días', icon: Calendar, desc: 'Programa completo', color: 'bg-orange-500/15 text-orange-400' },
+  { href: '/programa', label: 'Curso 21 Días', icon: Calendar, desc: 'Programa completo', color: 'bg-orange-500/15 text-orange-400' },
   { href: '/ejercicios', label: 'Ejercicios', icon: Dumbbell, desc: 'Metacognición interactiva', color: 'bg-emerald-500/15 text-emerald-400' },
   { href: '/diario', label: 'Diario', icon: PenLine, desc: 'Registra tu presencia', color: 'bg-cyan-500/15 text-cyan-400' },
   { href: '/test', label: 'Test Ruido Mental', icon: Brain, desc: 'Mide tu ruido mental', color: 'bg-sky-500/15 text-sky-400' },

@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { claimAndPlay, unregister, stopAll } from '@/lib/audio-manager'
+import { claimAndPlay, unregister } from '@/lib/audio-manager'
 import PremiumLock from '@/components/PremiumLock'
 import PremiumBadge from '@/components/PremiumBadge'
-import { Brain, Timer, Moon, Crosshair, Play, Pause, Heart, Shield, Wind, Eye, Sun, Zap, Target, Clock, Tag, Leaf, Sparkles, Hand, Lightbulb } from 'lucide-react'
+import { Brain, Timer, Moon, Crosshair, Play, Pause, Square, Heart, Shield, Wind, Eye, Sun, Zap, Target, Clock, Tag, Leaf, Sparkles, Hand, Lightbulb } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 type Meditation = {
@@ -94,13 +94,14 @@ function getDurationRange(filter: string): [number, number] {
   }
 }
 
-function MeditationCard({ m, playing, isPaused, onPlay, onPause, onResume }: {
+function MeditationCard({ m, playing, isPaused, onPlay, onPause, onResume, onStop }: {
   m: Meditation
   playing: string | null
   isPaused: boolean
   onPlay: (m: Meditation) => void
   onPause: () => void
   onResume: () => void
+  onStop: () => void
 }) {
   const isActive = playing === m.title
   const isCurrentlyPlaying = isActive && !isPaused
@@ -123,22 +124,33 @@ function MeditationCard({ m, playing, isPaused, onPlay, onPause, onResume }: {
           <span className="text-accent-blue text-[10px]">{isCurrentlyPlaying ? 'Reproduciendo...' : 'En pausa'}</span>
         </div>
       )}
-      <button
-        onClick={() => {
-          if (isCurrentlyPlaying) onPause()
-          else if (isActive && isPaused) onResume()
-          else onPlay(m)
-        }}
-        className={`flex items-center justify-center gap-2 w-full py-2 rounded-xl text-xs font-medium transition-all active:scale-95 ${
-          isActive ? 'bg-white/10 text-white' : 'bg-white/5 text-white'
-        }`}
-      >
-        {isCurrentlyPlaying
-          ? <><Pause className="w-3.5 h-3.5" /> Pausar</>
-          : isActive && isPaused
-            ? <><Play className="w-3.5 h-3.5" /> Reanudar</>
-            : <><Play className="w-3.5 h-3.5" /> Reproducir</>}
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={() => {
+            if (isCurrentlyPlaying) onPause()
+            else if (isActive && isPaused) onResume()
+            else onPlay(m)
+          }}
+          className={`flex items-center justify-center gap-2 flex-1 py-2 rounded-xl text-xs font-medium transition-all active:scale-95 ${
+            isActive ? 'bg-white/10 text-white' : 'bg-white/5 text-white'
+          }`}
+        >
+          {isCurrentlyPlaying
+            ? <><Pause className="w-3.5 h-3.5" /> Pausar</>
+            : isActive && isPaused
+              ? <><Play className="w-3.5 h-3.5" /> Reanudar</>
+              : <><Play className="w-3.5 h-3.5" /> Reproducir</>}
+        </button>
+        {isActive && (
+          <button
+            onClick={onStop}
+            className="py-2 px-3 rounded-xl text-xs font-medium bg-red-500/15 text-red-400 hover:bg-red-500/25 active:scale-95 transition-all"
+            title="Detener"
+          >
+            <Square className="w-3.5 h-3.5 fill-current" />
+          </button>
+        )}
+      </div>
     </div>
   )
 }
@@ -228,13 +240,22 @@ export default function MeditationCards() {
   const [ambientTracks, setAmbientTracks] = useState<string[]>(DEFAULT_TRACKS)
   const generationRef = useRef(0)
   const ambientRef = useRef<AmbientRef>(null)
+  const playIdRef = useRef(0)
+  const ttsAudioRef = useRef<{ audio: HTMLAudioElement; url?: string } | null>(null)
 
   useEffect(() => {
     getAmbientTracks().then(setAmbientTracks)
   }, [])
 
   const stopMeditation = useCallback(() => {
+    playIdRef.current = 0
     if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
+    if (ttsAudioRef.current) {
+      ttsAudioRef.current.audio.pause()
+      ttsAudioRef.current.audio.src = ''
+      if (ttsAudioRef.current.url) URL.revokeObjectURL(ttsAudioRef.current.url)
+      ttsAudioRef.current = null
+    }
     stopAmbient(ambientRef.current)
     ambientRef.current = null
     setPlaying(null)
@@ -248,29 +269,20 @@ export default function MeditationCards() {
     }
   }, [stopMeditation])
 
-  const handlePlay = useCallback((m: Meditation) => {
-    if (typeof window === 'undefined' || !window.speechSynthesis || !m.script) return
-    claimAndPlay('meditation', stopMeditation)
-    window.speechSynthesis.cancel()
-    stopAmbient(ambientRef.current)
-    ambientRef.current = null
-    const useSynthFallback = () => {
-      const ctx = new AudioContext()
-      const createPad = () => {
-        const { gain, oscs } = createAmbientPad(ctx)
-        ambientRef.current = { type: 'synth', ctx, gain, oscs }
-      }
-      if (ctx.state === 'suspended') ctx.resume().then(createPad).catch(createPad)
-      else createPad()
+  const startTTS = useCallback((med: Meditation) => {
+    if (!window.speechSynthesis || !med.script) return
+    setPlaying(med.title)
+    setIsPaused(false)
+    const generation = ++generationRef.current
+    const lines = med.script.split('\n').map(s => s.trim()).filter(Boolean)
+    let i = 0
+    const getVoice = () => {
+      const voices = window.speechSynthesis.getVoices()
+      return voices.find(v => v.lang.startsWith('es') && (v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Microsoft') || v.name.includes('Google')))
+        || voices.find(v => v.lang.startsWith('es') && v.name.includes('female'))
+        || voices.find(v => v.lang.startsWith('es'))
     }
-    ambientRef.current = startAmbientMusic(ambientTracks, useSynthFallback)
-    const startTTS = (med: Meditation) => {
-      setPlaying(med.title)
-      setIsPaused(false)
-      const generation = ++generationRef.current
-      const lines = med.script!.split('\n').map(s => s.trim()).filter(Boolean)
-      let i = 0
-      const next = () => {
+    const next = () => {
       if (generationRef.current !== generation) return
       if (i >= lines.length) {
         stopMeditation()
@@ -281,27 +293,94 @@ export default function MeditationCards() {
       utt.rate = 0.55
       utt.pitch = 0.92
       utt.volume = 1
-      const voices = window.speechSynthesis.getVoices()
-      const esVoice = voices.find(v => v.lang.startsWith('es') && (v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Microsoft') || v.name.includes('Google')))
-        || voices.find(v => v.lang.startsWith('es') && v.name.includes('female'))
-        || voices.find(v => v.lang.startsWith('es'))
+      const esVoice = getVoice()
       if (esVoice) utt.voice = esVoice
       utt.onend = next
+      utt.onerror = () => { if (i >= lines.length) stopMeditation() }
       window.speechSynthesis.speak(utt)
     }
+    if (getVoice()) {
       next()
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.onvoiceschanged = null
+        if (generationRef.current === generation) next()
+      }
+      setTimeout(() => {
+        if (generationRef.current === generation && !window.speechSynthesis.speaking) next()
+      }, 500)
     }
-    startTTS(m)
-  }, [ambientTracks, stopMeditation])
+  }, [stopMeditation])
+
+  const handlePlay = useCallback(async (m: Meditation) => {
+    if (typeof window === 'undefined' || !m.script) return
+    stopMeditation()
+    claimAndPlay('meditation', stopMeditation)
+    window.speechSynthesis?.cancel()
+    const thisPlayId = ++playIdRef.current
+    const startAmbientPad = () => {
+      if (playIdRef.current !== thisPlayId) return
+      const ctx = new AudioContext()
+      const createPad = () => {
+        if (playIdRef.current !== thisPlayId) {
+          try { ctx.close() } catch {}
+          return
+        }
+        const { gain, oscs } = createAmbientPad(ctx)
+        if (playIdRef.current !== thisPlayId) {
+          gain.gain.setTargetAtTime(0, ctx.currentTime, 0.1)
+          oscs.forEach(o => { try { o.stop() } catch {} })
+          try { ctx.close() } catch {}
+          return
+        }
+        ambientRef.current = { type: 'synth', ctx, gain, oscs }
+      }
+      if (ctx.state === 'suspended') ctx.resume().then(createPad).catch(() => { try { ctx.close() } catch {} })
+      else createPad()
+    }
+    startAmbientPad()
+
+    const tryElevenLabs = async () => {
+      setPlaying(m.title)
+      setIsPaused(false)
+      try {
+        const res = await fetch('/api/elevenlabs/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: m.script }),
+        })
+        if (playIdRef.current !== thisPlayId) return
+        if (!res.ok) throw new Error(String(res.status))
+        const contentType = res.headers.get('content-type') || ''
+        if (!contentType.includes('audio')) throw new Error('Respuesta no es audio')
+        const blob = await res.blob()
+        if (playIdRef.current !== thisPlayId) return
+        const url = URL.createObjectURL(blob)
+        const audio = new Audio(url)
+        ttsAudioRef.current = { audio, url }
+        audio.volume = 1
+        audio.onended = () => stopMeditation()
+        audio.onerror = () => stopMeditation()
+        await audio.play()
+      } catch {
+        if (playIdRef.current !== thisPlayId) return
+        startTTS(m)
+      }
+    }
+
+    tryElevenLabs()
+  }, [stopMeditation, startTTS])
 
   const handlePause = useCallback(() => {
-    window.speechSynthesis?.pause()
+    if (ttsAudioRef.current) ttsAudioRef.current.audio.pause()
+    else window.speechSynthesis?.pause()
     pauseAmbient(ambientRef.current)
     setIsPaused(true)
   }, [])
 
   const handleResume = useCallback(() => {
-    window.speechSynthesis?.resume()
+    if (ttsAudioRef.current) ttsAudioRef.current.audio.play().catch(() => {})
+    else window.speechSynthesis?.resume()
     resumeAmbient(ambientRef.current)
     setIsPaused(false)
   }, [])
@@ -383,10 +462,10 @@ export default function MeditationCards() {
         <div className="grid grid-cols-2 gap-3">
           {filtered.map((m) =>
             m.free ? (
-              <MeditationCard key={m.title} m={m} playing={playing} isPaused={isPaused} onPlay={handlePlay} onPause={handlePause} onResume={handleResume} />
+              <MeditationCard key={m.title} m={m} playing={playing} isPaused={isPaused} onPlay={handlePlay} onPause={handlePause} onResume={handleResume} onStop={stopMeditation} />
             ) : (
               <PremiumLock key={m.title} label={m.title}>
-                <MeditationCard m={m} playing={playing} isPaused={isPaused} onPlay={handlePlay} onPause={handlePause} onResume={handleResume} />
+                <MeditationCard m={m} playing={playing} isPaused={isPaused} onPlay={handlePlay} onPause={handlePause} onResume={handleResume} onStop={stopMeditation} />
               </PremiumLock>
             )
           )}

@@ -228,7 +228,7 @@ export default function Plan7DiasPage() {
                 </div>
 
                 <h1 className="font-heading text-3xl md:text-4xl font-bold text-white mb-3">
-                  Plan de 7 días
+                  Reto 7 Días
                 </h1>
                 <p className="text-text-secondary mb-2">
                   Tu introducción al Método N.E.U.R.O. en una semana.
@@ -377,13 +377,13 @@ export default function Plan7DiasPage() {
                     <h3 className="text-white font-semibold">¿Y ahora qué?</h3>
                   </div>
                   <p className="text-text-secondary text-sm mb-4">
-                    Has completado los 7 días. Tu cerebro ya ha empezado a cambiar. El Programa de 21 días lleva esto al siguiente nivel con cambios estructurales reales.
+                    Has completado los 7 días. Tu cerebro ya ha empezado a cambiar. El Curso 21 Días lleva esto al siguiente nivel con cambios estructurales reales.
                   </p>
                   <Link
                     href="/programa"
                     className="flex items-center justify-center gap-2 w-full py-3 bg-violet-500/15 text-violet-400 rounded-xl font-medium text-sm active:scale-95 transition-transform"
                   >
-                    <Flame className="w-4 h-4" /> Continuar con 21 días
+                    <Flame className="w-4 h-4" /> Continuar con Curso 21 Días
                   </Link>
                 </div>
               </FadeInSection>
@@ -403,7 +403,7 @@ export default function Plan7DiasPage() {
       <section className="pt-8 md:pt-16 pb-4">
         <Container>
           <div className="flex items-center justify-between mb-1">
-            <h1 className="font-heading text-3xl font-bold text-white animate-fade-in">Plan 7 días</h1>
+            <h1 className="font-heading text-3xl font-bold text-white animate-fade-in">Reto 7 Días</h1>
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-medium">
               <Star className="w-3 h-3" />
               Gratis
@@ -495,13 +495,13 @@ export default function Plan7DiasPage() {
                 <Flame className="w-8 h-8 text-accent-blue mx-auto mb-3" />
                 <h3 className="font-heading text-lg font-bold text-white mb-2">¿Listo para el siguiente nivel?</h3>
                 <p className="text-text-secondary text-sm mb-4">
-                  El Programa de 21 días consolida los cambios neuronales y crea hábitos permanentes.
+                  El Curso 21 Días consolida los cambios neuronales y crea hábitos permanentes.
                 </p>
                 <Link
                   href="/programa"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-accent-blue rounded-xl text-white font-medium text-sm active:scale-95 transition-transform glow-blue"
                 >
-                  Continuar con 21 días <ChevronRight className="w-4 h-4" />
+                  Continuar con Curso 21 Días <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
             </FadeInSection>

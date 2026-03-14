@@ -72,11 +72,11 @@ export default function RegistroPage() {
             </div>
             <h1 className="font-heading font-black text-white text-2xl mb-3">¡Bienvenido/a!</h1>
             <p className="text-text-secondary text-sm mb-4">
-              Tu cuenta ha sido creada. Te llevamos al Plan de 7 Días — tu regalo de bienvenida.
+              Tu cuenta ha sido creada. Te llevamos al Reto 7 Días — tu regalo de bienvenida.
             </p>
             <div className="flex items-center justify-center gap-2 text-green-400 text-sm font-medium">
               <Gift className="w-4 h-4" />
-              Plan 7 Días desbloqueado
+              Reto 7 Días desbloqueado
             </div>
           </div>
         </FadeInSection>
@@ -109,7 +109,7 @@ export default function RegistroPage() {
                 <Gift className="w-5 h-5 text-[#0066FF] shrink-0" />
                 <div>
                   <p className="text-white text-xs font-semibold">Regalo de bienvenida</p>
-                  <p className="text-text-secondary text-xs">Plan de 7 días completo, sin coste</p>
+                  <p className="text-text-secondary text-xs">Reto 7 Días completo, sin coste</p>
                 </div>
               </div>
 

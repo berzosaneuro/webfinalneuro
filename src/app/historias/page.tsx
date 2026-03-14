@@ -29,9 +29,9 @@ const stories: Story[] = [
     scoreAfter: 72,
     timeWeeks: 12,
     headline: 'De ansiedad crónica a calma interior',
-    story: 'Llevaba 3 años con ansiedad generalizada. Probé terapia, medicación, yoga... nada me hacía click. Con Berzosa Neuro entendí que mi problema no era emocional, era atencional. Mi mente no paraba de producir escenarios catastróficos porque nunca le enseñé a parar. En 12 semanas de programa 21 días + meditaciones diarias, mi NeuroScore pasó de 18 a 72. No es magia, es neuroplasticidad.',
+    story: 'Llevaba 3 años con ansiedad generalizada. Probé terapia, medicación, yoga... nada me hacía click. Con Berzosa Neuro entendí que mi problema no era emocional, era atencional. Mi mente no paraba de producir escenarios catastróficos porque nunca le enseñé a parar. En 12 semanas de Curso 21 Días + meditaciones diarias, mi NeuroScore pasó de 18 a 72. No es magia, es neuroplasticidad.',
     quote: 'Entendí que la ansiedad no es una enfermedad. Es una mente sin entrenar.',
-    tags: ['Ansiedad', 'Programa 21 días', 'Meditación'],
+    tags: ['Ansiedad', 'Curso 21 Días', 'Meditación'],
   },
   {
     name: 'Carlos R.',

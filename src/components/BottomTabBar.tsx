@@ -8,7 +8,7 @@ import { usePremium } from '@/context/PremiumContext'
 const tabs = [
   { href: '/', label: 'Inicio', icon: Brain },
   { href: '/meditacion', label: 'Meditar', icon: Headphones },
-  { href: '/plan-7-dias', label: '7 Días', icon: Sparkles },
+  { href: '/plan-7-dias', label: 'Reto 7 Días', icon: Sparkles },
   { href: '/retos', label: 'Retos', icon: Flame },
   { href: '/ia-coach', label: 'IA Coach', icon: Wand2 },
 ]

@@ -80,7 +80,7 @@ const profiles: Record<Profile, {
     recommended: [
       { label: 'Meditación: Atención Plena (10 min)', href: '/meditacion' },
       { label: 'Ejercicio: Contador de Pensamientos', href: '/ejercicios' },
-      { label: 'Programa 21 Días', href: '/programa' },
+      { label: 'Curso 21 Días', href: '/programa' },
       { label: 'Timer de Presencia (3 min)', href: '/meditacion' },
     ],
     color: 'from-violet-500 to-purple-500',
@@ -105,7 +105,7 @@ const profiles: Record<Profile, {
       { label: 'Meditación: Flow State (20 min)', href: '/meditacion' },
       { label: 'Meditación: Claridad y Foco (10 min)', href: '/meditacion' },
       { label: 'NeuroScore — Mide tu progreso', href: '/neuroscore' },
-      { label: 'Programa 21 Días', href: '/programa' },
+      { label: 'Curso 21 Días', href: '/programa' },
     ],
     color: 'from-emerald-500 to-teal-500',
   },

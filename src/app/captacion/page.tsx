@@ -262,7 +262,7 @@ export default function CaptacionPage() {
                 <ul className="space-y-2 mb-6">
                   {[
                     'Todo lo Gratis +',
-                    'Programa 21 días completo',
+                    'Curso 21 Días completo',
                     '40+ meditaciones PRO',
                     'NeuroScore avanzado',
                     'Sonidos binaurales',
@@ -295,7 +295,7 @@ export default function CaptacionPage() {
                 <Gift className="w-8 h-8 text-accent-blue" />
               </div>
               <h2 className="font-heading text-2xl font-bold text-white mb-2">
-                Plan gratuito: 7 días de neurociencia aplicada
+                Reto gratuito: 7 días de neurociencia aplicada
               </h2>
               <p className="text-text-secondary mb-6 max-w-md mx-auto">
                 7 ejercicios prácticos del Método N.E.U.R.O. con la base neurocientífica de cada uno. Gratis al suscribirte.
@@ -330,7 +330,7 @@ export default function CaptacionPage() {
                   <Check className="w-8 h-8 text-green-400 mx-auto mb-2" />
                   <p className="text-white font-medium">¡Listo!</p>
                   <Link href="/plan-7-dias" className="inline-flex items-center gap-2 mt-3 px-5 py-2.5 bg-accent-blue rounded-xl text-white font-medium text-sm active:scale-95 transition-transform">
-                    Empezar el plan de 7 días <ChevronRight className="w-4 h-4" />
+                    Empezar el Reto 7 Días <ChevronRight className="w-4 h-4" />
                   </Link>
                 </div>
               )}

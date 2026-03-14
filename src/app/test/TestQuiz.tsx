@@ -36,19 +36,19 @@ const levels = [
     range: [29, 36],
     level: 'Nivel 3 — Ruido moderado',
     interpretation: 'Tu mente genera ruido con frecuencia. Hay patrones de rumiación o ansiedad que consumen energía.',
-    recommendation: 'Necesitas un entrenamiento estructurado. Empieza con el plan de 7 días y practica el Método N.E.U.R.O. diariamente.',
+    recommendation: 'Necesitas un entrenamiento estructurado. Empieza con el Reto 7 Días y practica el Método N.E.U.R.O. diariamente.',
   },
   {
     range: [37, 44],
     level: 'Nivel 4 — Ruido alto',
     interpretation: 'El ruido mental domina gran parte de tu día. Pilotas en automático con frecuencia.',
-    recommendation: 'Es urgente que empieces a entrenar tu atención. Descarga el plan de 7 días y empieza hoy. La meditación diaria es fundamental.',
+    recommendation: 'Es urgente que empieces a entrenar tu atención. Empieza el Reto 7 Días y empieza hoy. La meditación diaria es fundamental.',
   },
   {
     range: [45, 50],
     level: 'Nivel 5 — Ruido extremo',
     interpretation: 'Tu mente está en modo hiperactivo constante. Esto afecta tu bienestar, tus decisiones y tu descanso.',
-    recommendation: 'Necesitas intervención inmediata. Empieza con las meditaciones de Reinicio Mental y Ansiedad. Sigue el plan de 7 días sin excepciones.',
+    recommendation: 'Necesitas intervención inmediata. Empieza con las meditaciones de Reinicio Mental y Ansiedad. Sigue el Reto 7 Días sin excepciones.',
   },
 ]
 

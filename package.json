@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "setup:elevenlabs": "node scripts/setup-elevenlabs.js",
     "url": "node -e \"console.log('\\n  Local:  http://localhost:3000\\n  Produccion: https://webfinalneuro.vercel.app\\n')\""
   },
   "dependencies": {

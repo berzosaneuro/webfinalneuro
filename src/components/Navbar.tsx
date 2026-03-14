@@ -19,8 +19,8 @@ const mainLinks = [
 ]
 
 const moreLinks = [
-  { href: '/plan-7-dias', label: '7 Días' },
-  { href: '/programa', label: '21 Días' },
+  { href: '/plan-7-dias', label: 'Reto 7 Días' },
+  { href: '/programa', label: 'Curso 21 Días' },
   { href: '/ia-coach', label: 'IA Coach' },
   { href: '/circulos', label: 'Círculos' },
   { href: '/leaderboard', label: 'Ranking' },
@@ -43,8 +43,8 @@ const mobileLinks = [
     { href: '/meditacion', label: 'Meditar' },
     { href: '/ejercicios', label: 'Ejercicios' },
     { href: '/sos', label: 'SOS' },
-    { href: '/plan-7-dias', label: '7 Días Gratis' },
-    { href: '/programa', label: '21 Días' },
+    { href: '/plan-7-dias', label: 'Reto 7 Días' },
+    { href: '/programa', label: 'Curso 21 Días' },
     { href: '/retos', label: 'Retos' },
   ]},
   { category: 'Aprender', items: [
