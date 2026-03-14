@@ -7,6 +7,8 @@ import { useUser } from '@/context/UserContext'
 import { Activity, Flame, Brain, Target, TrendingUp, ChevronRight, Trophy, Zap } from 'lucide-react'
 import Link from 'next/link'
 import EmailCapture from '@/components/EmailCapture'
+import { isCompletedToday } from '@/lib/daily-training'
+import { getAccumulatedScore, getCurrentLevel, getNextLevel, getPointsToNextLevel } from '@/lib/neuroscore-levels'
 
 const STORAGE_KEY = 'neuroscore_data'
 
@@ -17,6 +19,7 @@ type DayLog = {
   testDone: boolean
   despertarDone: boolean
   journalDone: boolean
+  trainingDone?: boolean
 }
 
 function getToday() {
@@ -44,6 +47,7 @@ function calculateScore(log: DayLog): number {
   if (log.testDone) score += 15
   if (log.despertarDone) score += 15
   if (log.journalDone) score += 15
+  if (log.trainingDone) score += 10
   return score
 }
 
@@ -66,7 +70,7 @@ function calculateStreak(logs: DayLog[]): number {
   return streak
 }
 
-type NeuroRow = { date: string; meditated: boolean; exercise_done: boolean; test_done: boolean; despertar_done: boolean; journal_done: boolean }
+type NeuroRow = { date: string; meditated?: boolean; exercise_done?: boolean; test_done?: boolean; despertar_done?: boolean; journal_done?: boolean; training_done?: boolean }
 
 function apiToDayLog(row: NeuroRow): DayLog {
   return {
@@ -76,6 +80,7 @@ function apiToDayLog(row: NeuroRow): DayLog {
     testDone: row.test_done ?? false,
     despertarDone: row.despertar_done ?? false,
     journalDone: row.journal_done ?? false,
+    trainingDone: row.training_done ?? false,
   }
 }
 
@@ -86,20 +91,34 @@ export default function NeuroScorePage() {
 
   useEffect(() => {
     setMounted(true)
+    const today = getToday()
     const load = async () => {
+      let result: { logs: DayLog[]; streak: number }
       if (user?.email) {
         try {
           const res = await fetch(`/api/neuroscore?email=${encodeURIComponent(user.email)}`)
           if (res.ok) {
             const rows: NeuroRow[] = await res.json()
             const logs = rows.map(apiToDayLog)
-            const streak = calculateStreak(logs)
-            setData({ logs, streak })
-            return
+            result = { logs, streak: calculateStreak(logs) }
+          } else {
+            result = loadData()
           }
-        } catch {}
+        } catch {
+          result = loadData()
+        }
+      } else {
+        result = loadData()
       }
-      setData(loadData())
+      if (isCompletedToday()) {
+        const todayLog = result.logs.find((l) => l.date === today)
+        const updated = { ...(todayLog || { date: today, meditated: false, exerciseDone: false, testDone: false, despertarDone: false, journalDone: false }), trainingDone: true }
+        result = {
+          logs: [...result.logs.filter((l) => l.date !== today), updated],
+          streak: calculateStreak([...result.logs.filter((l) => l.date !== today), updated]),
+        }
+      }
+      setData(result)
     }
     load()
   }, [user?.email])
@@ -112,12 +131,18 @@ export default function NeuroScorePage() {
     testDone: false,
     despertarDone: false,
     journalDone: false,
+    trainingDone: false,
   }
 
   const todayScore = calculateScore(todayLog)
+  const maxScore = 110
   const streak = calculateStreak(data.logs)
+  const accumulatedScore = getAccumulatedScore(data.logs, calculateScore)
+  const currentLevel = getCurrentLevel(accumulatedScore)
+  const nextLevel = getNextLevel(accumulatedScore)
+  const pointsToNext = getPointsToNextLevel(accumulatedScore)
   const circumference = 2 * Math.PI * 80
-  const scoreOffset = circumference * (1 - todayScore / 100)
+  const scoreOffset = circumference * (1 - Math.min(todayScore, maxScore) / maxScore)
 
   const toggleTask = async (key: keyof Omit<DayLog, 'date'>) => {
     const updated = { ...todayLog, [key]: !todayLog[key] }
@@ -153,6 +178,7 @@ export default function NeuroScorePage() {
   const tasks = [
     { key: 'meditated' as const, label: 'Meditar', desc: 'Cualquier sesión', icon: Brain, points: 30, href: '/meditacion' },
     { key: 'exerciseDone' as const, label: 'Ejercicio NEURO', desc: 'Método o metacognición', icon: Target, points: 25, href: '/metodo' },
+    { key: 'trainingDone' as const, label: 'Entrenamiento del día', desc: 'Ejercicio N.E.U.R.O. diario', icon: Target, points: 10, href: '/' },
     { key: 'testDone' as const, label: 'Test completado', desc: 'Test de ruido mental', icon: Activity, points: 15, href: '/test' },
     { key: 'despertarDone' as const, label: 'Despertar', desc: 'Claridad vital', icon: Zap, points: 15, href: '/despertar' },
     { key: 'journalDone' as const, label: 'Diario', desc: 'Reflexión escrita', icon: TrendingUp, points: 15, href: '/diario' },
@@ -217,7 +243,22 @@ export default function NeuroScorePage() {
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="font-heading text-4xl font-bold text-white">{todayScore}</span>
-                  <span className="text-text-muted text-xs">/ 100</span>
+                  <span className="text-text-muted text-xs">/ {maxScore}</span>
+                </div>
+              </div>
+
+              {/* Level evolution */}
+              <div className="w-full mb-4 px-2 py-3 rounded-xl bg-white/5 border border-white/5">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-text-muted text-xs">Nivel actual</span>
+                  <span className="text-accent-blue text-sm font-semibold">{currentLevel.name}</span>
+                </div>
+                <p className="text-text-secondary text-xs mb-2">{currentLevel.description}</p>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-text-muted">Acumulado: <span className="text-white font-medium">{accumulatedScore}</span> pts</span>
+                  {nextLevel && pointsToNext !== null && (
+                    <span className="text-accent-blue">Siguiente: {nextLevel.name} ({pointsToNext} pts)</span>
+                  )}
                 </div>
               </div>
 
@@ -232,9 +273,9 @@ export default function NeuroScorePage() {
                 </div>
                 <div className="w-px h-8 bg-white/10" />
                 <div className="flex items-center gap-2">
-                  <Trophy className={`w-5 h-5 ${todayScore === 100 ? 'text-emerald-400' : 'text-text-muted'}`} />
+                  <Trophy className={`w-5 h-5 ${todayScore >= maxScore ? 'text-emerald-400' : 'text-text-muted'}`} />
                   <div>
-                    <span className="text-white font-bold text-lg">{data.logs.filter(l => calculateScore(l) === 100).length}</span>
+                    <span className="text-white font-bold text-lg">{data.logs.filter(l => calculateScore(l) >= maxScore).length}</span>
                     <span className="text-text-muted text-xs ml-1">días perfectos</span>
                   </div>
                 </div>
@@ -325,7 +366,7 @@ export default function NeuroScorePage() {
               title="Sincroniza tu progreso"
               subtitle="Recibe un resumen semanal de tu NeuroScore y racha."
               buttonText="Activar"
-              extraData={{ todayScore, streak, perfectDays: data.logs.filter(l => calculateScore(l) === 100).length }}
+              extraData={{ todayScore, streak, perfectDays: data.logs.filter(l => calculateScore(l) >= maxScore).length }}
             />
           </FadeInSection>
         </Container>

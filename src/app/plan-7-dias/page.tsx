@@ -109,14 +109,17 @@ const days = [
 
 type PlanData = {
   completedDays: number[]
+  completedAtMap: Record<number, string>
   startDate?: string | null
 }
+
+const HOURS_BETWEEN_DAYS = 24
 
 export default function Plan7DiasPage() {
   const [subscribed, setSubscribed] = useState(false)
   const [email, setEmail] = useState('')
   const [sending, setSending] = useState(false)
-  const [data, setData] = useState<PlanData>({ completedDays: [] })
+  const [data, setData] = useState<PlanData>({ completedDays: [], completedAtMap: {} })
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
   const [mounted, setMounted] = useState(false)
 
@@ -128,14 +131,16 @@ export default function Plan7DiasPage() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY)
         if (raw) {
-          const parsed = JSON.parse(raw) as PlanData
+          const parsed = JSON.parse(raw) as Partial<PlanData>
+          const completedAtMap = parsed.completedAtMap ?? {}
+          const completedDays = Array.isArray(parsed.completedDays) ? parsed.completedDays : []
           if (sub && !parsed.startDate) {
             const today = new Date().toISOString().split('T')[0]
-            const fixed = { ...parsed, startDate: today }
-            setData(fixed)
+            const fixed = { ...parsed, completedDays, completedAtMap, startDate: today }
+            setData(fixed as PlanData)
             localStorage.setItem(STORAGE_KEY, JSON.stringify(fixed))
           } else {
-            setData(parsed)
+            setData({ ...parsed, completedDays, completedAtMap } as PlanData)
           }
         }
       } catch {}
@@ -172,27 +177,48 @@ export default function Plan7DiasPage() {
 
   const completeDay = (dayNum: number) => {
     if (data.completedDays.includes(dayNum)) return
-    const newData = { completedDays: [...data.completedDays, dayNum] }
+    const status = getDayStatus(dayNum)
+    if (status !== 'current') return
+    const completedAt = new Date().toISOString()
+    const newData: PlanData = {
+      ...data,
+      completedDays: [...data.completedDays, dayNum].sort((a, b) => a - b),
+      completedAtMap: { ...data.completedAtMap, [dayNum]: completedAt },
+    }
     save(newData)
     setSelectedDay(null)
   }
 
   const getCurrentUnlockedDay = (): number => {
     const start = data.startDate
-    if (!start) return 7
-    const startD = new Date(start)
-    const today = new Date()
-    startD.setHours(0, 0, 0, 0)
-    today.setHours(0, 0, 0, 0)
-    const diffMs = today.getTime() - startD.getTime()
-    const diffDays = Math.floor(diffMs / (24 * 60 * 60 * 1000))
-    return Math.min(7, Math.max(1, diffDays + 1))
+    if (!start) return 0
+    const now = Date.now()
+    const startMs = new Date(start + 'T00:00:00').getTime()
+    if (now < startMs) return 0
+    const getCompletedAt = (d: number) => {
+      const at = data.completedAtMap?.[d]
+      if (at) return new Date(at).getTime()
+      if (data.completedDays.includes(d)) {
+        const legacy = startMs + (d - 1) * HOURS_BETWEEN_DAYS * 60 * 60 * 1000
+        return Math.min(legacy, now - HOURS_BETWEEN_DAYS * 60 * 60 * 1000)
+      }
+      return 0
+    }
+    let unlocked = 1
+    for (let d = 1; d < 7; d++) {
+      const prevMs = getCompletedAt(d)
+      if (prevMs === 0) break
+      const hoursSincePrev = (now - prevMs) / (60 * 60 * 1000)
+      if (hoursSincePrev < HOURS_BETWEEN_DAYS) break
+      unlocked = d + 1
+    }
+    return Math.min(7, unlocked)
   }
 
   const getDayStatus = (dayNum: number): 'completed' | 'current' | 'locked' => {
     if (data.completedDays.includes(dayNum)) return 'completed'
-    const unlocked = getCurrentUnlockedDay()
-    if (dayNum <= unlocked) return 'current'
+    const unlockedDay = getCurrentUnlockedDay()
+    if (dayNum <= unlockedDay) return 'current'
     return 'locked'
   }
 

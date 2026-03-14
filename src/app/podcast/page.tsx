@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
-import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad } from '@/lib/audio-utils'
+import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad, fetchElevenLabsTTS } from '@/lib/audio-utils'
+import { trackSessionStart, trackSessionComplete, trackSessionInterrupted } from '@/lib/session-tracking'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
 import { Play, Pause, Headphones, Clock, Square } from 'lucide-react'
@@ -50,6 +51,9 @@ export default function PodcastPage() {
   const [isPaused, setIsPaused] = useState(false)
   const [filter, setFilter] = useState('Todos')
   const genRef = useRef(0)
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const playStartTimeRef = useRef<number>(0)
+  const playingEpisodeRef = useRef<Episode | null>(null)
   const ttsAudioRef = useRef<{ audio: HTMLAudioElement; url?: string; voiceRefs?: import('@/lib/audio-utils').VoiceRefs } | null>(null)
   const ambientRef = useRef<AmbientRef>(null)
 
@@ -124,6 +128,11 @@ export default function PodcastPage() {
     claimAndPlay('podcast', stopPodcast)
     window.speechSynthesis?.cancel()
     const thisGen = ++genRef.current
+    abortControllerRef.current = new AbortController()
+    const signal = abortControllerRef.current.signal
+    playingEpisodeRef.current = ep
+    playStartTimeRef.current = Date.now()
+    trackSessionStart('podcast', ep.title)
     setPlaying(ep.id)
     setLoadingEpisode(ep.id)
     setIsPaused(false)
@@ -134,28 +143,30 @@ export default function PodcastPage() {
     ambientRef.current = { ...pad, ctx }
 
     try {
-      const res = await fetch('/api/elevenlabs/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: ep.script }),
-      })
-      if (genRef.current !== thisGen) return
-      if (!res.ok) throw new Error(String(res.status))
-      const contentType = res.headers.get('content-type') || ''
-      if (!contentType.includes('audio')) throw new Error('Respuesta no es audio')
-      const blob = await res.blob()
-      if (genRef.current !== thisGen) return
+      const blob = await fetchElevenLabsTTS(ep.script, { signal })
+      if (genRef.current !== thisGen || signal.aborted) return
+      if (!blob) throw new Error('ElevenLabs fallback')
       const url = URL.createObjectURL(blob)
       const audio = new Audio(url)
-      audio.onended = () => stopPodcast()
+      audio.onended = () => {
+        trackSessionComplete('podcast', ep.title, Math.floor((Date.now() - playStartTimeRef.current) / 1000))
+        stopPodcast()
+      }
       audio.onerror = () => stopPodcast()
       setLoadingEpisode(null)
-      if (genRef.current !== thisGen) return
+      if (genRef.current !== thisGen || signal.aborted) {
+        URL.revokeObjectURL(url)
+        return
+      }
       const voiceRefs = await playAudioWithFadeIn(audio)
-      if (genRef.current !== thisGen) return
+      if (genRef.current !== thisGen || signal.aborted) {
+        URL.revokeObjectURL(url)
+        try { voiceRefs.ctx.close() } catch {}
+        return
+      }
       ttsAudioRef.current = { audio, url, voiceRefs }
     } catch {
-      if (genRef.current !== thisGen) return
+      if (genRef.current !== thisGen || signal.aborted) return
       setLoadingEpisode(null)
       if (window.speechSynthesis) startTTS(ep)
       else stopPodcast()

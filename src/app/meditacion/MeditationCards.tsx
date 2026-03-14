@@ -2,7 +2,8 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
-import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad as createSharedAmbientPad } from '@/lib/audio-utils'
+import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad as createSharedAmbientPad, fetchElevenLabsTTS } from '@/lib/audio-utils'
+import { trackSessionStart, trackSessionComplete, trackSessionInterrupted } from '@/lib/session-tracking'
 import PremiumLock from '@/components/PremiumLock'
 import PremiumBadge from '@/components/PremiumBadge'
 import { Brain, Timer, Moon, Crosshair, Play, Pause, Square, Heart, Shield, Wind, Eye, Sun, Zap, Target, Clock, Tag, Leaf, Sparkles, Hand, Lightbulb } from 'lucide-react'
@@ -237,13 +238,18 @@ export default function MeditationCards() {
   const generationRef = useRef(0)
   const ambientRef = useRef<AmbientRef>(null)
   const playIdRef = useRef(0)
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const playStartTimeRef = useRef<number>(0)
+  const playingTitleRef = useRef<string | null>(null)
   const ttsAudioRef = useRef<{ audio: HTMLAudioElement; url?: string; voiceRefs?: import('@/lib/audio-utils').VoiceRefs } | null>(null)
 
   useEffect(() => {
     getAmbientTracks().then(setAmbientTracks)
   }, [])
 
-  const stopMeditation = useCallback(() => {
+  const stopMeditation = useCallback((currentTitle?: string) => {
+    abortControllerRef.current?.abort()
+    abortControllerRef.current = null
     setLoadingAudio(null)
     playIdRef.current = 0
     if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
@@ -251,6 +257,13 @@ export default function MeditationCards() {
     ttsAudioRef.current = null
     stopAmbient(ambientRef.current)
     ambientRef.current = null
+    const trackTitle = currentTitle ?? playingTitleRef.current
+    playingTitleRef.current = null
+    if (trackTitle && playStartTimeRef.current > 0) {
+      const durationSeconds = Math.floor((Date.now() - playStartTimeRef.current) / 1000)
+      trackSessionInterrupted('meditation', trackTitle, durationSeconds)
+    }
+    playStartTimeRef.current = 0
     setPlaying(null)
     setIsPaused(false)
     if (ref) {
@@ -267,6 +280,7 @@ export default function MeditationCards() {
 
   const startTTS = useCallback((med: Meditation) => {
     if (!window.speechSynthesis || !med.script) return
+    playingTitleRef.current = med.title
     setPlaying(med.title)
     setIsPaused(false)
     const generation = ++generationRef.current
@@ -310,10 +324,12 @@ export default function MeditationCards() {
 
   const handlePlay = useCallback(async (m: Meditation) => {
     if (typeof window === 'undefined' || !m.script) return
-    stopMeditation()
-    claimAndPlay('meditation', stopMeditation)
+    stopMeditation(playingTitleRef.current ?? undefined)
+    claimAndPlay('meditation', () => stopMeditation(playingTitleRef.current ?? undefined))
     window.speechSynthesis?.cancel()
     const thisPlayId = ++playIdRef.current
+    abortControllerRef.current = new AbortController()
+    const signal = abortControllerRef.current.signal
     const startAmbientPad = () => {
       if (playIdRef.current !== thisPlayId) return
       const ctx = new AudioContext()
@@ -337,33 +353,39 @@ export default function MeditationCards() {
     startAmbientPad()
 
     const tryElevenLabs = async () => {
+      playingTitleRef.current = m.title
       setPlaying(m.title)
       setLoadingAudio(m.title)
       setIsPaused(false)
+      playStartTimeRef.current = Date.now()
+      trackSessionStart('meditation', m.title)
       try {
-        const res = await fetch('/api/elevenlabs/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: m.script }),
-        })
-        if (playIdRef.current !== thisPlayId) return
-        if (!res.ok) throw new Error(String(res.status))
-        const contentType = res.headers.get('content-type') || ''
-        if (!contentType.includes('audio')) throw new Error('Respuesta no es audio')
-        const blob = await res.blob()
-        if (playIdRef.current !== thisPlayId) return
+        const blob = await fetchElevenLabsTTS(m.script!, { signal })
+        if (playIdRef.current !== thisPlayId || signal.aborted) return
+        if (!blob) throw new Error('ElevenLabs fallback')
         const url = URL.createObjectURL(blob)
         const audio = new Audio(url)
         audio.volume = 1
-        audio.onended = () => stopMeditation()
+        audio.onended = () => {
+          const dur = playStartTimeRef.current > 0 ? Math.floor((Date.now() - playStartTimeRef.current) / 1000) : 0
+          trackSessionComplete('meditation', m.title, dur)
+          stopMeditation()
+        }
         audio.onerror = () => stopMeditation()
         setLoadingAudio(null)
-        if (playIdRef.current !== thisPlayId) return
+        if (playIdRef.current !== thisPlayId || signal.aborted) {
+          URL.revokeObjectURL(url)
+          return
+        }
         const voiceRefs = await playAudioWithFadeIn(audio)
-        if (playIdRef.current !== thisPlayId) return
+        if (playIdRef.current !== thisPlayId || signal.aborted) {
+          URL.revokeObjectURL(url)
+          try { voiceRefs.ctx.close() } catch {}
+          return
+        }
         ttsAudioRef.current = { audio, url, voiceRefs }
       } catch {
-        if (playIdRef.current !== thisPlayId) return
+        if (playIdRef.current !== thisPlayId || signal.aborted) return
         setLoadingAudio(null)
         startTTS(m)
       }

@@ -25,9 +25,13 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  let body: { email?: string; date?: string; meditated?: boolean; exerciseDone?: boolean; testDone?: boolean; despertarDone?: boolean; journalDone?: boolean }
+  const bodyType = {} as {
+    email?: string; date?: string; meditated?: boolean; exerciseDone?: boolean
+    testDone?: boolean; despertarDone?: boolean; journalDone?: boolean; trainingDone?: boolean
+  }
+  let body: typeof bodyType
   try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
-  const { email, date, meditated, exerciseDone, testDone, despertarDone, journalDone } = body
+  const { email, date, meditated, exerciseDone, testDone, despertarDone, journalDone, trainingDone } = body
 
   if (!email || !date) {
     return NextResponse.json({ error: 'Email y fecha requeridos' }, { status: 400 })
@@ -39,6 +43,7 @@ export async function POST(request: Request) {
   if (testDone) score += 15
   if (despertarDone) score += 15
   if (journalDone) score += 15
+  if (trainingDone) score += 10
 
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
@@ -49,14 +54,15 @@ export async function POST(request: Request) {
     .eq('date', date)
     .single()
 
-  const entry = {
-    meditated,
-    exercise_done: exerciseDone,
-    test_done: testDone,
-    despertar_done: despertarDone,
-    journal_done: journalDone,
+  const entry: Record<string, unknown> = {
+    meditated: meditated ?? false,
+    exercise_done: exerciseDone ?? false,
+    test_done: testDone ?? false,
+    despertar_done: despertarDone ?? false,
+    journal_done: journalDone ?? false,
     score,
   }
+  if (typeof trainingDone === 'boolean') entry.training_done = trainingDone
 
   if (existing) {
     const { error } = await supabase

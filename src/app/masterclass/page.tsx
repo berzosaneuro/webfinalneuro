@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
-import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad } from '@/lib/audio-utils'
+import { stopVoiceWithFadeOut, createAmbientPad } from '@/lib/audio-utils'
+import { trackSessionInterrupted } from '@/lib/session-tracking'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
 import PremiumLock from '@/components/PremiumLock'
@@ -147,6 +148,9 @@ export default function MasterclassPage() {
   const ttsAudioRef = useRef<{ audio: HTMLAudioElement; url?: string; voiceRefs?: import('@/lib/audio-utils').VoiceRefs } | null>(null)
   const ambientRef = useRef<AmbientRef>(null)
 
+  const playingMcRef = useRef<MasterClass | null>(null)
+  const playStartTimeRef = useRef<number>(0)
+
   const stopMasterclass = useCallback(() => {
     window.speechSynthesis?.cancel()
     const ref = ttsAudioRef.current
@@ -155,6 +159,12 @@ export default function MasterclassPage() {
       ambientRef.current.stop()
       ambientRef.current = null
     }
+    const mc = playingMcRef.current
+    if (mc && playStartTimeRef.current > 0) {
+      trackSessionInterrupted('masterclass', mc.title, Math.floor((Date.now() - playStartTimeRef.current) / 1000))
+    }
+    playingMcRef.current = null
+    playStartTimeRef.current = 0
     setPlaying(false)
     setLoadingMasterclass(null)
     setIsPaused(false)
@@ -199,6 +209,8 @@ export default function MasterclassPage() {
       window.speechSynthesis.speak(utt)
       i++
     }
+    playingMcRef.current = mc
+    playStartTimeRef.current = Date.now()
     setSelected(mc)
     setPlaying(true)
     setIsPaused(false)

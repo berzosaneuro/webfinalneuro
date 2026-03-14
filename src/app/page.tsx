@@ -7,6 +7,7 @@ import Card from '@/components/Card'
 import FadeInSection from '@/components/FadeInSection'
 import { usePremium } from '@/context/PremiumContext'
 import { Brain, Headphones, BookOpen, ClipboardCheck, Crosshair, Timer, Moon, Zap, ChevronRight, Crown, Sparkles, Activity, AlertCircle, Flame, Calendar, Dumbbell, PenLine, Trophy, Podcast, GraduationCap, Users, Video, Gift, Bot, ClipboardList } from 'lucide-react'
+import DailyTrainingSection from '@/components/DailyTrainingSection'
 
 const quickActions = [
   { href: '/meditacion', label: 'Meditación', icon: Headphones, color: 'bg-blue-500/15 text-blue-400' },
@@ -122,6 +123,15 @@ export default function Home() {
               </Link>
             ))}
           </div>
+        </Container>
+      </section>
+
+      {/* Entrenamiento N.E.U.R.O. del día */}
+      <section className="relative pb-4">
+        <Container>
+          <FadeInSection>
+            <DailyTrainingSection />
+          </FadeInSection>
         </Container>
       </section>
 
