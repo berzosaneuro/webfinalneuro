@@ -1,0 +1,645 @@
+{
+  "programs": [
+    {
+      "id": "stress-reset",
+      "name": "Stress Reset",
+      "durationDays": 21,
+      "mainGoal": "stress"
+    },
+    {
+      "id": "focus-training",
+      "name": "Focus Training",
+      "durationDays": 14,
+      "mainGoal": "focus"
+    },
+    {
+      "id": "sleep-recovery",
+      "name": "Sleep Recovery",
+      "durationDays": 10,
+      "mainGoal": "sleep"
+    },
+    {
+      "id": "metacognition-starter",
+      "name": "Metacognition Starter",
+      "durationDays": 21,
+      "mainGoal": "focus"
+    },
+    {
+      "id": "supraconscious-awareness",
+      "name": "Supraconscious Awareness",
+      "durationDays": 21,
+      "mainGoal": "spiritual"
+    }
+  ],
+  "programDays": [
+    {
+      "id": "stress-1",
+      "programId": "stress-reset",
+      "dayNumber": 1,
+      "title": "Observa los pensamientos",
+      "notificationCopy": "Día 1/21: observa tus pensamientos durante 7 minutos."
+    },
+    {
+      "id": "stress-2",
+      "programId": "stress-reset",
+      "dayNumber": 2,
+      "title": "Respiración consciente",
+      "notificationCopy": "Día 2/21: respiración 4-7-8 durante 5 minutos."
+    },
+    {
+      "id": "stress-3",
+      "programId": "stress-reset",
+      "dayNumber": 3,
+      "title": "Ancla corporal",
+      "notificationCopy": "Día 3/21: escaneo corporal 8 minutos."
+    },
+    {
+      "id": "stress-4",
+      "programId": "stress-reset",
+      "dayNumber": 4,
+      "title": "Etiqueta emociones",
+      "notificationCopy": "Día 4/21: etiquetado emocional 7 minutos."
+    },
+    {
+      "id": "stress-5",
+      "programId": "stress-reset",
+      "dayNumber": 5,
+      "title": "Reset del sistema nervioso",
+      "notificationCopy": "Día 5/21: reset del sistema nervioso 8 minutos."
+    },
+    {
+      "id": "stress-6",
+      "programId": "stress-reset",
+      "dayNumber": 6,
+      "title": "Libera la tensión",
+      "notificationCopy": "Día 6/21: libera tensión 9 minutos."
+    },
+    {
+      "id": "stress-7",
+      "programId": "stress-reset",
+      "dayNumber": 7,
+      "title": "Integración semanal",
+      "notificationCopy": "Día 7/21: integración 10 minutos."
+    },
+    {
+      "id": "stress-8",
+      "programId": "stress-reset",
+      "dayNumber": 8,
+      "title": "Respiración profunda",
+      "notificationCopy": "Día 8/21: respiración profunda 7 minutos."
+    },
+    {
+      "id": "stress-9",
+      "programId": "stress-reset",
+      "dayNumber": 9,
+      "title": "Grounding 5-4-3-2-1",
+      "notificationCopy": "Día 9/21: técnica grounding 8 minutos."
+    },
+    {
+      "id": "stress-10",
+      "programId": "stress-reset",
+      "dayNumber": 10,
+      "title": "Coherencia cardíaca",
+      "notificationCopy": "Día 10/21: coherencia cardíaca 9 minutos."
+    },
+    {
+      "id": "stress-11",
+      "programId": "stress-reset",
+      "dayNumber": 11,
+      "title": "Calma progresiva",
+      "notificationCopy": "Día 11/21: calma progresiva 8 minutos."
+    },
+    {
+      "id": "stress-12",
+      "programId": "stress-reset",
+      "dayNumber": 12,
+      "title": "Observador interno",
+      "notificationCopy": "Día 12/21: observador interno 10 minutos."
+    },
+    {
+      "id": "stress-13",
+      "programId": "stress-reset",
+      "dayNumber": 13,
+      "title": "Espacio entre estímulo y respuesta",
+      "notificationCopy": "Día 13/21: pausa consciente 7 minutos."
+    },
+    {
+      "id": "stress-14",
+      "programId": "stress-reset",
+      "dayNumber": 14,
+      "title": "Mitad del camino",
+      "notificationCopy": "Día 14/21: consolidación 9 minutos."
+    },
+    {
+      "id": "stress-15",
+      "programId": "stress-reset",
+      "dayNumber": 15,
+      "title": "Resiliencia",
+      "notificationCopy": "Día 15/21: resiliencia 8 minutos."
+    },
+    {
+      "id": "stress-16",
+      "programId": "stress-reset",
+      "dayNumber": 16,
+      "title": "Aceptación",
+      "notificationCopy": "Día 16/21: aceptación 7 minutos."
+    },
+    {
+      "id": "stress-17",
+      "programId": "stress-reset",
+      "dayNumber": 17,
+      "title": "Equilibrio emocional",
+      "notificationCopy": "Día 17/21: equilibrio 9 minutos."
+    },
+    {
+      "id": "stress-18",
+      "programId": "stress-reset",
+      "dayNumber": 18,
+      "title": "Presencia activa",
+      "notificationCopy": "Día 18/21: presencia 8 minutos."
+    },
+    {
+      "id": "stress-19",
+      "programId": "stress-reset",
+      "dayNumber": 19,
+      "title": "Integración N.E.U.R.O.",
+      "notificationCopy": "Día 19/21: método N.E.U.R.O. 10 minutos."
+    },
+    {
+      "id": "stress-20",
+      "programId": "stress-reset",
+      "dayNumber": 20,
+      "title": "Preparación final",
+      "notificationCopy": "Día 20/21: preparación final 9 minutos."
+    },
+    {
+      "id": "stress-21",
+      "programId": "stress-reset",
+      "dayNumber": 21,
+      "title": "Graduación Stress Reset",
+      "notificationCopy": "Día 21/21: graduación 10 minutos."
+    },
+    {
+      "id": "focus-1",
+      "programId": "focus-training",
+      "dayNumber": 1,
+      "title": "Atención al punto fijo",
+      "notificationCopy": "Día 1/14: atención al punto fijo 5 minutos."
+    },
+    {
+      "id": "focus-2",
+      "programId": "focus-training",
+      "dayNumber": 2,
+      "title": "Cuenta de respiraciones",
+      "notificationCopy": "Día 2/14: cuenta respiraciones 6 minutos."
+    },
+    {
+      "id": "focus-3",
+      "programId": "focus-training",
+      "dayNumber": 3,
+      "title": "Escucha focalizada",
+      "notificationCopy": "Día 3/14: escucha focalizada 6 minutos."
+    },
+    {
+      "id": "focus-4",
+      "programId": "focus-training",
+      "dayNumber": 4,
+      "title": "Body scan atencional",
+      "notificationCopy": "Día 4/14: body scan 7 minutos."
+    },
+    {
+      "id": "focus-5",
+      "programId": "focus-training",
+      "dayNumber": 5,
+      "title": "Regreso al ancla",
+      "notificationCopy": "Día 5/14: regreso al ancla 7 minutos."
+    },
+    {
+      "id": "focus-6",
+      "programId": "focus-training",
+      "dayNumber": 6,
+      "title": "Foco extendido",
+      "notificationCopy": "Día 6/14: foco extendido 8 minutos."
+    },
+    {
+      "id": "focus-7",
+      "programId": "focus-training",
+      "dayNumber": 7,
+      "title": "Metadía mitad",
+      "notificationCopy": "Día 7/14: integración 8 minutos."
+    },
+    {
+      "id": "focus-8",
+      "programId": "focus-training",
+      "dayNumber": 8,
+      "title": "Atención selectiva",
+      "notificationCopy": "Día 8/14: atención selectiva 7 minutos."
+    },
+    {
+      "id": "focus-9",
+      "programId": "focus-training",
+      "dayNumber": 9,
+      "title": "Distracción consciente",
+      "notificationCopy": "Día 9/14: distracción consciente 8 minutos."
+    },
+    {
+      "id": "focus-10",
+      "programId": "focus-training",
+      "dayNumber": 10,
+      "title": "Sosteniendo el foco",
+      "notificationCopy": "Día 10/14: sosteniendo foco 9 minutos."
+    },
+    {
+      "id": "focus-11",
+      "programId": "focus-training",
+      "dayNumber": 11,
+      "title": "Mente de principiante",
+      "notificationCopy": "Día 11/14: mente principiante 8 minutos."
+    },
+    {
+      "id": "focus-12",
+      "programId": "focus-training",
+      "dayNumber": 12,
+      "title": "Integración",
+      "notificationCopy": "Día 12/14: integración 9 minutos."
+    },
+    {
+      "id": "focus-13",
+      "programId": "focus-training",
+      "dayNumber": 13,
+      "title": "Preparación final",
+      "notificationCopy": "Día 13/14: preparación final 8 minutos."
+    },
+    {
+      "id": "focus-14",
+      "programId": "focus-training",
+      "dayNumber": 14,
+      "title": "Graduación Focus Training",
+      "notificationCopy": "Día 14/14: graduación 10 minutos."
+    },
+    {
+      "id": "sleep-1",
+      "programId": "sleep-recovery",
+      "dayNumber": 1,
+      "title": "Relajación pre-sueño",
+      "notificationCopy": "Día 1/10: relajación pre-sueño 8 minutos."
+    },
+    {
+      "id": "sleep-2",
+      "programId": "sleep-recovery",
+      "dayNumber": 2,
+      "title": "Respiración 4-7-8 nocturna",
+      "notificationCopy": "Día 2/10: respiración 4-7-8 6 minutos."
+    },
+    {
+      "id": "sleep-3",
+      "programId": "sleep-recovery",
+      "dayNumber": 3,
+      "title": "Body scan sueño",
+      "notificationCopy": "Día 3/10: body scan 9 minutos."
+    },
+    {
+      "id": "sleep-4",
+      "programId": "sleep-recovery",
+      "dayNumber": 4,
+      "title": "Suelta el día",
+      "notificationCopy": "Día 4/10: suelta el día 7 minutos."
+    },
+    {
+      "id": "sleep-5",
+      "programId": "sleep-recovery",
+      "dayNumber": 5,
+      "title": "Mitad Sleep Recovery",
+      "notificationCopy": "Día 5/10: mitad programa 8 minutos."
+    },
+    {
+      "id": "sleep-6",
+      "programId": "sleep-recovery",
+      "dayNumber": 6,
+      "title": "Nervioso sistema reset",
+      "notificationCopy": "Día 6/10: reset sistema nervioso 10 minutos."
+    },
+    {
+      "id": "sleep-7",
+      "programId": "sleep-recovery",
+      "dayNumber": 7,
+      "title": "Ritual nocturno",
+      "notificationCopy": "Día 7/10: ritual nocturno 9 minutos."
+    },
+    {
+      "id": "sleep-8",
+      "programId": "sleep-recovery",
+      "dayNumber": 8,
+      "title": "Profundización",
+      "notificationCopy": "Día 8/10: profundización 8 minutos."
+    },
+    {
+      "id": "sleep-9",
+      "programId": "sleep-recovery",
+      "dayNumber": 9,
+      "title": "Preparación final sueño",
+      "notificationCopy": "Día 9/10: preparación 9 minutos."
+    },
+    {
+      "id": "sleep-10",
+      "programId": "sleep-recovery",
+      "dayNumber": 10,
+      "title": "Graduación Sleep Recovery",
+      "notificationCopy": "Día 10/10: graduación 10 minutos."
+    },
+    {
+      "id": "meta-1",
+      "programId": "metacognition-starter",
+      "dayNumber": 1,
+      "title": "Observa pensamientos",
+      "notificationCopy": "Día 1/21: observa pensamientos 7 minutos."
+    },
+    {
+      "id": "meta-2",
+      "programId": "metacognition-starter",
+      "dayNumber": 2,
+      "title": "Cuenta pensamientos",
+      "notificationCopy": "Día 2/21: cuenta pensamientos 6 minutos."
+    },
+    {
+      "id": "meta-3",
+      "programId": "metacognition-starter",
+      "dayNumber": 3,
+      "title": "Pensamiento como objeto",
+      "notificationCopy": "Día 3/21: pensamiento como objeto 7 minutos."
+    },
+    {
+      "id": "meta-4",
+      "programId": "metacognition-starter",
+      "dayNumber": 4,
+      "title": "Desidentificación",
+      "notificationCopy": "Día 4/21: desidentificación 8 minutos."
+    },
+    {
+      "id": "meta-5",
+      "programId": "metacognition-starter",
+      "dayNumber": 5,
+      "title": "El observador",
+      "notificationCopy": "Día 5/21: el observador 8 minutos."
+    },
+    {
+      "id": "meta-6",
+      "programId": "metacognition-starter",
+      "dayNumber": 6,
+      "title": "Integración N",
+      "notificationCopy": "Día 6/21: integración N 9 minutos."
+    },
+    {
+      "id": "meta-7",
+      "programId": "metacognition-starter",
+      "dayNumber": 7,
+      "title": "Primera semana",
+      "notificationCopy": "Día 7/21: primera semana 10 minutos."
+    },
+    {
+      "id": "meta-8",
+      "programId": "metacognition-starter",
+      "dayNumber": 8,
+      "title": "Metacognición avanzada",
+      "notificationCopy": "Día 8/21: metacognición avanzada 8 minutos."
+    },
+    {
+      "id": "meta-9",
+      "programId": "metacognition-starter",
+      "dayNumber": 9,
+      "title": "Pensar sobre pensar",
+      "notificationCopy": "Día 9/21: pensar sobre pensar 9 minutos."
+    },
+    {
+      "id": "meta-10",
+      "programId": "metacognition-starter",
+      "dayNumber": 10,
+      "title": "Espacio metacognitivo",
+      "notificationCopy": "Día 10/21: espacio metacognitivo 8 minutos."
+    },
+    {
+      "id": "meta-11",
+      "programId": "metacognition-starter",
+      "dayNumber": 11,
+      "title": "Consolidación",
+      "notificationCopy": "Día 11/21: consolidación 9 minutos."
+    },
+    {
+      "id": "meta-12",
+      "programId": "metacognition-starter",
+      "dayNumber": 12,
+      "title": "Patrones automáticos",
+      "notificationCopy": "Día 12/21: patrones automáticos 8 minutos."
+    },
+    {
+      "id": "meta-13",
+      "programId": "metacognition-starter",
+      "dayNumber": 13,
+      "title": "Elección consciente",
+      "notificationCopy": "Día 13/21: elección consciente 9 minutos."
+    },
+    {
+      "id": "meta-14",
+      "programId": "metacognition-starter",
+      "dayNumber": 14,
+      "title": "Mitad Metacognition",
+      "notificationCopy": "Día 14/21: mitad 10 minutos."
+    },
+    {
+      "id": "meta-15",
+      "programId": "metacognition-starter",
+      "dayNumber": 15,
+      "title": "Observador del observador",
+      "notificationCopy": "Día 15/21: observador del observador 9 minutos."
+    },
+    {
+      "id": "meta-16",
+      "programId": "metacognition-starter",
+      "dayNumber": 16,
+      "title": "Libertad metacognitiva",
+      "notificationCopy": "Día 16/21: libertad metacognitiva 8 minutos."
+    },
+    {
+      "id": "meta-17",
+      "programId": "metacognition-starter",
+      "dayNumber": 17,
+      "title": "Integración final",
+      "notificationCopy": "Día 17/21: integración final 9 minutos."
+    },
+    {
+      "id": "meta-18",
+      "programId": "metacognition-starter",
+      "dayNumber": 18,
+      "title": "Práctica profunda",
+      "notificationCopy": "Día 18/21: práctica profunda 10 minutos."
+    },
+    {
+      "id": "meta-19",
+      "programId": "metacognition-starter",
+      "dayNumber": 19,
+      "title": "Preparación graduación",
+      "notificationCopy": "Día 19/21: preparación 9 minutos."
+    },
+    {
+      "id": "meta-20",
+      "programId": "metacognition-starter",
+      "dayNumber": 20,
+      "title": "Penúltimo día",
+      "notificationCopy": "Día 20/21: penúltimo día 8 minutos."
+    },
+    {
+      "id": "meta-21",
+      "programId": "metacognition-starter",
+      "dayNumber": 21,
+      "title": "Graduación Metacognition Starter",
+      "notificationCopy": "Día 21/21: graduación 10 minutos."
+    },
+    {
+      "id": "supra-1",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 1,
+      "title": "Despertar básico",
+      "notificationCopy": "Día 1/21: despertar básico 7 minutos."
+    },
+    {
+      "id": "supra-2",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 2,
+      "title": "Presencia pura",
+      "notificationCopy": "Día 2/21: presencia pura 7 minutos."
+    },
+    {
+      "id": "supra-3",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 3,
+      "title": "Consciencia testigo",
+      "notificationCopy": "Día 3/21: consciencia testigo 8 minutos."
+    },
+    {
+      "id": "supra-4",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 4,
+      "title": "Espacio abierto",
+      "notificationCopy": "Día 4/21: espacio abierto 8 minutos."
+    },
+    {
+      "id": "supra-5",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 5,
+      "title": "Observación sin yo",
+      "notificationCopy": "Día 5/21: observación sin yo 9 minutos."
+    },
+    {
+      "id": "supra-6",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 6,
+      "title": "Retorno reconfigura",
+      "notificationCopy": "Día 6/21: retorno reconfigura cerebro 6 minutos."
+    },
+    {
+      "id": "supra-7",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 7,
+      "title": "Primera semana supra",
+      "notificationCopy": "Día 7/21: primera semana 10 minutos."
+    },
+    {
+      "id": "supra-8",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 8,
+      "title": "Más allá del pensamiento",
+      "notificationCopy": "Día 8/21: más allá del pensamiento 9 minutos."
+    },
+    {
+      "id": "supra-9",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 9,
+      "title": "Silencio interno",
+      "notificationCopy": "Día 9/21: silencio interno 8 minutos."
+    },
+    {
+      "id": "supra-10",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 10,
+      "title": "Total 120min",
+      "notificationCopy": "120min total. Día 10 supra (9min)."
+    },
+    {
+      "id": "supra-11",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 11,
+      "title": "Consciencia expandida",
+      "notificationCopy": "Día 11/21: consciencia expandida 9 minutos."
+    },
+    {
+      "id": "supra-12",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 12,
+      "title": "Unidad",
+      "notificationCopy": "Día 12/21: unidad 10 minutos."
+    },
+    {
+      "id": "supra-13",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 13,
+      "title": "No-dualidad básica",
+      "notificationCopy": "Día 13/21: no-dualidad 9 minutos."
+    },
+    {
+      "id": "supra-14",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 14,
+      "title": "Mitad Supraconscious",
+      "notificationCopy": "Día 14/21: mitad 10 minutos."
+    },
+    {
+      "id": "supra-15",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 15,
+      "title": "Integración supra",
+      "notificationCopy": "Día 15/21: integración 9 minutos."
+    },
+    {
+      "id": "supra-16",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 16,
+      "title": "Presencia sostenida",
+      "notificationCopy": "Día 16/21: presencia sostenida 10 minutos."
+    },
+    {
+      "id": "supra-17",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 17,
+      "title": "Estabilidad",
+      "notificationCopy": "Día 17/21: estabilidad 9 minutos."
+    },
+    {
+      "id": "supra-18",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 18,
+      "title": "Profundización",
+      "notificationCopy": "Día 18/21: profundización 10 minutos."
+    },
+    {
+      "id": "supra-19",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 19,
+      "title": "Preparación final",
+      "notificationCopy": "Día 19/21: preparación 9 minutos."
+    },
+    {
+      "id": "supra-20",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 20,
+      "title": "Penúltimo",
+      "notificationCopy": "Día 20/21: penúltimo 10 minutos."
+    },
+    {
+      "id": "supra-21",
+      "programId": "supraconscious-awareness",
+      "dayNumber": 21,
+      "title": "Graduación Supraconscious Awareness",
+      "notificationCopy": "Día 21/21: graduación 10 minutos."
+    }
+  ]
+}
