@@ -28,7 +28,7 @@ const affirmations = [
 function createAmbientPad(): { ctx: AudioContext; gain: GainNode; stop: () => void } {
   const ctx = new AudioContext()
   const gain = ctx.createGain()
-  gain.gain.value = 0.12
+  gain.gain.value = 0
   gain.connect(ctx.destination)
 
   const freqs = [65.41, 82.41, 98, 130.81]
@@ -44,13 +44,16 @@ function createAmbientPad(): { ctx: AudioContext; gain: GainNode; stop: () => vo
     osc.start()
     oscs.push(osc)
   })
+  gain.gain.setTargetAtTime(0.12, ctx.currentTime, 0.08)
 
   const stop = () => {
-    gain.gain.setTargetAtTime(0, ctx.currentTime, 0.5)
-    oscs.forEach((o) => {
-      try { o.stop(ctx.currentTime + 0.6) } catch {}
-    })
-    try { ctx.close() } catch {}
+    gain.gain.setTargetAtTime(0, ctx.currentTime, 0.04)
+    setTimeout(() => {
+      oscs.forEach((o) => {
+        try { o.stop(ctx.currentTime) } catch {}
+      })
+      try { ctx.close() } catch {}
+    }, 130)
   }
   return { ctx, gain, stop }
 }

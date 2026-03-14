@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
+import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad } from '@/lib/audio-utils'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
 import PremiumLock from '@/components/PremiumLock'
-import { Play, Pause, Clock, Brain, Eye, Zap, Heart, Shield, Flame, X } from 'lucide-react'
+import { Play, Pause, Square, Clock, Brain, Eye, Zap, Heart, Shield, Flame, X } from 'lucide-react'
 
 type MasterClass = {
   id: string
@@ -135,16 +136,31 @@ function MasterClassCard({ mc, onSelect }: { mc: MasterClass; onSelect: () => vo
   )
 }
 
+type AmbientRef = { ctx: AudioContext; gain: GainNode; oscs: OscillatorNode[]; stop: () => void } | null
+
 export default function MasterclassPage() {
   const [selected, setSelected] = useState<MasterClass | null>(null)
   const [playing, setPlaying] = useState(false)
+  const [loadingMasterclass, setLoadingMasterclass] = useState<string | null>(null)
   const [isPaused, setIsPaused] = useState(false)
   const genRef = useRef(0)
+  const ttsAudioRef = useRef<{ audio: HTMLAudioElement; url?: string; voiceRefs?: import('@/lib/audio-utils').VoiceRefs } | null>(null)
+  const ambientRef = useRef<AmbientRef>(null)
 
   const stopMasterclass = useCallback(() => {
     window.speechSynthesis?.cancel()
+    const ref = ttsAudioRef.current
+    ttsAudioRef.current = null
+    if (ambientRef.current) {
+      ambientRef.current.stop()
+      ambientRef.current = null
+    }
     setPlaying(false)
+    setLoadingMasterclass(null)
     setIsPaused(false)
+    if (ref) {
+      stopVoiceWithFadeOut(ref.audio, ref.voiceRefs ?? null, ref.url, () => {})
+    }
   }, [])
 
   useEffect(() => {
@@ -189,18 +205,31 @@ export default function MasterclassPage() {
     next()
   }, [])
 
+  const handlePause = useCallback(() => {
+    if (ttsAudioRef.current) ttsAudioRef.current.audio.pause()
+    else window.speechSynthesis?.pause()
+    if (ambientRef.current) ambientRef.current.gain.gain.setTargetAtTime(0, ambientRef.current.ctx.currentTime, 0.1)
+    setIsPaused(true)
+  }, [])
+
+  const handleResume = useCallback(() => {
+    if (ttsAudioRef.current) ttsAudioRef.current.audio.play().catch(() => {})
+    else window.speechSynthesis?.resume()
+    if (ambientRef.current) ambientRef.current.gain.gain.setTargetAtTime(0.2, ambientRef.current.ctx.currentTime, 0.1)
+    setIsPaused(false)
+  }, [])
+
   const handleSelect = useCallback((mc: MasterClass) => {
     claimAndPlay('masterclass', stopMasterclass)
+    if (loadingMasterclass === mc.id) return
     if (playing && selected?.id === mc.id && !isPaused) {
-      window.speechSynthesis?.pause()
-      setIsPaused(true)
+      handlePause()
     } else if (playing && selected?.id === mc.id && isPaused) {
-      window.speechSynthesis?.resume()
-      setIsPaused(false)
+      handleResume()
     } else {
       handlePlay(mc)
     }
-  }, [playing, selected, isPaused, stopMasterclass, handlePlay])
+  }, [playing, selected, isPaused, loadingMasterclass, stopMasterclass, handlePlay, handlePause, handleResume])
 
   const handleStop = useCallback(() => {
     stopMasterclass()
@@ -262,9 +291,12 @@ export default function MasterclassPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => handleSelect(selected)}
-                className="flex-1 py-3 rounded-xl bg-accent-blue text-white font-semibold flex items-center justify-center gap-2 active:scale-95"
+                disabled={loadingMasterclass === selected.id}
+                className="flex-1 py-3 rounded-xl bg-accent-blue text-white font-semibold flex items-center justify-center gap-2 active:scale-95 disabled:opacity-70"
               >
-                {playing && !isPaused ? (
+                {loadingMasterclass === selected.id ? (
+                  <>Preparando...</>
+                ) : playing && !isPaused ? (
                   <>
                     <Pause className="w-5 h-5" /> Pausar
                   </>
@@ -276,9 +308,9 @@ export default function MasterclassPage() {
               </button>
               <button
                 onClick={handleStop}
-                className="py-3 px-4 rounded-xl bg-white/10 text-text-secondary font-medium active:scale-95"
+                className="py-3 px-4 rounded-xl bg-rose-500/20 text-rose-400 font-medium active:scale-95"
               >
-                Parar
+                <Square className="w-5 h-5 inline mr-1" /> Parar
               </button>
             </div>
           </div>

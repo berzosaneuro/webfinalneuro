@@ -2,9 +2,12 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
+import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad } from '@/lib/audio-utils'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
 import { Play, Pause, Headphones, Clock, Square } from 'lucide-react'
+
+type AmbientRef = { ctx: AudioContext; gain: GainNode; oscs: OscillatorNode[]; stop: () => void } | null
 
 type Episode = {
   id: number
@@ -43,16 +46,29 @@ const categories = ['Todos', 'Neurociencia', 'Consciencia', 'Emociones', 'Presen
 
 export default function PodcastPage() {
   const [playing, setPlaying] = useState<number | null>(null)
+  const [loadingEpisode, setLoadingEpisode] = useState<number | null>(null)
   const [isPaused, setIsPaused] = useState(false)
   const [filter, setFilter] = useState('Todos')
   const genRef = useRef(0)
+  const ttsAudioRef = useRef<{ audio: HTMLAudioElement; url?: string; voiceRefs?: import('@/lib/audio-utils').VoiceRefs } | null>(null)
+  const ambientRef = useRef<AmbientRef>(null)
 
   const filtered = filter === 'Todos' ? episodes : episodes.filter(e => e.category === filter)
 
   const stopPodcast = useCallback(() => {
     window.speechSynthesis?.cancel()
+    const ref = ttsAudioRef.current
+    ttsAudioRef.current = null
+    if (ambientRef.current) {
+      ambientRef.current.stop()
+      ambientRef.current = null
+    }
     setPlaying(null)
+    setLoadingEpisode(null)
     setIsPaused(false)
+    if (ref) {
+      stopVoiceWithFadeOut(ref.audio, ref.voiceRefs ?? null, ref.url, () => {})
+    }
   }, [])
 
   useEffect(() => {
@@ -66,12 +82,16 @@ export default function PodcastPage() {
     }
   }, [stopPodcast])
 
-  const handlePlay = useCallback((ep: Episode) => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return
-    window.speechSynthesis.cancel()
+  const startTTS = useCallback((ep: Episode) => {
+    if (!window.speechSynthesis || !ep.script) return
     const gen = ++genRef.current
     const lines = ep.script.split(/[.!?]\s+/).map(s => s.trim()).filter(Boolean)
     let i = 0
+    const getVoice = () => {
+      const voices = window.speechSynthesis.getVoices()
+      return voices.find(v => v.lang.startsWith('es') && (v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Jorge') || v.name.includes('female')))
+        || voices.find(v => v.lang.startsWith('es'))
+    }
     const next = () => {
       if (genRef.current !== gen) return
       if (i >= lines.length) { stopPodcast(); return }
@@ -80,33 +100,88 @@ export default function PodcastPage() {
       utt.rate = 0.78
       utt.pitch = 0.95
       utt.volume = 1
-      const voices = window.speechSynthesis.getVoices()
-      const es = voices.find(v => v.lang.startsWith('es') && (v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Jorge') || v.name.includes('female')))
-        || voices.find(v => v.lang.startsWith('es'))
+      const es = getVoice()
       if (es) utt.voice = es
       utt.onend = next
       window.speechSynthesis.speak(utt)
     }
+    if (getVoice()) {
+      next()
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.onvoiceschanged = null
+        if (genRef.current === gen) next()
+      }
+      setTimeout(() => {
+        if (genRef.current === gen && !window.speechSynthesis.speaking) next()
+      }, 500)
+    }
+  }, [stopPodcast])
+
+  const handlePlay = useCallback(async (ep: Episode) => {
+    if (typeof window === 'undefined') return
+    stopPodcast()
+    claimAndPlay('podcast', stopPodcast)
+    window.speechSynthesis?.cancel()
+    const thisGen = ++genRef.current
     setPlaying(ep.id)
+    setLoadingEpisode(ep.id)
     setIsPaused(false)
-    next()
-  }, [])
+
+    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+    const pad = createAmbientPad(ctx, 0.2)
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {})
+    ambientRef.current = { ...pad, ctx }
+
+    try {
+      const res = await fetch('/api/elevenlabs/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: ep.script }),
+      })
+      if (genRef.current !== thisGen) return
+      if (!res.ok) throw new Error(String(res.status))
+      const contentType = res.headers.get('content-type') || ''
+      if (!contentType.includes('audio')) throw new Error('Respuesta no es audio')
+      const blob = await res.blob()
+      if (genRef.current !== thisGen) return
+      const url = URL.createObjectURL(blob)
+      const audio = new Audio(url)
+      audio.onended = () => stopPodcast()
+      audio.onerror = () => stopPodcast()
+      setLoadingEpisode(null)
+      if (genRef.current !== thisGen) return
+      const voiceRefs = await playAudioWithFadeIn(audio)
+      if (genRef.current !== thisGen) return
+      ttsAudioRef.current = { audio, url, voiceRefs }
+    } catch {
+      if (genRef.current !== thisGen) return
+      setLoadingEpisode(null)
+      if (window.speechSynthesis) startTTS(ep)
+      else stopPodcast()
+    }
+  }, [stopPodcast, startTTS])
 
   const handleStop = useCallback(() => {
     stopPodcast()
   }, [stopPodcast])
 
   const handlePause = useCallback(() => {
-    window.speechSynthesis?.pause()
+    if (ttsAudioRef.current) ttsAudioRef.current.audio.pause()
+    else window.speechSynthesis?.pause()
+    if (ambientRef.current) ambientRef.current.gain.gain.setTargetAtTime(0, ambientRef.current.ctx.currentTime, 0.1)
     setIsPaused(true)
   }, [])
 
   const handleResume = useCallback(() => {
-    window.speechSynthesis?.resume()
+    if (ttsAudioRef.current) ttsAudioRef.current.audio.play().catch(() => {})
+    else window.speechSynthesis?.resume()
+    if (ambientRef.current) ambientRef.current.gain.gain.setTargetAtTime(0.2, ambientRef.current.ctx.currentTime, 0.1)
     setIsPaused(false)
   }, [])
 
   const handleEpisodeClick = (ep: Episode) => {
+    if (loadingEpisode === ep.id) return
     const isActive = playing === ep.id
     if (isActive && !isPaused) handlePause()
     else if (isActive && isPaused) handleResume()
@@ -185,7 +260,9 @@ export default function PodcastPage() {
                     {isActive && (
                       <div className="mt-3 pt-3 border-t border-white/5 space-y-2">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-accent-blue text-[10px] font-medium">{isPausedEp ? 'En pausa' : 'Reproduciendo...'}</span>
+                          <span className="text-accent-blue text-[10px] font-medium">
+                            {loadingEpisode === ep.id ? 'Preparando audio...' : isPausedEp ? 'En pausa' : 'Reproduciendo...'}
+                          </span>
                           <button
                             onClick={handleStop}
                             className="flex items-center gap-1 px-2 py-1 rounded-lg bg-rose-500/20 text-rose-400 text-[10px] font-medium active:scale-95"

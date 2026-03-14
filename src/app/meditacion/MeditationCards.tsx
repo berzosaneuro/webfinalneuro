@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
+import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad as createSharedAmbientPad } from '@/lib/audio-utils'
 import PremiumLock from '@/components/PremiumLock'
 import PremiumBadge from '@/components/PremiumBadge'
 import { Brain, Timer, Moon, Crosshair, Play, Pause, Square, Heart, Shield, Wind, Eye, Sun, Zap, Target, Clock, Tag, Leaf, Sparkles, Hand, Lightbulb } from 'lucide-react'
@@ -94,17 +95,19 @@ function getDurationRange(filter: string): [number, number] {
   }
 }
 
-function MeditationCard({ m, playing, isPaused, onPlay, onPause, onResume, onStop }: {
+function MeditationCard({ m, playing, isPaused, loadingAudio, onPlay, onPause, onResume, onStop }: {
   m: Meditation
   playing: string | null
   isPaused: boolean
+  loadingAudio: string | null
   onPlay: (m: Meditation) => void
   onPause: () => void
   onResume: () => void
   onStop: () => void
 }) {
   const isActive = playing === m.title
-  const isCurrentlyPlaying = isActive && !isPaused
+  const isLoading = loadingAudio === m.title
+  const isCurrentlyPlaying = isActive && !isPaused && !isLoading
   return (
     <div className="glass rounded-2xl p-4 flex flex-col card-hover">
       <div className="flex items-start justify-between mb-3">
@@ -120,26 +123,30 @@ function MeditationCard({ m, playing, isPaused, onPlay, onPause, onResume, onSto
       <p className="text-text-secondary text-xs mb-3 flex-1 line-clamp-2">{m.description}</p>
       {isActive && (
         <div className="flex items-center gap-1.5 mb-2">
-          <span className={`w-1.5 h-1.5 rounded-full ${isCurrentlyPlaying ? 'bg-accent-blue animate-pulse' : 'bg-white/30'}`} />
-          <span className="text-accent-blue text-[10px]">{isCurrentlyPlaying ? 'Reproduciendo...' : 'En pausa'}</span>
+          <span className={`w-1.5 h-1.5 rounded-full ${isLoading ? 'bg-accent-amber animate-pulse' : isCurrentlyPlaying ? 'bg-accent-blue animate-pulse' : 'bg-white/30'}`} />
+          <span className="text-accent-blue text-[10px]">{isLoading ? 'Preparando audio...' : isCurrentlyPlaying ? 'Reproduciendo...' : 'En pausa'}</span>
         </div>
       )}
       <div className="flex gap-2">
         <button
           onClick={() => {
+            if (isLoading) return
             if (isCurrentlyPlaying) onPause()
             else if (isActive && isPaused) onResume()
             else onPlay(m)
           }}
-          className={`flex items-center justify-center gap-2 flex-1 py-2 rounded-xl text-xs font-medium transition-all active:scale-95 ${
+          disabled={isLoading}
+          className={`flex items-center justify-center gap-2 flex-1 py-2 rounded-xl text-xs font-medium transition-all active:scale-95 disabled:opacity-70 disabled:cursor-wait ${
             isActive ? 'bg-white/10 text-white' : 'bg-white/5 text-white'
           }`}
         >
-          {isCurrentlyPlaying
-            ? <><Pause className="w-3.5 h-3.5" /> Pausar</>
-            : isActive && isPaused
-              ? <><Play className="w-3.5 h-3.5" /> Reanudar</>
-              : <><Play className="w-3.5 h-3.5" /> Reproducir</>}
+          {isLoading
+            ? <><Play className="w-3.5 h-3.5 animate-pulse" /> Preparando...</>
+            : isCurrentlyPlaying
+              ? <><Pause className="w-3.5 h-3.5" /> Pausar</>
+              : isActive && isPaused
+                ? <><Play className="w-3.5 h-3.5" /> Reanudar</>
+                : <><Play className="w-3.5 h-3.5" /> Reproducir</>}
         </button>
         {isActive && (
           <button
@@ -157,24 +164,9 @@ function MeditationCard({ m, playing, isPaused, onPlay, onPause, onResume, onSto
 
 type AmbientRef = { type: 'file'; audio: HTMLAudioElement } | { type: 'synth'; ctx: AudioContext; gain: GainNode; oscs: OscillatorNode[] } | null
 
-function createAmbientPad(ctx: AudioContext): { gain: GainNode; oscs: OscillatorNode[] } {
-  const gain = ctx.createGain()
-  gain.gain.value = 0.28
-  gain.connect(ctx.destination)
-  const freqs = [65.41, 82.41, 98, 130.81, 164.81]
-  const oscs: OscillatorNode[] = []
-  freqs.forEach((f, i) => {
-    const osc = ctx.createOscillator()
-    osc.type = 'triangle'
-    osc.frequency.value = f
-    const g = ctx.createGain()
-    g.gain.value = 0.3 / (i + 1)
-    osc.connect(g)
-    g.connect(gain)
-    osc.start()
-    oscs.push(osc)
-  })
-  return { gain, oscs }
+function createMeditationAmbientPad(ctx: AudioContext): { gain: GainNode; oscs: OscillatorNode[] } {
+  const pad = createSharedAmbientPad(ctx, 0.22)
+  return { gain: pad.gain, oscs: pad.oscs }
 }
 
 const DEFAULT_TRACKS = [
@@ -212,11 +204,11 @@ function stopAmbient(ambient: AmbientRef) {
     ambient.audio.pause()
     ambient.audio.currentTime = 0
   } else {
-    ambient.gain.gain.setTargetAtTime(0, ambient.ctx.currentTime, 0.3)
-    ambient.oscs.forEach(o => {
-      try { o.stop(ambient.ctx.currentTime + 0.5) } catch { /* ignore */ }
-    })
-    try { ambient.ctx.close() } catch { /* ignore */ }
+    ambient.gain.gain.setTargetAtTime(0, ambient.ctx.currentTime, 0.04)
+    setTimeout(() => {
+      ambient.oscs.forEach(o => { try { o.stop(ambient.ctx.currentTime) } catch { /* ignore */ } })
+      try { ambient.ctx.close() } catch { /* ignore */ }
+    }, 130)
   }
 }
 
@@ -226,14 +218,18 @@ function pauseAmbient(ambient: AmbientRef) {
   else ambient.gain.gain.setTargetAtTime(0, ambient.ctx.currentTime, 0.1)
 }
 
+const AMBIENT_VOLUME = 0.22
+
 function resumeAmbient(ambient: AmbientRef) {
   if (!ambient) return
   if (ambient.type === 'file') ambient.audio.play().catch(() => {})
-  else ambient.gain.gain.setTargetAtTime(0.28, ambient.ctx.currentTime, 0.1)
+  else ambient.gain.gain.setTargetAtTime(AMBIENT_VOLUME, ambient.ctx.currentTime, 0.1)
 }
+
 
 export default function MeditationCards() {
   const [playing, setPlaying] = useState<string | null>(null)
+  const [loadingAudio, setLoadingAudio] = useState<string | null>(null)
   const [isPaused, setIsPaused] = useState(false)
   const [themeFilter, setThemeFilter] = useState('Todas')
   const [durationFilter, setDurationFilter] = useState('Todas')
@@ -241,25 +237,25 @@ export default function MeditationCards() {
   const generationRef = useRef(0)
   const ambientRef = useRef<AmbientRef>(null)
   const playIdRef = useRef(0)
-  const ttsAudioRef = useRef<{ audio: HTMLAudioElement; url?: string } | null>(null)
+  const ttsAudioRef = useRef<{ audio: HTMLAudioElement; url?: string; voiceRefs?: import('@/lib/audio-utils').VoiceRefs } | null>(null)
 
   useEffect(() => {
     getAmbientTracks().then(setAmbientTracks)
   }, [])
 
   const stopMeditation = useCallback(() => {
+    setLoadingAudio(null)
     playIdRef.current = 0
     if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
-    if (ttsAudioRef.current) {
-      ttsAudioRef.current.audio.pause()
-      ttsAudioRef.current.audio.src = ''
-      if (ttsAudioRef.current.url) URL.revokeObjectURL(ttsAudioRef.current.url)
-      ttsAudioRef.current = null
-    }
+    const ref = ttsAudioRef.current
+    ttsAudioRef.current = null
     stopAmbient(ambientRef.current)
     ambientRef.current = null
     setPlaying(null)
     setIsPaused(false)
+    if (ref) {
+      stopVoiceWithFadeOut(ref.audio, ref.voiceRefs ?? null, ref.url, () => {})
+    }
   }, [])
 
   useEffect(() => {
@@ -326,7 +322,7 @@ export default function MeditationCards() {
           try { ctx.close() } catch {}
           return
         }
-        const { gain, oscs } = createAmbientPad(ctx)
+        const { gain, oscs } = createMeditationAmbientPad(ctx)
         if (playIdRef.current !== thisPlayId) {
           gain.gain.setTargetAtTime(0, ctx.currentTime, 0.1)
           oscs.forEach(o => { try { o.stop() } catch {} })
@@ -342,6 +338,7 @@ export default function MeditationCards() {
 
     const tryElevenLabs = async () => {
       setPlaying(m.title)
+      setLoadingAudio(m.title)
       setIsPaused(false)
       try {
         const res = await fetch('/api/elevenlabs/tts', {
@@ -357,13 +354,17 @@ export default function MeditationCards() {
         if (playIdRef.current !== thisPlayId) return
         const url = URL.createObjectURL(blob)
         const audio = new Audio(url)
-        ttsAudioRef.current = { audio, url }
         audio.volume = 1
         audio.onended = () => stopMeditation()
         audio.onerror = () => stopMeditation()
-        await audio.play()
+        setLoadingAudio(null)
+        if (playIdRef.current !== thisPlayId) return
+        const voiceRefs = await playAudioWithFadeIn(audio)
+        if (playIdRef.current !== thisPlayId) return
+        ttsAudioRef.current = { audio, url, voiceRefs }
       } catch {
         if (playIdRef.current !== thisPlayId) return
+        setLoadingAudio(null)
         startTTS(m)
       }
     }
@@ -462,10 +463,10 @@ export default function MeditationCards() {
         <div className="grid grid-cols-2 gap-3">
           {filtered.map((m) =>
             m.free ? (
-              <MeditationCard key={m.title} m={m} playing={playing} isPaused={isPaused} onPlay={handlePlay} onPause={handlePause} onResume={handleResume} onStop={stopMeditation} />
+              <MeditationCard key={m.title} m={m} playing={playing} isPaused={isPaused} loadingAudio={loadingAudio} onPlay={handlePlay} onPause={handlePause} onResume={handleResume} onStop={stopMeditation} />
             ) : (
               <PremiumLock key={m.title} label={m.title}>
-                <MeditationCard m={m} playing={playing} isPaused={isPaused} onPlay={handlePlay} onPause={handlePause} onResume={handleResume} onStop={stopMeditation} />
+                <MeditationCard m={m} playing={playing} isPaused={isPaused} loadingAudio={loadingAudio} onPlay={handlePlay} onPause={handlePause} onResume={handleResume} onStop={stopMeditation} />
               </PremiumLock>
             )
           )}
