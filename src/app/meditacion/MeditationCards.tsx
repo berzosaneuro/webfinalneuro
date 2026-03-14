@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
 import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad as createSharedAmbientPad, fetchElevenLabsTTS } from '@/lib/audio-utils'
 import { trackSessionStart, trackSessionComplete, trackSessionInterrupted } from '@/lib/session-tracking'
+import { recordActivity } from '@/lib/streak'
 import PremiumLock from '@/components/PremiumLock'
 import PremiumBadge from '@/components/PremiumBadge'
 import { Brain, Timer, Moon, Crosshair, Play, Pause, Square, Heart, Shield, Wind, Eye, Sun, Zap, Target, Clock, Tag, Leaf, Sparkles, Hand, Lightbulb } from 'lucide-react'
@@ -166,8 +167,22 @@ function MeditationCard({ m, playing, isPaused, loadingAudio, onPlay, onPause, o
 type AmbientRef = { type: 'file'; audio: HTMLAudioElement } | { type: 'synth'; ctx: AudioContext; gain: GainNode; oscs: OscillatorNode[] } | null
 
 function createMeditationAmbientPad(ctx: AudioContext): { gain: GainNode; oscs: OscillatorNode[] } {
-  const pad = createSharedAmbientPad(ctx, 0.22)
+  const pad = createSharedAmbientPad(ctx, 0.18)
   return { gain: pad.gain, oscs: pad.oscs }
+}
+
+/** Fade-in suave para música ambiental (evita pops/ruidos al inicio) */
+function fadeInAmbientMusic(audio: HTMLAudioElement, durationMs = 2500): void {
+  audio.volume = 0
+  const steps = 20
+  const stepMs = durationMs / steps
+  const stepVol = 0.25 / steps
+  let i = 0
+  const interval = setInterval(() => {
+    i++
+    audio.volume = Math.min(i * stepVol, 0.25)
+    if (i >= steps) clearInterval(interval)
+  }, stepMs)
 }
 
 const DEFAULT_TRACKS = [
@@ -193,9 +208,9 @@ function startAmbientMusic(tracks: string[], onFallback: () => void): AmbientRef
   const src = tracks[Math.floor(Math.random() * tracks.length)] || DEFAULT_TRACKS[0]
   const audio = new Audio(src)
   audio.loop = true
-  audio.volume = 0.28
+  audio.volume = 0
   audio.onerror = onFallback
-  audio.play().catch(onFallback)
+  audio.play().then(() => fadeInAmbientMusic(audio, 2500)).catch(onFallback)
   return { type: 'file', audio }
 }
 
@@ -295,12 +310,13 @@ export default function MeditationCards() {
     const next = () => {
       if (generationRef.current !== generation) return
       if (i >= lines.length) {
+        recordActivity()
         stopMeditation()
         return
       }
       const utt = new SpeechSynthesisUtterance(lines[i++])
       utt.lang = 'es-ES'
-      utt.rate = 0.55
+      utt.rate = 0.4
       utt.pitch = 0.92
       utt.volume = 1
       const esVoice = getVoice()
@@ -330,27 +346,37 @@ export default function MeditationCards() {
     const thisPlayId = ++playIdRef.current
     abortControllerRef.current = new AbortController()
     const signal = abortControllerRef.current.signal
-    const startAmbientPad = () => {
+    const startAmbient = () => {
       if (playIdRef.current !== thisPlayId) return
-      const ctx = new AudioContext()
-      const createPad = () => {
-        if (playIdRef.current !== thisPlayId) {
-          try { ctx.close() } catch {}
-          return
+      const fallbackToSynth = () => {
+        if (playIdRef.current !== thisPlayId) return
+        if (ambientRef.current?.type === 'file') {
+          stopAmbient(ambientRef.current)
+          ambientRef.current = null
         }
-        const { gain, oscs } = createMeditationAmbientPad(ctx)
-        if (playIdRef.current !== thisPlayId) {
-          gain.gain.setTargetAtTime(0, ctx.currentTime, 0.1)
-          oscs.forEach(o => { try { o.stop() } catch {} })
-          try { ctx.close() } catch {}
-          return
+        const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+        const createPad = () => {
+          if (playIdRef.current !== thisPlayId) {
+            try { ctx.close() } catch {}
+            return
+          }
+          const { gain, oscs } = createMeditationAmbientPad(ctx)
+          gain.gain.setTargetAtTime(0.18, ctx.currentTime, 0.5)
+          if (playIdRef.current !== thisPlayId) {
+            gain.gain.setTargetAtTime(0, ctx.currentTime, 0.1)
+            oscs.forEach(o => { try { o.stop() } catch {} })
+            try { ctx.close() } catch {}
+            return
+          }
+          ambientRef.current = { type: 'synth', ctx, gain, oscs }
         }
-        ambientRef.current = { type: 'synth', ctx, gain, oscs }
+        if (ctx.state === 'suspended') ctx.resume().then(createPad).catch(() => { try { ctx.close() } catch {} })
+        else createPad()
       }
-      if (ctx.state === 'suspended') ctx.resume().then(createPad).catch(() => { try { ctx.close() } catch {} })
-      else createPad()
+      const music = startAmbientMusic(ambientTracks, fallbackToSynth)
+      ambientRef.current = music
     }
-    startAmbientPad()
+    startAmbient()
 
     const tryElevenLabs = async () => {
       playingTitleRef.current = m.title
@@ -366,9 +392,11 @@ export default function MeditationCards() {
         const url = URL.createObjectURL(blob)
         const audio = new Audio(url)
         audio.volume = 1
+        audio.playbackRate = 0.88
         audio.onended = () => {
           const dur = playStartTimeRef.current > 0 ? Math.floor((Date.now() - playStartTimeRef.current) / 1000) : 0
           trackSessionComplete('meditation', m.title, dur)
+          recordActivity()
           stopMeditation()
         }
         audio.onerror = () => stopMeditation()

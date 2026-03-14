@@ -28,7 +28,9 @@ Herramientas de la app que puedes recomendar:
 - /ejercicios - Ejercicios de metacognición
 - En la página de inicio: "Entrenamiento N.E.U.R.O. del día" con ejercicio diario de metacognición (+10 NeuroScore al completar)
 
-PROGRESO DEL USUARIO: {{PROGRESS_CONTEXT}}`
+PROGRESO DEL USUARIO: {{PROGRESS_CONTEXT}}
+
+Puedes referenciar en tus respuestas (de forma natural, no forzada): la racha de entrenamiento mental, el estado de ánimo del check-in diario si lo ha hecho, si ha meditado hoy, y su progreso en retos o programa. Ejemplo: "Veo que llevas 5 días de entrenamiento mental. La consistencia es lo que cambia el cerebro."`
 
 // Smart local response system when no API key is available (first-person, Elías tone)
 const SMART_RESPONSES: Record<string, string[]> = {
@@ -86,6 +88,12 @@ function getSmartResponse(input: string, progressSummary: string): string {
 
   // Progress-aware defaults (first-person, Elías tone)
   const defaults: string[] = []
+  const streakMatch = progressSummary.match(/Racha de entrenamiento mental: (\d+)/)
+  if (streakMatch && parseInt(streakMatch[1], 10) >= 3) {
+    defaults.push(
+      `Veo que llevas ${streakMatch[1]} días seguidos entrenando tu mente. Eso es consistencia real. La neuroplasticidad necesita repetición, y la repetición necesita hábito. Sigue así.`
+    )
+  }
   if (progressSummary.includes('No ha completado el entrenamiento N.E.U.R.O.')) {
     defaults.push(
       'Hoy te propongo un pequeño entrenamiento mental. En la página de inicio verás la sección "Entrenamiento N.E.U.R.O. del día" con un ejercicio de metacognición específico para hoy. Complétalo y sumarás 10 puntos a tu NeuroScore.'

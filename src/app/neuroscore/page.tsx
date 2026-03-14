@@ -9,6 +9,9 @@ import Link from 'next/link'
 import EmailCapture from '@/components/EmailCapture'
 import { isCompletedToday } from '@/lib/daily-training'
 import { getAccumulatedScore, getCurrentLevel, getNextLevel, getPointsToNextLevel } from '@/lib/neuroscore-levels'
+import { getDisplayStreak } from '@/lib/streak'
+import { getMeditationCount, getTrainingDaysCount } from '@/lib/progress-stats'
+import DailyCheckin from '@/components/DailyCheckin'
 
 const STORAGE_KEY = 'neuroscore_data'
 
@@ -136,7 +139,7 @@ export default function NeuroScorePage() {
 
   const todayScore = calculateScore(todayLog)
   const maxScore = 110
-  const streak = calculateStreak(data.logs)
+  const streak = getDisplayStreak()
   const accumulatedScore = getAccumulatedScore(data.logs, calculateScore)
   const currentLevel = getCurrentLevel(accumulatedScore)
   const nextLevel = getNextLevel(accumulatedScore)
@@ -268,7 +271,7 @@ export default function NeuroScorePage() {
                   <Flame className={`w-5 h-5 ${streak > 0 ? 'text-orange-400' : 'text-text-muted'}`} />
                   <div>
                     <span className="text-white font-bold text-lg">{streak}</span>
-                    <span className="text-text-muted text-xs ml-1">días racha</span>
+                    <span className="text-text-muted text-xs ml-1">días de entrenamiento mental</span>
                   </div>
                 </div>
                 <div className="w-px h-8 bg-white/10" />
@@ -281,6 +284,46 @@ export default function NeuroScorePage() {
                 </div>
               </div>
             </div>
+          </FadeInSection>
+        </Container>
+      </section>
+
+      {/* Personal Progress Panel */}
+      <section className="pb-6">
+        <Container>
+          <FadeInSection>
+            <h2 className="font-heading font-semibold text-white text-lg mb-3">Tu progreso</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="glass rounded-2xl p-4">
+                <Brain className="w-5 h-5 text-accent-blue mb-1" />
+                <span className="text-white font-bold text-lg">{getMeditationCount()}</span>
+                <p className="text-text-muted text-[10px]">Meditaciones completadas</p>
+              </div>
+              <div className="glass rounded-2xl p-4">
+                <Target className="w-5 h-5 text-emerald-400 mb-1" />
+                <span className="text-white font-bold text-lg">{getTrainingDaysCount()}</span>
+                <p className="text-text-muted text-[10px]">Entrenamientos diarios</p>
+              </div>
+              <div className="glass rounded-2xl p-4">
+                <Flame className="w-5 h-5 text-orange-400 mb-1" />
+                <span className="text-white font-bold text-lg">{streak}</span>
+                <p className="text-text-muted text-[10px]">Racha actual</p>
+              </div>
+              <div className="glass rounded-2xl p-4">
+                <Trophy className="w-5 h-5 text-amber-400 mb-1" />
+                <span className="text-white font-bold text-lg">{currentLevel.name}</span>
+                <p className="text-text-muted text-[10px]">Nivel NeuroScore</p>
+              </div>
+            </div>
+          </FadeInSection>
+        </Container>
+      </section>
+
+      {/* Daily check-in */}
+      <section className="pb-6">
+        <Container>
+          <FadeInSection>
+            <DailyCheckin />
           </FadeInSection>
         </Container>
       </section>

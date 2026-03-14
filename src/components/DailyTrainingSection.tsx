@@ -10,6 +10,7 @@ import {
   isCompletedToday,
   NEUROSCORE_POINTS,
 } from '@/lib/daily-training'
+import { recordActivity } from '@/lib/streak'
 import { useUser } from '@/context/UserContext'
 
 const NEUROSCORE_KEY = 'neuroscore_data'
@@ -83,6 +84,7 @@ export default function DailyTrainingSection() {
     const newStreak = calculateStreak(newCompletions)
     saveDailyTraining({ completions: newCompletions, streak: newStreak })
     addTrainingToNeuroScore(user?.email)
+    recordActivity()
     setCompleted(true)
     setStreak(newStreak)
   }

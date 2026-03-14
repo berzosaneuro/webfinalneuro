@@ -5,6 +5,7 @@ import Container from '@/components/Container'
 import {
   Brain, Send, Sparkles, Wind, Moon, Sun, Eye
 } from 'lucide-react'
+import { getProgressContext } from '@/lib/elias-progress'
 
 type Message = {
   id: string
@@ -62,6 +63,7 @@ export default function IACoachPage() {
     setIsTyping(true)
 
     try {
+      const progress = getProgressContext()
       const res = await fetch('/api/ia-coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,6 +72,7 @@ export default function IACoachPage() {
             role: m.role,
             text: m.text,
           })),
+          progress: progress?.summary ?? 'Sin datos de progreso.',
         }),
       })
 

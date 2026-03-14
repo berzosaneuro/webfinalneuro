@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
 import { Flame, Trophy, Check, Lock, Brain, Eye, Heart, Wind, Zap, Moon, Target, Shield } from 'lucide-react'
+import { recordActivity } from '@/lib/streak'
 
 const STORAGE_KEY = 'neuro_retos'
 
@@ -147,6 +148,7 @@ export default function RetosPage() {
     const p = { ...progress, [id]: [...days, todayNum] }
     setProgress(p)
     saveProgress(p)
+    recordActivity()
   }
 
   const activeChallenge = challenges.find(c => c.id === active)

@@ -18,6 +18,8 @@ export type EliasProgressContext = {
   trainingCompletedToday: boolean
   neuroscoreLevel: string
   neuroscoreAccumulated: number
+  streak: number
+  dailyCheckinMood: string | null
   summary: string
 }
 
@@ -26,6 +28,8 @@ const TRAINING_KEY = 'neuro_training_daily'
 const PLAN7_KEY = 'plan7_data'
 const NEUROSCORE_KEY = 'neuroscore_data'
 const PROGRAMA_KEY = 'programa21_data'
+const STREAK_KEY = 'neuro_streak'
+const CHECKIN_KEY = 'neuro_daily_checkin'
 
 function getToday(): string {
   return new Date().toISOString().split('T')[0]
@@ -130,7 +134,30 @@ export function getProgressContext(): EliasProgressContext | null {
     }
   } catch {}
 
+  let streak = 0
+  try {
+    const raw = localStorage.getItem(STREAK_KEY)
+    if (raw) {
+      const data = JSON.parse(raw) as { currentStreak?: number; lastActivityDate?: string }
+      if (data.lastActivityDate) {
+        const gap = daysBetween(data.lastActivityDate, today)
+        if (gap <= 1) streak = data.currentStreak ?? 0
+      }
+    }
+  } catch {}
+
+  let dailyCheckinMood: string | null = null
+  try {
+    const raw = localStorage.getItem(CHECKIN_KEY)
+    if (raw) {
+      const data = JSON.parse(raw) as { date?: string; mood?: string }
+      if (data.date === today && data.mood) dailyCheckinMood = data.mood
+    }
+  } catch {}
+
   const parts: string[] = []
+  if (streak > 0) parts.push(`Racha de entrenamiento mental: ${streak} días consecutivos`)
+  if (dailyCheckinMood) parts.push(`Check-in de hoy: mente ${dailyCheckinMood}`)
   if (!meditatedToday) parts.push('No ha meditado hoy')
   else parts.push('Ya meditó hoy')
   if (meditationCountLast7Days > 0) parts.push(`${meditationCountLast7Days} sesiones de meditación en los últimos 7 días`)
@@ -180,6 +207,8 @@ export function getProgressContext(): EliasProgressContext | null {
     trainingCompletedToday,
     neuroscoreLevel,
     neuroscoreAccumulated,
+    streak,
+    dailyCheckinMood,
     summary: parts.length > 0 ? parts.join('. ') : 'Usuario nuevo o sin datos de progreso',
   }
 }

@@ -9,6 +9,7 @@ import {
   Check, ChevronRight, ArrowLeft, Play, Lock, Gift,
   Loader2, Send, Mail, Flame, Star
 } from 'lucide-react'
+import { recordActivity } from '@/lib/streak'
 
 const STORAGE_KEY = 'plan7_data'
 const SUB_KEY = 'plan7_subscribed'
@@ -186,6 +187,7 @@ export default function Plan7DiasPage() {
       completedAtMap: { ...data.completedAtMap, [dayNum]: completedAt },
     }
     save(newData)
+    recordActivity()
     setSelectedDay(null)
   }
 

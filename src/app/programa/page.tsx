@@ -7,6 +7,7 @@ import FadeInSection from '@/components/FadeInSection'
 import EmailCapture from '@/components/EmailCapture'
 import Link from 'next/link'
 import { Lock, Check, Play, ChevronRight, ArrowLeft, Brain, Eye, Wind, Heart, Zap, Target, Shield, Flame, Sun, Moon, Sparkles, Crown, Leaf, Users } from 'lucide-react'
+import { recordActivity } from '@/lib/streak'
 
 const STORAGE_KEY = 'programa21_data'
 
@@ -263,6 +264,7 @@ export default function ProgramaPage() {
     setData(newData)
     saveProgram(newData)
     syncToApi(newData)
+    recordActivity()
     setSelectedDay(null)
   }
 
