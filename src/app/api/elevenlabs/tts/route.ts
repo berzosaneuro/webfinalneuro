@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const ELEVENLABS_API = 'https://api.elevenlabs.io'
+const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
+const ELEVENLABS_MODEL_ID = process.env.ELEVENLABS_MODEL_ID || 'eleven_multilingual_v2'
+const ELEVENLABS_STABILITY = clamp(Number.isFinite(Number(process.env.ELEVENLABS_STABILITY)) ? Number(process.env.ELEVENLABS_STABILITY) : 0.5, 0, 1)
+const ELEVENLABS_SIMILARITY = clamp(Number.isFinite(Number(process.env.ELEVENLABS_SIMILARITY_BOOST)) ? Number(process.env.ELEVENLABS_SIMILARITY_BOOST) : 0.85, 0, 1)
+const ELEVENLABS_STYLE = clamp(Number.isFinite(Number(process.env.ELEVENLABS_STYLE)) ? Number(process.env.ELEVENLABS_STYLE) : 0.3, 0, 1)
+const ELEVENLABS_SPEAKER_BOOST = (process.env.ELEVENLABS_SPEAKER_BOOST || 'true') !== 'false'
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ELEVENLABS_API_KEY
@@ -34,8 +40,13 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         text: text.slice(0, 5000),
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.75, similarity_boost: 0.8 },
+        model_id: ELEVENLABS_MODEL_ID,
+        voice_settings: {
+          stability: ELEVENLABS_STABILITY,
+          similarity_boost: ELEVENLABS_SIMILARITY,
+          style: ELEVENLABS_STYLE,
+          use_speaker_boost: ELEVENLABS_SPEAKER_BOOST,
+        },
       }),
     })
 

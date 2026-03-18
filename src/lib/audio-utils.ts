@@ -8,10 +8,41 @@ export const FADE_OUT_MS = 120
 
 const FADE_IN_DURATION = FADE_IN_MS / 1000
 const FADE_OUT_DURATION = FADE_OUT_MS / 1000
+const TTS_CACHE_MAX_ITEMS = 40
 
 export type VoiceRefs = {
   ctx: AudioContext
   gain: GainNode
+}
+
+const ttsBlobCache = new Map<string, Blob>()
+
+function normalizeTtsText(text: string): string {
+  return text.trim().slice(0, 5000)
+}
+
+function getCachedTTS(key: string): Blob | null {
+  const cached = ttsBlobCache.get(key)
+  if (!cached) return null
+  // LRU simple: refresh insertion order on hit
+  ttsBlobCache.delete(key)
+  ttsBlobCache.set(key, cached)
+  return cached
+}
+
+function setCachedTTS(key: string, blob: Blob): void {
+  if (ttsBlobCache.has(key)) ttsBlobCache.delete(key)
+  ttsBlobCache.set(key, blob)
+  while (ttsBlobCache.size > TTS_CACHE_MAX_ITEMS) {
+    const oldest = ttsBlobCache.keys().next().value as string | undefined
+    if (!oldest) break
+    ttsBlobCache.delete(oldest)
+  }
+}
+
+/** Pre-warm cache without throwing (best-effort). */
+export function primeElevenLabsTTS(text: string): void {
+  void fetchElevenLabsTTS(text).catch(() => {})
 }
 
 /** Play HTMLAudioElement with smooth fade-in via Web Audio API. Returns refs for fade-out. Compatible con Safari/Chrome. */
@@ -45,6 +76,7 @@ export function stopVoiceWithFadeOut(
     voiceRefs.gain.gain.setTargetAtTime(0, voiceRefs.ctx.currentTime, FADE_OUT_DURATION * 0.4)
     setTimeout(() => {
       audio.pause()
+      audio.currentTime = 0
       audio.src = ''
       if (url) URL.revokeObjectURL(url)
       try { voiceRefs.ctx.close() } catch { /* ignore */ }
@@ -52,6 +84,7 @@ export function stopVoiceWithFadeOut(
     }, FADE_OUT_MS + 20)
   } else {
     audio.pause()
+    audio.currentTime = 0
     audio.src = ''
     if (url) URL.revokeObjectURL(url)
     onCleanup()
@@ -95,6 +128,12 @@ export async function fetchElevenLabsTTS(
   text: string,
   options?: { signal?: AbortSignal; timeoutMs?: number }
 ): Promise<Blob> {
+  const normalizedText = normalizeTtsText(text)
+  if (!normalizedText) throw new Error('Texto vacío para ElevenLabs')
+
+  const cached = getCachedTTS(normalizedText)
+  if (cached) return cached
+
   const controller = new AbortController()
   const timeoutMs = options?.timeoutMs ?? ELEVENLABS_TIMEOUT_MS
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
@@ -109,7 +148,7 @@ export async function fetchElevenLabsTTS(
     const res = await fetch('/api/elevenlabs/tts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: text.slice(0, 5000) }),
+      body: JSON.stringify({ text: normalizedText }),
       signal: controller.signal,
     })
     if (!res.ok) {
@@ -120,7 +159,9 @@ export async function fetchElevenLabsTTS(
     if (!contentType.includes('audio')) {
       throw new Error(`Respuesta inválida de ElevenLabs (${contentType || 'sin content-type'})`)
     }
-    return await res.blob()
+    const blob = await res.blob()
+    setCachedTTS(normalizedText, blob)
+    return blob
   } catch (error) {
     if (controller.signal.aborted) {
       throw new Error('Timeout o cancelación al obtener audio de ElevenLabs')

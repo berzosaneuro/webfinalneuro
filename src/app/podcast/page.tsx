@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
-import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad, fetchElevenLabsTTS } from '@/lib/audio-utils'
+import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad, fetchElevenLabsTTS, primeElevenLabsTTS } from '@/lib/audio-utils'
 import { trackSessionStart, trackSessionComplete, trackSessionInterrupted } from '@/lib/session-tracking'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
@@ -72,6 +72,12 @@ export default function PodcastPage() {
     if (ref) {
       stopVoiceWithFadeOut(ref.audio, ref.voiceRefs ?? null, ref.url, () => {})
     }
+  }, [])
+
+  useEffect(() => {
+    episodes.slice(0, 2).forEach((episode) => {
+      primeElevenLabsTTS(episode.script)
+    })
   }, [])
 
   useEffect(() => {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
-import { stopVoiceWithFadeOut, createAmbientPad, fetchElevenLabsTTS, playAudioWithFadeIn } from '@/lib/audio-utils'
+import { stopVoiceWithFadeOut, createAmbientPad, fetchElevenLabsTTS, playAudioWithFadeIn, primeElevenLabsTTS } from '@/lib/audio-utils'
 import { trackSessionStart, trackSessionComplete, trackSessionInterrupted } from '@/lib/session-tracking'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
@@ -147,11 +147,15 @@ export default function MasterclassPage() {
   const genRef = useRef(0)
   const ttsAudioRef = useRef<{ audio: HTMLAudioElement; url?: string; voiceRefs?: import('@/lib/audio-utils').VoiceRefs } | null>(null)
   const ambientRef = useRef<AmbientRef>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const playingMcRef = useRef<MasterClass | null>(null)
   const playStartTimeRef = useRef<number>(0)
 
   const stopMasterclass = useCallback(() => {
+    genRef.current += 1
+    abortControllerRef.current?.abort()
+    abortControllerRef.current = null
     const ref = ttsAudioRef.current
     ttsAudioRef.current = null
     if (ambientRef.current) {
@@ -173,6 +177,12 @@ export default function MasterclassPage() {
   }, [])
 
   useEffect(() => {
+    masterclasses.slice(0, 1).forEach((masterclass) => {
+      primeElevenLabsTTS(masterclass.script)
+    })
+  }, [])
+
+  useEffect(() => {
     return () => {
       unregister('masterclass')
       stopMasterclass()
@@ -184,6 +194,8 @@ export default function MasterclassPage() {
     stopMasterclass()
     claimAndPlay('masterclass', stopMasterclass)
     const thisGen = ++genRef.current
+    abortControllerRef.current = new AbortController()
+    const signal = abortControllerRef.current.signal
 
     playingMcRef.current = mc
     playStartTimeRef.current = Date.now()
@@ -202,8 +214,8 @@ export default function MasterclassPage() {
     }
 
     try {
-      const blob = await fetchElevenLabsTTS(mc.script)
-      if (genRef.current !== thisGen) return
+      const blob = await fetchElevenLabsTTS(mc.script, { signal })
+      if (genRef.current !== thisGen || signal.aborted) return
       const url = URL.createObjectURL(blob)
       const audio = new Audio(url)
       audio.onended = () => {
@@ -212,14 +224,14 @@ export default function MasterclassPage() {
       }
       audio.onerror = () => stopMasterclass()
       setLoadingMasterclass(null)
-      if (genRef.current !== thisGen) {
+      if (genRef.current !== thisGen || signal.aborted) {
         URL.revokeObjectURL(url)
         return
       }
 
       if (CtxClass) {
         const voiceRefs = await playAudioWithFadeIn(audio)
-        if (genRef.current !== thisGen) {
+        if (genRef.current !== thisGen || signal.aborted) {
           URL.revokeObjectURL(url)
           try { voiceRefs.ctx.close() } catch {}
           return
@@ -227,7 +239,7 @@ export default function MasterclassPage() {
         ttsAudioRef.current = { audio, url, voiceRefs }
       } else {
         await audio.play()
-        if (genRef.current !== thisGen) {
+        if (genRef.current !== thisGen || signal.aborted) {
           audio.pause()
           URL.revokeObjectURL(url)
           return
@@ -235,11 +247,11 @@ export default function MasterclassPage() {
         ttsAudioRef.current = { audio, url }
       }
     } catch (error) {
-      if (genRef.current !== thisGen) return
+      if (genRef.current !== thisGen || signal.aborted) return
       console.error('Fallo al reproducir masterclass con ElevenLabs:', error)
       stopMasterclass()
     } finally {
-      if (genRef.current === thisGen) setLoadingMasterclass(null)
+      if (genRef.current === thisGen && !signal.aborted) setLoadingMasterclass(null)
     }
   }, [stopMasterclass])
 

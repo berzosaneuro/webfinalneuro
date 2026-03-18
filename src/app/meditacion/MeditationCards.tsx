@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
-import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad as createSharedAmbientPad, fetchElevenLabsTTS } from '@/lib/audio-utils'
+import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad as createSharedAmbientPad, fetchElevenLabsTTS, primeElevenLabsTTS } from '@/lib/audio-utils'
 import { trackSessionStart, trackSessionComplete, trackSessionInterrupted } from '@/lib/session-tracking'
 import { recordActivity } from '@/lib/streak'
 import PremiumLock from '@/components/PremiumLock'
@@ -285,6 +285,12 @@ export default function MeditationCards() {
 
   useEffect(() => {
     getAmbientTracks().then(setAmbientTracks)
+  }, [])
+
+  useEffect(() => {
+    meditations.slice(0, 2).forEach((meditation) => {
+      if (meditation.script) primeElevenLabsTTS(meditation.script)
+    })
   }, [])
 
   const stopMeditation = useCallback((currentTitle?: string) => {
