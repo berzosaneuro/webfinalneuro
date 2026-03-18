@@ -25,32 +25,39 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'text es obligatorio' }, { status: 400 })
   }
 
-  const res = await fetch(`${ELEVENLABS_API}/v1/text-to-speech/${voiceId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'xi-api-key': apiKey,
-    },
-    body: JSON.stringify({
-      text: text.slice(0, 5000),
-      model_id: 'eleven_multilingual_v2',
-      voice_settings: { stability: 0.75, similarity_boost: 0.8 },
-    }),
-  })
+  try {
+    const res = await fetch(`${ELEVENLABS_API}/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'xi-api-key': apiKey,
+      },
+      body: JSON.stringify({
+        text: text.slice(0, 5000),
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.75, similarity_boost: 0.8 },
+      }),
+    })
 
-  if (!res.ok) {
-    const err = await res.text()
+    if (!res.ok) {
+      const err = await res.text()
+      return NextResponse.json(
+        { error: `ElevenLabs error: ${res.status} - ${err}` },
+        { status: res.status >= 500 ? 502 : res.status }
+      )
+    }
+
+    const audio = await res.arrayBuffer()
+    return new NextResponse(audio, {
+      headers: {
+        'Content-Type': 'audio/mpeg',
+        'Cache-Control': 'private, max-age=3600',
+      },
+    })
+  } catch {
     return NextResponse.json(
-      { error: `ElevenLabs error: ${res.status} - ${err}` },
-      { status: res.status >= 500 ? 502 : res.status }
+      { error: 'No se pudo conectar con ElevenLabs' },
+      { status: 502 }
     )
   }
-
-  const audio = await res.arrayBuffer()
-  return new NextResponse(audio, {
-    headers: {
-      'Content-Type': 'audio/mpeg',
-      'Cache-Control': 'private, max-age=3600',
-    },
-  })
 }

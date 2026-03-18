@@ -24,16 +24,21 @@ export async function POST(request: Request) {
   const { email, nombre, source, data: extraData } = body
   const sourceFinal = source || 'registro'
 
-  if (!email) {
+  if (!email || typeof email !== 'string' || !email.trim()) {
     return NextResponse.json({ error: 'Email es obligatorio' }, { status: 400 })
   }
+  const emailNorm = email.trim().toLowerCase()
 
   // Upsert: if email exists, update source and data
-  const { data: existing } = await supabase
+  const { data: existing, error: lookupError } = await supabase
     .from('subscribers')
     .select('id, sources')
-    .eq('email', email)
-    .single()
+    .ilike('email', emailNorm)
+    .maybeSingle()
+
+  if (lookupError) {
+    return NextResponse.json({ error: lookupError.message }, { status: 500 })
+  }
 
   if (existing) {
     // Add new source to existing sources array
@@ -61,7 +66,7 @@ export async function POST(request: Request) {
 
   // New subscriber
   const { error } = await supabase.from('subscribers').insert({
-    email,
+    email: emailNorm,
     nombre: nombre || '',
     sources: [sourceFinal],
     extra_data: extraData || {},

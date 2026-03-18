@@ -8,6 +8,16 @@ import { useUser } from '@/context/UserContext'
 import FadeInSection from '@/components/FadeInSection'
 import { Brain, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 
+async function getApiError(response: Response): Promise<string> {
+  try {
+    const json = await response.json() as { error?: string }
+    if (json?.error) return json.error
+  } catch {
+    // ignore parse error
+  }
+  return `HTTP ${response.status}`
+}
+
 export default function AccederPage() {
   const router = useRouter()
   const { setUser } = useUser()
@@ -27,16 +37,21 @@ export default function AccederPage() {
 
     setLoading(true)
     try {
-      const email = form.email.trim()
+      const email = form.email.trim().toLowerCase()
       const nombre = email.split('@')[0] || 'Usuario'
-      await fetch('/api/users', {
+      const userRes = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        // Usuarios se guardan en la tabla `users` vía /api/users
         body: JSON.stringify({ email, nombre }),
       })
+      if (!userRes.ok) {
+        throw new Error(await getApiError(userRes))
+      }
       setUser({ email, nombre })
       router.push('/')
-    } catch {
+    } catch (err) {
+      console.error('Error de acceso:', err)
       setError('Error al acceder. Inténtalo de nuevo.')
     } finally {
       setLoading(false)

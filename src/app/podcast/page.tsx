@@ -60,7 +60,6 @@ export default function PodcastPage() {
   const filtered = filter === 'Todos' ? episodes : episodes.filter(e => e.category === filter)
 
   const stopPodcast = useCallback(() => {
-    window.speechSynthesis?.cancel()
     const ref = ttsAudioRef.current
     ttsAudioRef.current = null
     if (ambientRef.current) {
@@ -76,49 +75,9 @@ export default function PodcastPage() {
   }, [])
 
   useEffect(() => {
-    if (typeof window !== 'undefined') window.speechSynthesis?.getVoices()
-    const loadVoices = () => window.speechSynthesis?.getVoices()
-    window.speechSynthesis?.addEventListener?.('voiceschanged', loadVoices)
     return () => {
-      window.speechSynthesis?.removeEventListener?.('voiceschanged', loadVoices)
       unregister('podcast')
       stopPodcast()
-    }
-  }, [stopPodcast])
-
-  const startTTS = useCallback((ep: Episode) => {
-    if (!window.speechSynthesis || !ep.script) return
-    const gen = ++genRef.current
-    const lines = ep.script.split(/[.!?]\s+/).map(s => s.trim()).filter(Boolean)
-    let i = 0
-    const getVoice = () => {
-      const voices = window.speechSynthesis.getVoices()
-      return voices.find(v => v.lang.startsWith('es') && (v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Jorge') || v.name.includes('female')))
-        || voices.find(v => v.lang.startsWith('es'))
-    }
-    const next = () => {
-      if (genRef.current !== gen) return
-      if (i >= lines.length) { stopPodcast(); return }
-      const utt = new SpeechSynthesisUtterance(lines[i] + '.')
-      utt.lang = 'es-ES'
-      utt.rate = 0.78
-      utt.pitch = 0.95
-      utt.volume = 1
-      const es = getVoice()
-      if (es) utt.voice = es
-      utt.onend = next
-      window.speechSynthesis.speak(utt)
-    }
-    if (getVoice()) {
-      next()
-    } else {
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.onvoiceschanged = null
-        if (genRef.current === gen) next()
-      }
-      setTimeout(() => {
-        if (genRef.current === gen && !window.speechSynthesis.speaking) next()
-      }, 500)
     }
   }, [stopPodcast])
 
@@ -126,7 +85,6 @@ export default function PodcastPage() {
     if (typeof window === 'undefined') return
     stopPodcast()
     claimAndPlay('podcast', stopPodcast)
-    window.speechSynthesis?.cancel()
     const thisGen = ++genRef.current
     abortControllerRef.current = new AbortController()
     const signal = abortControllerRef.current.signal
@@ -138,21 +96,16 @@ export default function PodcastPage() {
     setIsPaused(false)
 
     const CtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-    if (!CtxClass) {
-      setLoadingEpisode(null)
-      if (window.speechSynthesis) startTTS(ep)
-      else stopPodcast()
-      return
+    if (CtxClass) {
+      const ctx = new CtxClass()
+      if (ctx.state === 'suspended') await ctx.resume()
+      const pad = createAmbientPad(ctx, 0.2)
+      ambientRef.current = { ...pad, ctx }
     }
-    const ctx = new CtxClass()
-    if (ctx.state === 'suspended') await ctx.resume()
-    const pad = createAmbientPad(ctx, 0.2)
-    ambientRef.current = { ...pad, ctx }
 
     try {
       const blob = await fetchElevenLabsTTS(ep.script, { signal })
       if (genRef.current !== thisGen || signal.aborted) return
-      if (!blob) throw new Error('ElevenLabs fallback')
       const url = URL.createObjectURL(blob)
       const audio = new Audio(url)
       audio.onended = () => {
@@ -165,20 +118,29 @@ export default function PodcastPage() {
         URL.revokeObjectURL(url)
         return
       }
-      const voiceRefs = await playAudioWithFadeIn(audio)
-      if (genRef.current !== thisGen || signal.aborted) {
-        URL.revokeObjectURL(url)
-        try { voiceRefs.ctx.close() } catch {}
-        return
+      if (CtxClass) {
+        const voiceRefs = await playAudioWithFadeIn(audio)
+        if (genRef.current !== thisGen || signal.aborted) {
+          URL.revokeObjectURL(url)
+          try { voiceRefs.ctx.close() } catch {}
+          return
+        }
+        ttsAudioRef.current = { audio, url, voiceRefs }
+      } else {
+        await audio.play()
+        if (genRef.current !== thisGen || signal.aborted) {
+          audio.pause()
+          URL.revokeObjectURL(url)
+          return
+        }
+        ttsAudioRef.current = { audio, url }
       }
-      ttsAudioRef.current = { audio, url, voiceRefs }
-    } catch {
+    } catch (error) {
       if (genRef.current !== thisGen || signal.aborted) return
-      setLoadingEpisode(null)
-      if (window.speechSynthesis) startTTS(ep)
-      else stopPodcast()
+      console.error('Fallo al reproducir podcast con ElevenLabs:', error)
+      stopPodcast()
     }
-  }, [stopPodcast, startTTS])
+  }, [stopPodcast])
 
   const handleStop = useCallback(() => {
     stopPodcast()
@@ -186,14 +148,12 @@ export default function PodcastPage() {
 
   const handlePause = useCallback(() => {
     if (ttsAudioRef.current) ttsAudioRef.current.audio.pause()
-    else window.speechSynthesis?.pause()
     if (ambientRef.current) ambientRef.current.gain.gain.setTargetAtTime(0, ambientRef.current.ctx.currentTime, 0.1)
     setIsPaused(true)
   }, [])
 
   const handleResume = useCallback(() => {
     if (ttsAudioRef.current) ttsAudioRef.current.audio.play().catch(() => {})
-    else window.speechSynthesis?.resume()
     if (ambientRef.current) ambientRef.current.gain.gain.setTargetAtTime(0.2, ambientRef.current.ctx.currentTime, 0.1)
     setIsPaused(false)
   }, [])
@@ -256,6 +216,15 @@ export default function PodcastPage() {
                     <div className="flex items-start gap-3">
                       <button
                         onClick={() => handleEpisodeClick(ep)}
+                        aria-label={
+                          loadingEpisode === ep.id
+                            ? `Preparando episodio ${ep.title}`
+                            : !isActive
+                              ? `Reproducir episodio ${ep.title}`
+                              : isPausedEp
+                                ? `Reanudar episodio ${ep.title}`
+                                : `Pausar episodio ${ep.title}`
+                        }
                         className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all active:scale-90 ${
                           isActive ? 'bg-accent-blue text-white' : 'bg-accent-blue/15 text-accent-blue'
                         }`}

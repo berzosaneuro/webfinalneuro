@@ -153,6 +153,7 @@ function MeditationCard({ m, playing, isPaused, loadingAudio, onPlay, onPause, o
         {isActive && (
           <button
             onClick={onStop}
+            aria-label={`Detener meditación ${m.title}`}
             className="py-2 px-3 rounded-xl text-xs font-medium bg-red-500/15 text-red-400 hover:bg-red-500/25 active:scale-95 transition-all"
             title="Detener"
           >
@@ -275,7 +276,6 @@ export default function MeditationCards() {
   const [themeFilter, setThemeFilter] = useState('Todas')
   const [durationFilter, setDurationFilter] = useState('Todas')
   const [ambientTracks, setAmbientTracks] = useState<string[]>(DEFAULT_TRACKS)
-  const generationRef = useRef(0)
   const ambientRef = useRef<AmbientRef>(null)
   const playIdRef = useRef(0)
   const abortControllerRef = useRef<AbortController | null>(null)
@@ -287,20 +287,11 @@ export default function MeditationCards() {
     getAmbientTracks().then(setAmbientTracks)
   }, [])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    window.speechSynthesis?.getVoices()
-    const loadVoices = () => window.speechSynthesis?.getVoices()
-    window.speechSynthesis?.addEventListener?.('voiceschanged', loadVoices)
-    return () => window.speechSynthesis?.removeEventListener?.('voiceschanged', loadVoices)
-  }, [])
-
   const stopMeditation = useCallback((currentTitle?: string) => {
     abortControllerRef.current?.abort()
     abortControllerRef.current = null
     setLoadingAudio(null)
     playIdRef.current = 0
-    if (typeof window !== 'undefined') window.speechSynthesis?.cancel()
     const ref = ttsAudioRef.current
     ttsAudioRef.current = null
     stopAmbient(ambientRef.current)
@@ -326,56 +317,10 @@ export default function MeditationCards() {
     }
   }, [stopMeditation])
 
-  const startTTS = useCallback((med: Meditation) => {
-    if (!window.speechSynthesis || !med.script) return
-    playingTitleRef.current = med.title
-    setPlaying(med.title)
-    setIsPaused(false)
-    const generation = ++generationRef.current
-    const lines = med.script.split('\n').map(s => s.trim()).filter(Boolean)
-    let i = 0
-    const getVoice = () => {
-      const voices = window.speechSynthesis.getVoices()
-      return voices.find(v => v.lang.startsWith('es') && (v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Microsoft') || v.name.includes('Google')))
-        || voices.find(v => v.lang.startsWith('es') && v.name.includes('female'))
-        || voices.find(v => v.lang.startsWith('es'))
-    }
-    const next = () => {
-      if (generationRef.current !== generation) return
-      if (i >= lines.length) {
-        recordActivity()
-        stopMeditation()
-        return
-      }
-      const utt = new SpeechSynthesisUtterance(lines[i++])
-      utt.lang = 'es-ES'
-      utt.rate = 0.4
-      utt.pitch = 0.92
-      utt.volume = 1
-      const esVoice = getVoice()
-      if (esVoice) utt.voice = esVoice
-      utt.onend = next
-      utt.onerror = () => { if (i >= lines.length) stopMeditation() }
-      window.speechSynthesis.speak(utt)
-    }
-    if (getVoice()) {
-      next()
-    } else {
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.onvoiceschanged = null
-        if (generationRef.current === generation) next()
-      }
-      setTimeout(() => {
-        if (generationRef.current === generation && !window.speechSynthesis.speaking) next()
-      }, 500)
-    }
-  }, [stopMeditation])
-
   const handlePlay = useCallback(async (m: Meditation) => {
     if (typeof window === 'undefined' || !m.script) return
     stopMeditation(playingTitleRef.current ?? undefined)
     claimAndPlay('meditation', () => stopMeditation(playingTitleRef.current ?? undefined))
-    window.speechSynthesis?.cancel()
     const thisPlayId = ++playIdRef.current
     abortControllerRef.current = new AbortController()
     const signal = abortControllerRef.current.signal
@@ -428,7 +373,6 @@ export default function MeditationCards() {
       try {
         const blob = await fetchElevenLabsTTS(m.script!, { signal })
         if (playIdRef.current !== thisPlayId || signal.aborted) return
-        if (!blob) throw new Error('ElevenLabs fallback')
         const url = URL.createObjectURL(blob)
         const audio = new Audio(url)
         audio.volume = 1
@@ -452,26 +396,24 @@ export default function MeditationCards() {
           return
         }
         ttsAudioRef.current = { audio, url, voiceRefs }
-      } catch {
+      } catch (error) {
         if (playIdRef.current !== thisPlayId || signal.aborted) return
-        setLoadingAudio(null)
-        startTTS(m)
+        console.error('Fallo al reproducir meditación con ElevenLabs:', error)
+        stopMeditation(m.title)
       }
     }
 
     tryElevenLabs()
-  }, [stopMeditation, startTTS, ambientTracks])
+  }, [stopMeditation, ambientTracks])
 
   const handlePause = useCallback(() => {
     if (ttsAudioRef.current) ttsAudioRef.current.audio.pause()
-    else window.speechSynthesis?.pause()
     pauseAmbient(ambientRef.current)
     setIsPaused(true)
   }, [])
 
   const handleResume = useCallback(() => {
     if (ttsAudioRef.current) ttsAudioRef.current.audio.play().catch(() => {})
-    else window.speechSynthesis?.resume()
     resumeAmbient(ambientRef.current)
     setIsPaused(false)
   }, [])

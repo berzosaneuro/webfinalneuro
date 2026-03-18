@@ -33,25 +33,32 @@ export async function POST(request: Request) {
   const nameVal = (nombre && typeof nombre === 'string' ? nombre.trim() : '') || emailNorm.split('@')[0] || 'Usuario'
 
   try {
-    const { data: existing } = await supabase
+    const { data: existing, error: lookupError } = await supabase
       .from('users')
       .select('id, nombre')
-      .eq('email', emailNorm)
-      .single()
+      .ilike('email', emailNorm)
+      .maybeSingle()
+
+    if (lookupError) {
+      return NextResponse.json({ error: lookupError.message }, { status: 500 })
+    }
 
     if (existing) {
-      await supabase
+      const { error: updateError } = await supabase
         .from('users')
         .update({ nombre: nameVal, last_login_at: new Date().toISOString() })
         .eq('id', existing.id)
-      return NextResponse.json({ ok: true, created: false })
+      if (updateError) {
+        return NextResponse.json({ error: updateError.message }, { status: 500 })
+      }
+      return NextResponse.json({ ok: true, created: false, table: 'users' })
     }
     const { error } = await supabase.from('users').insert({
       email: emailNorm,
       nombre: nameVal,
     })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ ok: true, created: true })
+    return NextResponse.json({ ok: true, created: true, table: 'users' })
   } catch {
     return NextResponse.json({ error: 'Servicio no disponible' }, { status: 503 })
   }

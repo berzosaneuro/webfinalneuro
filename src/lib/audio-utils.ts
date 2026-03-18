@@ -88,22 +88,21 @@ export function createAmbientPad(ctx: AudioContext, volume = 0.2): { gain: GainN
   return { gain, oscs, stop }
 }
 
-/** ElevenLabs TTS fetch with abort and timeout. Returns null on failure/abort. */
+/** ElevenLabs TTS fetch with abort and timeout. Throws on failure/abort. */
 const ELEVENLABS_TIMEOUT_MS = 45000
 
 export async function fetchElevenLabsTTS(
   text: string,
   options?: { signal?: AbortSignal; timeoutMs?: number }
-): Promise<Blob | null> {
+): Promise<Blob> {
   const controller = new AbortController()
   const timeoutMs = options?.timeoutMs ?? ELEVENLABS_TIMEOUT_MS
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
   const signal = options?.signal
   const onAbort = () => {
-    clearTimeout(timeoutId)
     controller.abort()
   }
-  if (signal?.aborted) return null
+  if (signal?.aborted) throw new Error('Solicitud cancelada')
   signal?.addEventListener('abort', onAbort, { once: true })
 
   try {
@@ -113,15 +112,25 @@ export async function fetchElevenLabsTTS(
       body: JSON.stringify({ text: text.slice(0, 5000) }),
       signal: controller.signal,
     })
-    clearTimeout(timeoutId)
-    signal?.removeEventListener('abort', onAbort)
-    if (!res.ok) return null
+    if (!res.ok) {
+      const detail = await res.text()
+      throw new Error(`ElevenLabs no disponible (${res.status}): ${detail || 'sin detalle'}`)
+    }
     const contentType = res.headers.get('content-type') || ''
-    if (!contentType.includes('audio')) return null
+    if (!contentType.includes('audio')) {
+      throw new Error(`Respuesta inválida de ElevenLabs (${contentType || 'sin content-type'})`)
+    }
     return await res.blob()
-  } catch {
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error('Timeout o cancelación al obtener audio de ElevenLabs')
+    }
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error('Error de red al obtener audio de ElevenLabs')
+  } finally {
     clearTimeout(timeoutId)
     signal?.removeEventListener('abort', onAbort)
-    return null
   }
 }

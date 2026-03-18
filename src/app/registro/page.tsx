@@ -8,6 +8,16 @@ import { useUser } from '@/context/UserContext'
 import FadeInSection from '@/components/FadeInSection'
 import { Brain, Mail, User, Lock, Eye, EyeOff, ArrowRight, Gift, Check } from 'lucide-react'
 
+async function getApiError(response: Response): Promise<string> {
+  try {
+    const json = await response.json() as { error?: string }
+    if (json?.error) return json.error
+  } catch {
+    // ignore parse error
+  }
+  return `HTTP ${response.status}`
+}
+
 export default function RegistroPage() {
   const router = useRouter()
   const { setUser } = useUser()
@@ -33,8 +43,8 @@ export default function RegistroPage() {
     setLoading(true)
     try {
       const nombre = form.nombre.trim()
-      const email = form.email.trim()
-      await Promise.all([
+      const email = form.email.trim().toLowerCase()
+      const [leadRes, subscriberRes, userRes] = await Promise.all([
         fetch('/api/leads', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -48,14 +58,25 @@ export default function RegistroPage() {
         fetch('/api/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          // Usuarios se guardan en la tabla `users` vía /api/users
           body: JSON.stringify({ email, nombre }),
         }),
       ])
+
+      const errors: string[] = []
+      if (!leadRes.ok) errors.push(`leads: ${await getApiError(leadRes)}`)
+      if (!subscriberRes.ok) errors.push(`subscribers: ${await getApiError(subscriberRes)}`)
+      if (!userRes.ok) errors.push(`users: ${await getApiError(userRes)}`)
+      if (errors.length > 0) {
+        throw new Error(errors.join(' | '))
+      }
+
       setUser({ nombre, email })
 
       setSuccess(true)
       setTimeout(() => router.push('/plan-7-dias'), 2000)
-    } catch {
+    } catch (err) {
+      console.error('Error de registro:', err)
       setError('Error al crear la cuenta. Inténtalo de nuevo.')
     } finally {
       setLoading(false)
