@@ -41,7 +41,4 @@ export function claimAndPlay(source: AudioSource, stop: StopCallback): void {
 /** Stop all audio globally */
 export function stopAll(): void {
   stopAllExcept()
-  if (typeof window !== 'undefined' && window.speechSynthesis) {
-    window.speechSynthesis.cancel()
-  }
 }

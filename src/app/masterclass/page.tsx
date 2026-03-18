@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
-import { stopVoiceWithFadeOut, createAmbientPad } from '@/lib/audio-utils'
-import { trackSessionInterrupted } from '@/lib/session-tracking'
+import { stopVoiceWithFadeOut, createAmbientPad, fetchElevenLabsTTS, playAudioWithFadeIn } from '@/lib/audio-utils'
+import { trackSessionStart, trackSessionComplete, trackSessionInterrupted } from '@/lib/session-tracking'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
 import PremiumLock from '@/components/PremiumLock'
@@ -152,7 +152,6 @@ export default function MasterclassPage() {
   const playStartTimeRef = useRef<number>(0)
 
   const stopMasterclass = useCallback(() => {
-    window.speechSynthesis?.cancel()
     const ref = ttsAudioRef.current
     ttsAudioRef.current = null
     if (ambientRef.current) {
@@ -174,65 +173,89 @@ export default function MasterclassPage() {
   }, [])
 
   useEffect(() => {
-    if (typeof window !== 'undefined') window.speechSynthesis?.getVoices()
-    const loadVoices = () => window.speechSynthesis?.getVoices()
-    window.speechSynthesis?.addEventListener?.('voiceschanged', loadVoices)
     return () => {
-      window.speechSynthesis?.removeEventListener?.('voiceschanged', loadVoices)
       unregister('masterclass')
       stopMasterclass()
     }
   }, [stopMasterclass])
 
-  const handlePlay = useCallback((mc: MasterClass) => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return
-    window.speechSynthesis.cancel()
-    const gen = ++genRef.current
-    const lines = mc.script.split(/[.!?]\s+/).map(s => s.trim()).filter(Boolean)
-    let i = 0
-    const next = () => {
-      if (genRef.current !== gen) return
-      if (i >= lines.length) {
-        setPlaying(false)
-        return
-      }
-      const utt = new SpeechSynthesisUtterance(lines[i] + '.')
-      utt.lang = 'es-ES'
-      utt.rate = 0.82
-      utt.pitch = 0.95
-      utt.volume = 1
-      const voices = window.speechSynthesis.getVoices()
-      const es = voices.find(v => v.lang.startsWith('es') && (v.name.includes('Paulina') || v.name.includes('Monica') || v.name.includes('Jorge') || v.name.includes('female')))
-        || voices.find(v => v.lang.startsWith('es'))
-      if (es) utt.voice = es
-      utt.onend = next
-      window.speechSynthesis.speak(utt)
-      i++
-    }
+  const handlePlay = useCallback(async (mc: MasterClass) => {
+    if (typeof window === 'undefined') return
+    stopMasterclass()
+    claimAndPlay('masterclass', stopMasterclass)
+    const thisGen = ++genRef.current
+
     playingMcRef.current = mc
     playStartTimeRef.current = Date.now()
+    trackSessionStart('masterclass', mc.title)
     setSelected(mc)
     setPlaying(true)
     setIsPaused(false)
-    next()
-  }, [])
+    setLoadingMasterclass(mc.id)
+
+    const CtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    if (CtxClass) {
+      const ctx = new CtxClass()
+      if (ctx.state === 'suspended') await ctx.resume()
+      const pad = createAmbientPad(ctx, 0.2)
+      ambientRef.current = { ...pad, ctx }
+    }
+
+    try {
+      const blob = await fetchElevenLabsTTS(mc.script)
+      if (genRef.current !== thisGen) return
+      const url = URL.createObjectURL(blob)
+      const audio = new Audio(url)
+      audio.onended = () => {
+        trackSessionComplete('masterclass', mc.title, Math.floor((Date.now() - playStartTimeRef.current) / 1000))
+        stopMasterclass()
+      }
+      audio.onerror = () => stopMasterclass()
+      setLoadingMasterclass(null)
+      if (genRef.current !== thisGen) {
+        URL.revokeObjectURL(url)
+        return
+      }
+
+      if (CtxClass) {
+        const voiceRefs = await playAudioWithFadeIn(audio)
+        if (genRef.current !== thisGen) {
+          URL.revokeObjectURL(url)
+          try { voiceRefs.ctx.close() } catch {}
+          return
+        }
+        ttsAudioRef.current = { audio, url, voiceRefs }
+      } else {
+        await audio.play()
+        if (genRef.current !== thisGen) {
+          audio.pause()
+          URL.revokeObjectURL(url)
+          return
+        }
+        ttsAudioRef.current = { audio, url }
+      }
+    } catch (error) {
+      if (genRef.current !== thisGen) return
+      console.error('Fallo al reproducir masterclass con ElevenLabs:', error)
+      stopMasterclass()
+    } finally {
+      if (genRef.current === thisGen) setLoadingMasterclass(null)
+    }
+  }, [stopMasterclass])
 
   const handlePause = useCallback(() => {
     if (ttsAudioRef.current) ttsAudioRef.current.audio.pause()
-    else window.speechSynthesis?.pause()
     if (ambientRef.current) ambientRef.current.gain.gain.setTargetAtTime(0, ambientRef.current.ctx.currentTime, 0.1)
     setIsPaused(true)
   }, [])
 
   const handleResume = useCallback(() => {
     if (ttsAudioRef.current) ttsAudioRef.current.audio.play().catch(() => {})
-    else window.speechSynthesis?.resume()
     if (ambientRef.current) ambientRef.current.gain.gain.setTargetAtTime(0.2, ambientRef.current.ctx.currentTime, 0.1)
     setIsPaused(false)
   }, [])
 
   const handleSelect = useCallback((mc: MasterClass) => {
-    claimAndPlay('masterclass', stopMasterclass)
     if (loadingMasterclass === mc.id) return
     if (playing && selected?.id === mc.id && !isPaused) {
       handlePause()
