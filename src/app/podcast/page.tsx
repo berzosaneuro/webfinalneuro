@@ -60,12 +60,21 @@ export default function PodcastPage() {
   const filtered = filter === 'Todos' ? episodes : episodes.filter(e => e.category === filter)
 
   const stopPodcast = useCallback(() => {
+    genRef.current += 1
+    abortControllerRef.current?.abort()
+    abortControllerRef.current = null
     const ref = ttsAudioRef.current
     ttsAudioRef.current = null
     if (ambientRef.current) {
       ambientRef.current.stop()
       ambientRef.current = null
     }
+    const ep = playingEpisodeRef.current
+    if (ep && playStartTimeRef.current > 0) {
+      trackSessionInterrupted('podcast', ep.title, Math.floor((Date.now() - playStartTimeRef.current) / 1000))
+    }
+    playingEpisodeRef.current = null
+    playStartTimeRef.current = 0
     setPlaying(null)
     setLoadingEpisode(null)
     setIsPaused(false)
@@ -116,6 +125,8 @@ export default function PodcastPage() {
       const audio = new Audio(url)
       audio.onended = () => {
         trackSessionComplete('podcast', ep.title, Math.floor((Date.now() - playStartTimeRef.current) / 1000))
+        playingEpisodeRef.current = null
+        playStartTimeRef.current = 0
         stopPodcast()
       }
       audio.onerror = () => stopPodcast()

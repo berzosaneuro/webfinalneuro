@@ -7,6 +7,38 @@ const ELEVENLABS_STABILITY = clamp(Number.isFinite(Number(process.env.ELEVENLABS
 const ELEVENLABS_SIMILARITY = clamp(Number.isFinite(Number(process.env.ELEVENLABS_SIMILARITY_BOOST)) ? Number(process.env.ELEVENLABS_SIMILARITY_BOOST) : 0.85, 0, 1)
 const ELEVENLABS_STYLE = clamp(Number.isFinite(Number(process.env.ELEVENLABS_STYLE)) ? Number(process.env.ELEVENLABS_STYLE) : 0.3, 0, 1)
 const ELEVENLABS_SPEAKER_BOOST = (process.env.ELEVENLABS_SPEAKER_BOOST || 'true') !== 'false'
+const TTS_SERVER_CACHE_LIMIT = 50
+const ttsServerCache = new Map<string, ArrayBuffer>()
+
+function getCacheKey(voiceId: string, text: string): string {
+  return [
+    voiceId,
+    ELEVENLABS_MODEL_ID,
+    ELEVENLABS_STABILITY,
+    ELEVENLABS_SIMILARITY,
+    ELEVENLABS_STYLE,
+    ELEVENLABS_SPEAKER_BOOST ? 1 : 0,
+    text.slice(0, 5000),
+  ].join('|')
+}
+
+function getCachedAudio(key: string): ArrayBuffer | null {
+  const cached = ttsServerCache.get(key)
+  if (!cached) return null
+  ttsServerCache.delete(key)
+  ttsServerCache.set(key, cached)
+  return cached
+}
+
+function setCachedAudio(key: string, bytes: ArrayBuffer): void {
+  if (ttsServerCache.has(key)) ttsServerCache.delete(key)
+  ttsServerCache.set(key, bytes)
+  while (ttsServerCache.size > TTS_SERVER_CACHE_LIMIT) {
+    const oldest = ttsServerCache.keys().next().value as string | undefined
+    if (!oldest) break
+    ttsServerCache.delete(oldest)
+  }
+}
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ELEVENLABS_API_KEY
@@ -30,6 +62,19 @@ export async function POST(req: NextRequest) {
   if (!text) {
     return NextResponse.json({ error: 'text es obligatorio' }, { status: 400 })
   }
+  const trimmedText = text.slice(0, 5000)
+  const cacheKey = getCacheKey(voiceId, trimmedText)
+  const cached = getCachedAudio(cacheKey)
+  if (cached) {
+    const cachedAudio = cached.slice(0)
+    return new NextResponse(cachedAudio, {
+      headers: {
+        'Content-Type': 'audio/mpeg',
+        'Cache-Control': 'private, max-age=3600',
+        'X-TTS-Cache': 'HIT',
+      },
+    })
+  }
 
   try {
     const res = await fetch(`${ELEVENLABS_API}/v1/text-to-speech/${voiceId}`, {
@@ -39,7 +84,7 @@ export async function POST(req: NextRequest) {
         'xi-api-key': apiKey,
       },
       body: JSON.stringify({
-        text: text.slice(0, 5000),
+        text: trimmedText,
         model_id: ELEVENLABS_MODEL_ID,
         voice_settings: {
           stability: ELEVENLABS_STABILITY,
@@ -59,10 +104,12 @@ export async function POST(req: NextRequest) {
     }
 
     const audio = await res.arrayBuffer()
+    setCachedAudio(cacheKey, audio.slice(0))
     return new NextResponse(audio, {
       headers: {
         'Content-Type': 'audio/mpeg',
         'Cache-Control': 'private, max-age=3600',
+        'X-TTS-Cache': 'MISS',
       },
     })
   } catch {

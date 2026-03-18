@@ -276,7 +276,7 @@ export default function MasterclassPage() {
     } else {
       handlePlay(mc)
     }
-  }, [playing, selected, isPaused, loadingMasterclass, stopMasterclass, handlePlay, handlePause, handleResume])
+  }, [playing, selected, isPaused, loadingMasterclass, handlePlay, handlePause, handleResume])
 
   const handleStop = useCallback(() => {
     stopMasterclass()
