@@ -1,0 +1,69 @@
+// Prisma schema — WhatsApp AI Assistant
+// Base de datos: SQLite para MVP. Cambiar provider a "postgresql" y DATABASE_URL
+// para migrar a PostgreSQL sin tocar el código de la app.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Contacto ─────────────────────────────────────────────────────────────────
+model Contact {
+  id            String         @id @default(uuid())
+  phone         String         @unique
+  name          String?
+  metadata      String?        // JSON serializado con datos extra del contacto
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  conversations Conversation[]
+}
+
+// ─── Conversación ─────────────────────────────────────────────────────────────
+model Conversation {
+  id               String    @id @default(uuid())
+  contactId        String
+  contact          Contact   @relation(fields: [contactId], references: [id])
+  // active | escalated | closed
+  status           String    @default("active")
+  escalatedAt      DateTime?
+  escalationReason String?
+  escalationTrigger String?  // user_request | low_confidence | frustration | consecutive_failures
+  failureCount     Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  messages         Message[]
+}
+
+// ─── Mensaje ──────────────────────────────────────────────────────────────────
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  // user | assistant
+  role           String
+  content        String
+  // saludo | consulta | queja | pedido | otro
+  messageType    String?
+  // 0.0 – 1.0 confianza de la clasificación
+  confidence     Float?
+  // Payload original serializado como JSON string
+  rawPayload     String?
+  sentAt         DateTime     @default(now())
+}
+
+// ─── Log de escalado ──────────────────────────────────────────────────────────
+model EscalationLog {
+  id             String   @id @default(uuid())
+  conversationId String
+  contactPhone   String
+  reason         String
+  trigger        String
+  resolvedAt     DateTime?
+  resolvedBy     String?
+  notes          String?
+  createdAt      DateTime @default(now())
+}
