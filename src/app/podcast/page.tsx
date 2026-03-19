@@ -57,10 +57,10 @@ const categories = ['Todos', 'Neurociencia', 'Consciencia', 'Emociones', 'Presen
 
 function getPodcastStaticCandidates(ep: Episode): string[] {
   return [
+    ...getGlobalVoiceStaticCandidates(),
     ...getStaticAudioCandidates('podcast', ep.title),
     ...getStaticAudioCandidates('podcast', `episodio_${ep.id}`),
     ...getStaticAudioCandidates('podcast', `podcast_${ep.id}`),
-    ...getGlobalVoiceStaticCandidates(),
   ]
 }
 

@@ -151,9 +151,9 @@ type AmbientRef = { ctx: AudioContext; gain: GainNode; oscs: OscillatorNode[]; s
 
 function getMasterclassStaticCandidates(mc: MasterClass): string[] {
   return [
+    ...getGlobalVoiceStaticCandidates(),
     ...getStaticAudioCandidates('masterclass', mc.id),
     ...getStaticAudioCandidates('masterclass', mc.title),
-    ...getGlobalVoiceStaticCandidates(),
   ]
 }
 

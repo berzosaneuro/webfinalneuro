@@ -88,10 +88,7 @@ export function getStaticAudioCandidates(section: 'meditacion' | 'podcast' | 'ma
   const slug = toAudioSlug(key)
   const keyCandidates = Array.from(new Set([
     slug,
-    humanKey,
-    humanKey.toLowerCase(),
     stripAccents(humanKey),
-    stripAccents(humanKey).toLowerCase(),
   ].filter(Boolean)))
   return keyCandidates.flatMap((candidate) => STATIC_AUDIO_EXTENSIONS.map((ext) => `/audio/${section}/${candidate}.${ext}`))
 }
@@ -117,7 +114,11 @@ async function probeStaticAudio(url: string): Promise<boolean> {
       setCachedStaticAudioAvailability(url, true)
       return true
     }
-    // Algunos entornos no resuelven HEAD para estáticos; probamos GET como respaldo.
+    if (head.status === 404) {
+      setCachedStaticAudioAvailability(url, false)
+      return false
+    }
+    // Algunos entornos no resuelven HEAD para estáticos (ej. 405); probamos GET como respaldo.
     const get = await fetch(url, {
       method: 'GET',
       cache: 'force-cache',
