@@ -21,9 +21,13 @@ function getTransporter() {
   })
 }
 
-export async function sendNotification(subject: string, html: string) {
+export function isEmailNotificationConfigured(): boolean {
+  return Boolean(process.env.EMAIL_SMTP_HOST && process.env.EMAIL_SMTP_USER && process.env.EMAIL_SMTP_PASS)
+}
+
+export async function sendNotification(subject: string, html: string): Promise<boolean> {
   const transporter = getTransporter()
-  if (!transporter) return // Email not configured — silently skip
+  if (!transporter) return false
 
   try {
     const to = process.env.EMAIL_NOTIFY_TO || process.env.EMAIL_SMTP_USER
@@ -33,7 +37,8 @@ export async function sendNotification(subject: string, html: string) {
       subject,
       html,
     })
+    return true
   } catch {
-    // Silently fail — email is optional
+    return false
   }
 }

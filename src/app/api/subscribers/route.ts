@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
+import { isEmailNotificationConfigured, sendNotification } from '@/lib/mailer'
 
 export async function GET() {
   const supabase = getSupabase()
@@ -19,8 +20,6 @@ export async function GET() {
 export async function POST(request: Request) {
   let body: { email?: string; nombre?: string; source?: string; data?: unknown }
   try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
-  const supabase = getSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { email, nombre, source, data: extraData } = body
   const sourceFinal = source || 'registro'
 
@@ -28,6 +27,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Email es obligatorio' }, { status: 400 })
   }
   const emailNorm = email.trim().toLowerCase()
+  const supabase = getSupabase()
+  if (!supabase) {
+    const emailed = await sendNotification(
+      `📬 Nuevo subscriber — ${emailNorm}`,
+      `<h2>Nuevo suscriptor (modo respaldo email)</h2>
+      <p><strong>Email:</strong> ${emailNorm}</p>
+      ${nombre ? `<p><strong>Nombre:</strong> ${nombre}</p>` : ''}
+      <p><strong>Origen:</strong> ${sourceFinal}</p>
+      <p><strong>Data:</strong> <code>${JSON.stringify(extraData || {})}</code></p>
+      <p><strong>Almacenamiento:</strong> EMAIL_FALLBACK (sin Supabase)</p>`
+    )
+    if (emailed) {
+      return NextResponse.json({ success: true, fallback: 'email' })
+    }
+    const detail = isEmailNotificationConfigured()
+      ? 'No se pudo enviar el respaldo por email'
+      : 'Base de datos no configurada y SMTP no configurado'
+    return NextResponse.json({ error: detail }, { status: 503 })
+  }
 
   // Upsert: if email exists, update source and data
   const { data: existing, error: lookupError } = await supabase

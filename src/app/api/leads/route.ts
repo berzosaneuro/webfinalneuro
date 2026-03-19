@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
-import { sendNotification } from '@/lib/mailer'
+import { isEmailNotificationConfigured, sendNotification } from '@/lib/mailer'
 
 export async function GET() {
   const supabase = getSupabase()
@@ -30,7 +30,21 @@ export async function POST(request: Request) {
   const nombreFinal = name ?? nombre ?? ''
 
   const supabase = getSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  if (!supabase) {
+    const emailBody = `<h2>Nuevo lead (modo respaldo email)</h2>
+    <p><strong>Email:</strong> ${email}</p>
+    ${nombreFinal ? `<p><strong>Nombre:</strong> ${nombreFinal}</p>` : ''}
+    <p><strong>Origen:</strong> ${origen}</p>
+    <p><strong>Almacenamiento:</strong> EMAIL_FALLBACK (sin Supabase)</p>`
+    const emailed = await sendNotification(`🔔 Nuevo lead — ${email}`, emailBody)
+    if (emailed) {
+      return NextResponse.json({ success: true, fallback: 'email' })
+    }
+    const detail = isEmailNotificationConfigured()
+      ? 'No se pudo enviar el respaldo por email'
+      : 'Base de datos no configurada y SMTP no configurado'
+    return NextResponse.json({ error: detail }, { status: 503 })
+  }
   const { error } = await supabase.from('leads').insert({
     email,
     name: nombreFinal,
@@ -48,7 +62,7 @@ export async function POST(request: Request) {
     <p><strong>Email:</strong> ${email}</p>
     ${nombreFinal ? `<p><strong>Nombre:</strong> ${nombreFinal}</p>` : ''}
     <p><strong>Origen:</strong> ${origen}</p>`
-  ).catch(() => {})
+  )
 
   return NextResponse.json({ success: true })
 }
