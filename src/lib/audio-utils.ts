@@ -94,14 +94,7 @@ export function getStaticAudioCandidates(section: 'meditacion' | 'podcast' | 'ma
 }
 
 export function getGlobalVoiceStaticCandidates(): string[] {
-  const baseNames = [
-    'mi_voz',
-    'mi_voz_base',
-    'voz_base',
-    'voz_principal',
-    'narradora',
-    'luisa_narradora',
-  ]
+  const baseNames = ['mi_voz']
   return baseNames.flatMap((name) => STATIC_AUDIO_EXTENSIONS.map((ext) => `/audio/voz/${name}.${ext}`))
 }
 

@@ -55,9 +55,8 @@ const episodes: Episode[] = [
 
 const categories = ['Todos', 'Neurociencia', 'Consciencia', 'Emociones', 'Presencia', 'Cuerpo', 'Despertar']
 
-function getPodcastStaticCandidates(ep: Episode): string[] {
+function getPodcastContentStaticCandidates(ep: Episode): string[] {
   return [
-    ...getGlobalVoiceStaticCandidates(),
     ...getStaticAudioCandidates('podcast', ep.title),
     ...getStaticAudioCandidates('podcast', `episodio_${ep.id}`),
     ...getStaticAudioCandidates('podcast', `podcast_${ep.id}`),
@@ -104,7 +103,10 @@ export default function PodcastPage() {
 
   useEffect(() => {
     episodes.slice(0, 2).forEach((episode) => {
-      primeStaticAudioLookup(getPodcastStaticCandidates(episode))
+      primeStaticAudioLookup([
+        ...getPodcastContentStaticCandidates(episode),
+        ...getGlobalVoiceStaticCandidates(),
+      ])
       primeElevenLabsTTS(episode.script)
     })
   }, [])
@@ -139,7 +141,8 @@ export default function PodcastPage() {
     }
 
     try {
-      const staticUrl = await resolveStaticAudioUrl(getPodcastStaticCandidates(ep))
+      const contentStaticUrl = await resolveStaticAudioUrl(getPodcastContentStaticCandidates(ep))
+      const staticUrl = contentStaticUrl ?? await resolveStaticAudioUrl(getGlobalVoiceStaticCandidates())
       if (genRef.current !== thisGen || signal.aborted) return
 
       let audioSourceUrl: string | undefined

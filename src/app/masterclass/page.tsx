@@ -149,9 +149,8 @@ function MasterClassCard({ mc, onSelect }: { mc: MasterClass; onSelect: () => vo
 
 type AmbientRef = { ctx: AudioContext; gain: GainNode; oscs: OscillatorNode[]; stop: () => void } | null
 
-function getMasterclassStaticCandidates(mc: MasterClass): string[] {
+function getMasterclassContentStaticCandidates(mc: MasterClass): string[] {
   return [
-    ...getGlobalVoiceStaticCandidates(),
     ...getStaticAudioCandidates('masterclass', mc.id),
     ...getStaticAudioCandidates('masterclass', mc.title),
   ]
@@ -196,7 +195,10 @@ export default function MasterclassPage() {
 
   useEffect(() => {
     masterclasses.slice(0, 1).forEach((masterclass) => {
-      primeStaticAudioLookup(getMasterclassStaticCandidates(masterclass))
+      primeStaticAudioLookup([
+        ...getMasterclassContentStaticCandidates(masterclass),
+        ...getGlobalVoiceStaticCandidates(),
+      ])
       primeElevenLabsTTS(masterclass.script)
     })
   }, [])
@@ -233,7 +235,8 @@ export default function MasterclassPage() {
     }
 
     try {
-      const staticUrl = await resolveStaticAudioUrl(getMasterclassStaticCandidates(mc))
+      const contentStaticUrl = await resolveStaticAudioUrl(getMasterclassContentStaticCandidates(mc))
+      const staticUrl = contentStaticUrl ?? await resolveStaticAudioUrl(getGlobalVoiceStaticCandidates())
       if (genRef.current !== thisGen || signal.aborted) return
 
       let audioSourceUrl: string | undefined
