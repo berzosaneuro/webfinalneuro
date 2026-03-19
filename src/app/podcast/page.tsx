@@ -2,7 +2,16 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
-import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad, fetchElevenLabsTTS, primeElevenLabsTTS } from '@/lib/audio-utils'
+import {
+  playAudioWithFadeIn,
+  stopVoiceWithFadeOut,
+  createAmbientPad,
+  fetchElevenLabsTTS,
+  primeElevenLabsTTS,
+  getStaticAudioCandidates,
+  resolveStaticAudioUrl,
+  primeStaticAudioLookup,
+} from '@/lib/audio-utils'
 import { trackSessionStart, trackSessionComplete, trackSessionInterrupted } from '@/lib/session-tracking'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
@@ -45,6 +54,14 @@ const episodes: Episode[] = [
 
 const categories = ['Todos', 'Neurociencia', 'Consciencia', 'Emociones', 'Presencia', 'Cuerpo', 'Despertar']
 
+function getPodcastStaticCandidates(ep: Episode): string[] {
+  return [
+    ...getStaticAudioCandidates('podcast', ep.title),
+    ...getStaticAudioCandidates('podcast', `episodio_${ep.id}`),
+    ...getStaticAudioCandidates('podcast', `podcast_${ep.id}`),
+  ]
+}
+
 export default function PodcastPage() {
   const [playing, setPlaying] = useState<number | null>(null)
   const [loadingEpisode, setLoadingEpisode] = useState<number | null>(null)
@@ -85,6 +102,7 @@ export default function PodcastPage() {
 
   useEffect(() => {
     episodes.slice(0, 2).forEach((episode) => {
+      primeStaticAudioLookup(getPodcastStaticCandidates(episode))
       primeElevenLabsTTS(episode.script)
     })
   }, [])
@@ -119,10 +137,21 @@ export default function PodcastPage() {
     }
 
     try {
-      const blob = await fetchElevenLabsTTS(ep.script, { signal })
+      const staticUrl = await resolveStaticAudioUrl(getPodcastStaticCandidates(ep))
       if (genRef.current !== thisGen || signal.aborted) return
-      const url = URL.createObjectURL(blob)
-      const audio = new Audio(url)
+
+      let audioSourceUrl: string | undefined
+      let audio: HTMLAudioElement
+
+      if (staticUrl) {
+        audio = new Audio(staticUrl)
+      } else {
+        const blob = await fetchElevenLabsTTS(ep.script, { signal })
+        if (genRef.current !== thisGen || signal.aborted) return
+        audioSourceUrl = URL.createObjectURL(blob)
+        audio = new Audio(audioSourceUrl)
+      }
+
       audio.onended = () => {
         trackSessionComplete('podcast', ep.title, Math.floor((Date.now() - playStartTimeRef.current) / 1000))
         playingEpisodeRef.current = null
@@ -132,25 +161,25 @@ export default function PodcastPage() {
       audio.onerror = () => stopPodcast()
       setLoadingEpisode(null)
       if (genRef.current !== thisGen || signal.aborted) {
-        URL.revokeObjectURL(url)
+        if (audioSourceUrl) URL.revokeObjectURL(audioSourceUrl)
         return
       }
       if (CtxClass) {
         const voiceRefs = await playAudioWithFadeIn(audio)
         if (genRef.current !== thisGen || signal.aborted) {
-          URL.revokeObjectURL(url)
+          if (audioSourceUrl) URL.revokeObjectURL(audioSourceUrl)
           try { voiceRefs.ctx.close() } catch {}
           return
         }
-        ttsAudioRef.current = { audio, url, voiceRefs }
+        ttsAudioRef.current = { audio, url: audioSourceUrl, voiceRefs }
       } else {
         await audio.play()
         if (genRef.current !== thisGen || signal.aborted) {
           audio.pause()
-          URL.revokeObjectURL(url)
+          if (audioSourceUrl) URL.revokeObjectURL(audioSourceUrl)
           return
         }
-        ttsAudioRef.current = { audio, url }
+        ttsAudioRef.current = { audio, url: audioSourceUrl }
       }
     } catch (error) {
       if (genRef.current !== thisGen || signal.aborted) return

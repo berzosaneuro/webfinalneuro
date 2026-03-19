@@ -9,6 +9,8 @@ export const FADE_OUT_MS = 120
 const FADE_IN_DURATION = FADE_IN_MS / 1000
 const FADE_OUT_DURATION = FADE_OUT_MS / 1000
 const TTS_CACHE_MAX_ITEMS = 40
+const STATIC_AUDIO_CACHE_MAX_ITEMS = 250
+const STATIC_AUDIO_EXTENSIONS = ['mp3', 'm4a', 'wav', 'ogg'] as const
 
 export type VoiceRefs = {
   ctx: AudioContext
@@ -16,6 +18,7 @@ export type VoiceRefs = {
 }
 
 const ttsBlobCache = new Map<string, Blob>()
+const staticAudioExistsCache = new Map<string, boolean>()
 
 function normalizeTtsText(text: string): string {
   return text.trim().slice(0, 5000)
@@ -38,6 +41,94 @@ function setCachedTTS(key: string, blob: Blob): void {
     if (!oldest) break
     ttsBlobCache.delete(oldest)
   }
+}
+
+function getCachedStaticAudioAvailability(key: string): boolean | null {
+  if (!staticAudioExistsCache.has(key)) return null
+  const value = staticAudioExistsCache.get(key) === true
+  staticAudioExistsCache.delete(key)
+  staticAudioExistsCache.set(key, value)
+  return value
+}
+
+function setCachedStaticAudioAvailability(key: string, exists: boolean): void {
+  if (staticAudioExistsCache.has(key)) staticAudioExistsCache.delete(key)
+  staticAudioExistsCache.set(key, exists)
+  while (staticAudioExistsCache.size > STATIC_AUDIO_CACHE_MAX_ITEMS) {
+    const oldest = staticAudioExistsCache.keys().next().value as string | undefined
+    if (!oldest) break
+    staticAudioExistsCache.delete(oldest)
+  }
+}
+
+function stripAccents(value: string): string {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+
+function toHumanAudioKey(value: string): string {
+  return value
+    .trim()
+    .replace(/[^\w\s\u00C0-\u024F-]/g, '')
+    .replace(/\s+/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 120)
+}
+
+export function toAudioSlug(value: string): string {
+  return stripAccents(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 120)
+}
+
+export function getStaticAudioCandidates(section: 'meditacion' | 'podcast' | 'masterclass', key: string): string[] {
+  const humanKey = toHumanAudioKey(key)
+  const slug = toAudioSlug(key)
+  const keyCandidates = Array.from(new Set([
+    slug,
+    humanKey,
+    humanKey.toLowerCase(),
+    stripAccents(humanKey),
+    stripAccents(humanKey).toLowerCase(),
+  ].filter(Boolean)))
+  return keyCandidates.flatMap((candidate) => STATIC_AUDIO_EXTENSIONS.map((ext) => `/audio/${section}/${candidate}.${ext}`))
+}
+
+async function probeStaticAudio(url: string): Promise<boolean> {
+  const cached = getCachedStaticAudioAvailability(url)
+  if (cached !== null) return cached
+  try {
+    const head = await fetch(url, { method: 'HEAD', cache: 'force-cache' })
+    if (head.ok) {
+      setCachedStaticAudioAvailability(url, true)
+      return true
+    }
+    // Algunos entornos no resuelven HEAD para estáticos; probamos GET como respaldo.
+    const get = await fetch(url, {
+      method: 'GET',
+      cache: 'force-cache',
+      headers: { Range: 'bytes=0-0' },
+    })
+    const exists = get.ok
+    setCachedStaticAudioAvailability(url, exists)
+    return exists
+  } catch {
+    setCachedStaticAudioAvailability(url, false)
+    return false
+  }
+}
+
+export async function resolveStaticAudioUrl(candidates: string[]): Promise<string | null> {
+  for (const candidate of candidates) {
+    if (await probeStaticAudio(candidate)) return candidate
+  }
+  return null
+}
+
+export function primeStaticAudioLookup(candidates: string[]): void {
+  void resolveStaticAudioUrl(candidates).catch(() => {})
 }
 
 /** Pre-warm cache without throwing (best-effort). */

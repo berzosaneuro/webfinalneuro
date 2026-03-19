@@ -2,7 +2,16 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
-import { stopVoiceWithFadeOut, createAmbientPad, fetchElevenLabsTTS, playAudioWithFadeIn, primeElevenLabsTTS } from '@/lib/audio-utils'
+import {
+  stopVoiceWithFadeOut,
+  createAmbientPad,
+  fetchElevenLabsTTS,
+  playAudioWithFadeIn,
+  primeElevenLabsTTS,
+  getStaticAudioCandidates,
+  resolveStaticAudioUrl,
+  primeStaticAudioLookup,
+} from '@/lib/audio-utils'
 import { trackSessionStart, trackSessionComplete, trackSessionInterrupted } from '@/lib/session-tracking'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
@@ -139,6 +148,13 @@ function MasterClassCard({ mc, onSelect }: { mc: MasterClass; onSelect: () => vo
 
 type AmbientRef = { ctx: AudioContext; gain: GainNode; oscs: OscillatorNode[]; stop: () => void } | null
 
+function getMasterclassStaticCandidates(mc: MasterClass): string[] {
+  return [
+    ...getStaticAudioCandidates('masterclass', mc.id),
+    ...getStaticAudioCandidates('masterclass', mc.title),
+  ]
+}
+
 export default function MasterclassPage() {
   const [selected, setSelected] = useState<MasterClass | null>(null)
   const [playing, setPlaying] = useState(false)
@@ -178,6 +194,7 @@ export default function MasterclassPage() {
 
   useEffect(() => {
     masterclasses.slice(0, 1).forEach((masterclass) => {
+      primeStaticAudioLookup(getMasterclassStaticCandidates(masterclass))
       primeElevenLabsTTS(masterclass.script)
     })
   }, [])
@@ -214,10 +231,21 @@ export default function MasterclassPage() {
     }
 
     try {
-      const blob = await fetchElevenLabsTTS(mc.script, { signal })
+      const staticUrl = await resolveStaticAudioUrl(getMasterclassStaticCandidates(mc))
       if (genRef.current !== thisGen || signal.aborted) return
-      const url = URL.createObjectURL(blob)
-      const audio = new Audio(url)
+
+      let audioSourceUrl: string | undefined
+      let audio: HTMLAudioElement
+
+      if (staticUrl) {
+        audio = new Audio(staticUrl)
+      } else {
+        const blob = await fetchElevenLabsTTS(mc.script, { signal })
+        if (genRef.current !== thisGen || signal.aborted) return
+        audioSourceUrl = URL.createObjectURL(blob)
+        audio = new Audio(audioSourceUrl)
+      }
+
       audio.onended = () => {
         trackSessionComplete('masterclass', mc.title, Math.floor((Date.now() - playStartTimeRef.current) / 1000))
         stopMasterclass()
@@ -225,26 +253,26 @@ export default function MasterclassPage() {
       audio.onerror = () => stopMasterclass()
       setLoadingMasterclass(null)
       if (genRef.current !== thisGen || signal.aborted) {
-        URL.revokeObjectURL(url)
+        if (audioSourceUrl) URL.revokeObjectURL(audioSourceUrl)
         return
       }
 
       if (CtxClass) {
         const voiceRefs = await playAudioWithFadeIn(audio)
         if (genRef.current !== thisGen || signal.aborted) {
-          URL.revokeObjectURL(url)
+          if (audioSourceUrl) URL.revokeObjectURL(audioSourceUrl)
           try { voiceRefs.ctx.close() } catch {}
           return
         }
-        ttsAudioRef.current = { audio, url, voiceRefs }
+        ttsAudioRef.current = { audio, url: audioSourceUrl, voiceRefs }
       } else {
         await audio.play()
         if (genRef.current !== thisGen || signal.aborted) {
           audio.pause()
-          URL.revokeObjectURL(url)
+          if (audioSourceUrl) URL.revokeObjectURL(audioSourceUrl)
           return
         }
-        ttsAudioRef.current = { audio, url }
+        ttsAudioRef.current = { audio, url: audioSourceUrl }
       }
     } catch (error) {
       if (genRef.current !== thisGen || signal.aborted) return

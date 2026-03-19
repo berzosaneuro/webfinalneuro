@@ -2,7 +2,16 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
-import { playAudioWithFadeIn, stopVoiceWithFadeOut, createAmbientPad as createSharedAmbientPad, fetchElevenLabsTTS, primeElevenLabsTTS } from '@/lib/audio-utils'
+import {
+  playAudioWithFadeIn,
+  stopVoiceWithFadeOut,
+  createAmbientPad as createSharedAmbientPad,
+  fetchElevenLabsTTS,
+  primeElevenLabsTTS,
+  getStaticAudioCandidates,
+  resolveStaticAudioUrl,
+  primeStaticAudioLookup,
+} from '@/lib/audio-utils'
 import { trackSessionStart, trackSessionComplete, trackSessionInterrupted } from '@/lib/session-tracking'
 import { recordActivity } from '@/lib/streak'
 import PremiumLock from '@/components/PremiumLock'
@@ -289,6 +298,7 @@ export default function MeditationCards() {
 
   useEffect(() => {
     meditations.slice(0, 2).forEach((meditation) => {
+      primeStaticAudioLookup(getStaticAudioCandidates('meditacion', meditation.title))
       if (meditation.script) primeElevenLabsTTS(meditation.script)
     })
   }, [])
@@ -324,7 +334,7 @@ export default function MeditationCards() {
   }, [stopMeditation])
 
   const handlePlay = useCallback(async (m: Meditation) => {
-    if (typeof window === 'undefined' || !m.script) return
+    if (typeof window === 'undefined') return
     stopMeditation(playingTitleRef.current ?? undefined)
     claimAndPlay('meditation', () => stopMeditation(playingTitleRef.current ?? undefined))
     const thisPlayId = ++playIdRef.current
@@ -377,10 +387,22 @@ export default function MeditationCards() {
       playStartTimeRef.current = Date.now()
       trackSessionStart('meditation', m.title)
       try {
-        const blob = await fetchElevenLabsTTS(m.script!, { signal })
+        const staticUrl = await resolveStaticAudioUrl(getStaticAudioCandidates('meditacion', m.title))
         if (playIdRef.current !== thisPlayId || signal.aborted) return
-        const url = URL.createObjectURL(blob)
-        const audio = new Audio(url)
+
+        let audioSourceUrl: string | undefined
+        let audio: HTMLAudioElement
+
+        if (staticUrl) {
+          audio = new Audio(staticUrl)
+        } else {
+          if (!m.script) throw new Error(`No hay script ni audio estático para: ${m.title}`)
+          const blob = await fetchElevenLabsTTS(m.script, { signal })
+          if (playIdRef.current !== thisPlayId || signal.aborted) return
+          audioSourceUrl = URL.createObjectURL(blob)
+          audio = new Audio(audioSourceUrl)
+        }
+
         audio.volume = 1
         audio.playbackRate = 0.88
         audio.onended = () => {
@@ -392,16 +414,16 @@ export default function MeditationCards() {
         audio.onerror = () => stopMeditation()
         setLoadingAudio(null)
         if (playIdRef.current !== thisPlayId || signal.aborted) {
-          URL.revokeObjectURL(url)
+          if (audioSourceUrl) URL.revokeObjectURL(audioSourceUrl)
           return
         }
         const voiceRefs = await playAudioWithFadeIn(audio)
         if (playIdRef.current !== thisPlayId || signal.aborted) {
-          URL.revokeObjectURL(url)
+          if (audioSourceUrl) URL.revokeObjectURL(audioSourceUrl)
           try { voiceRefs.ctx.close() } catch {}
           return
         }
-        ttsAudioRef.current = { audio, url, voiceRefs }
+        ttsAudioRef.current = { audio, url: audioSourceUrl, voiceRefs }
       } catch (error) {
         if (playIdRef.current !== thisPlayId || signal.aborted) return
         console.error('Fallo al reproducir meditación con ElevenLabs:', error)
