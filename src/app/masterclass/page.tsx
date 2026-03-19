@@ -9,6 +9,7 @@ import {
   playAudioWithFadeIn,
   primeElevenLabsTTS,
   getStaticAudioCandidates,
+  getGlobalVoiceStaticCandidates,
   resolveStaticAudioUrl,
   primeStaticAudioLookup,
 } from '@/lib/audio-utils'
@@ -152,6 +153,7 @@ function getMasterclassStaticCandidates(mc: MasterClass): string[] {
   return [
     ...getStaticAudioCandidates('masterclass', mc.id),
     ...getStaticAudioCandidates('masterclass', mc.title),
+    ...getGlobalVoiceStaticCandidates(),
   ]
 }
 

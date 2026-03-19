@@ -9,6 +9,7 @@ import {
   fetchElevenLabsTTS,
   primeElevenLabsTTS,
   getStaticAudioCandidates,
+  getGlobalVoiceStaticCandidates,
   resolveStaticAudioUrl,
   primeStaticAudioLookup,
 } from '@/lib/audio-utils'
@@ -59,6 +60,7 @@ function getPodcastStaticCandidates(ep: Episode): string[] {
     ...getStaticAudioCandidates('podcast', ep.title),
     ...getStaticAudioCandidates('podcast', `episodio_${ep.id}`),
     ...getStaticAudioCandidates('podcast', `podcast_${ep.id}`),
+    ...getGlobalVoiceStaticCandidates(),
   ]
 }
 

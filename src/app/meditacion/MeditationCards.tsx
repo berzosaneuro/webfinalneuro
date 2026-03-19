@@ -9,6 +9,7 @@ import {
   fetchElevenLabsTTS,
   primeElevenLabsTTS,
   getStaticAudioCandidates,
+  getGlobalVoiceStaticCandidates,
   resolveStaticAudioUrl,
   primeStaticAudioLookup,
 } from '@/lib/audio-utils'
@@ -298,7 +299,10 @@ export default function MeditationCards() {
 
   useEffect(() => {
     meditations.slice(0, 2).forEach((meditation) => {
-      primeStaticAudioLookup(getStaticAudioCandidates('meditacion', meditation.title))
+      primeStaticAudioLookup([
+        ...getStaticAudioCandidates('meditacion', meditation.title),
+        ...getGlobalVoiceStaticCandidates(),
+      ])
       if (meditation.script) primeElevenLabsTTS(meditation.script)
     })
   }, [])
@@ -387,7 +391,10 @@ export default function MeditationCards() {
       playStartTimeRef.current = Date.now()
       trackSessionStart('meditation', m.title)
       try {
-        const staticUrl = await resolveStaticAudioUrl(getStaticAudioCandidates('meditacion', m.title))
+        const staticUrl = await resolveStaticAudioUrl([
+          ...getStaticAudioCandidates('meditacion', m.title),
+          ...getGlobalVoiceStaticCandidates(),
+        ])
         if (playIdRef.current !== thisPlayId || signal.aborted) return
 
         let audioSourceUrl: string | undefined

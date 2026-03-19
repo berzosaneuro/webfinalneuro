@@ -96,6 +96,18 @@ export function getStaticAudioCandidates(section: 'meditacion' | 'podcast' | 'ma
   return keyCandidates.flatMap((candidate) => STATIC_AUDIO_EXTENSIONS.map((ext) => `/audio/${section}/${candidate}.${ext}`))
 }
 
+export function getGlobalVoiceStaticCandidates(): string[] {
+  const baseNames = [
+    'mi_voz',
+    'mi_voz_base',
+    'voz_base',
+    'voz_principal',
+    'narradora',
+    'luisa_narradora',
+  ]
+  return baseNames.flatMap((name) => STATIC_AUDIO_EXTENSIONS.map((ext) => `/audio/voz/${name}.${ext}`))
+}
+
 async function probeStaticAudio(url: string): Promise<boolean> {
   const cached = getCachedStaticAudioAvailability(url)
   if (cached !== null) return cached
