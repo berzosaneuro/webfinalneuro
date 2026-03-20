@@ -6,6 +6,10 @@ import Link from 'next/link'
 import { claimAndPlay, unregister } from '@/lib/audio-manager'
 
 type Phase = 'inhale' | 'hold' | 'exhale' | 'holdOut'
+type AmbientRef =
+  | { type: 'file'; audio: HTMLAudioElement }
+  | { type: 'synth'; ctx: AudioContext; gain: GainNode; stop: () => void }
+  | null
 
 const PATTERN = {
   inhale: { duration: 4, label: 'Inhala', next: 'hold' as Phase },
@@ -23,6 +27,15 @@ const affirmations = [
   'Inhala calma. Exhala ruido.',
   'Tu mente miente. Tu cuerpo sabe.',
   'Nada de lo que imaginas está pasando ahora.',
+]
+
+const SOS_TRACKS = [
+  '/Calm-ambient-music-ocean-waves-for-sleep-and-relaxation.mp3',
+  '/Calm-ambient-music-ocean-waves-for-sleep-and-relaxation (1).mp3',
+  '/Free-meditation-music.mp3',
+  '/Free-meditation-music (1).mp3',
+  '/Relaxing-analog-synth-piano-music.mp3',
+  '/Warm-ambient-relaxing-synth-pad-music.mp3',
 ]
 
 function createAmbientPad(): { ctx: AudioContext; gain: GainNode; stop: () => void } {
@@ -58,6 +71,19 @@ function createAmbientPad(): { ctx: AudioContext; gain: GainNode; stop: () => vo
   return { ctx, gain, stop }
 }
 
+function fadeInAmbientMusic(audio: HTMLAudioElement, target = 0.22, durationMs = 2200): void {
+  audio.volume = 0
+  const steps = 22
+  const stepMs = durationMs / steps
+  const stepVol = target / steps
+  let i = 0
+  const interval = setInterval(() => {
+    i += 1
+    audio.volume = Math.min(i * stepVol, target)
+    if (i >= steps) clearInterval(interval)
+  }, stepMs)
+}
+
 export default function SOSPage() {
   const uid = useId().replace(/:/g, '')
   const [started, setStarted] = useState(false)
@@ -67,12 +93,20 @@ export default function SOSPage() {
   const [muted, setMuted] = useState(false)
   const [affirmation, setAffirmation] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const ambientRef = useRef<{ ctx: AudioContext; gain: GainNode; stop: () => void } | null>(null)
+  const ambientRef = useRef<AmbientRef>(null)
 
   const currentPhase = PATTERN[phase]
 
   const stopSOS = useCallback(() => {
-    ambientRef.current?.stop()
+    const current = ambientRef.current
+    if (!current) return
+    if (current.type === 'file') {
+      current.audio.pause()
+      current.audio.currentTime = 0
+      current.audio.src = ''
+    } else {
+      current.stop()
+    }
     ambientRef.current = null
   }, [])
 
@@ -108,14 +142,39 @@ export default function SOSPage() {
   }, [started, tick])
 
   const start = () => {
+    stopSOS()
     claimAndPlay('sos', stopSOS)
-    if (!muted) {
+    const shuffled = [...SOS_TRACKS].sort(() => Math.random() - 0.5)
+    const startSynthFallback = () => {
       try {
         const pad = createAmbientPad()
         if (pad.ctx.state === 'suspended') pad.ctx.resume().catch(() => {})
-        ambientRef.current = pad
-      } catch {}
+        if (muted) {
+          pad.gain.gain.setTargetAtTime(0, pad.ctx.currentTime, 0.08)
+        }
+        ambientRef.current = { type: 'synth', ...pad }
+      } catch {
+        // ignore
+      }
     }
+    const tryTrack = (idx: number) => {
+      if (idx >= shuffled.length) {
+        startSynthFallback()
+        return
+      }
+      const src = shuffled[idx]
+      const audio = new Audio(src)
+      audio.loop = true
+      audio.volume = 0
+      audio.onerror = () => tryTrack(idx + 1)
+      audio.play()
+        .then(() => {
+          ambientRef.current = { type: 'file', audio }
+          if (!muted) fadeInAmbientMusic(audio)
+        })
+        .catch(() => tryTrack(idx + 1))
+    }
+    tryTrack(0)
     setStarted(true)
     setPhase('inhale')
     setCounter(PATTERN.inhale.duration)
@@ -126,7 +185,11 @@ export default function SOSPage() {
     const newMuted = !muted
     setMuted(newMuted)
     if (ambientRef.current) {
-      ambientRef.current.gain.gain.setTargetAtTime(newMuted ? 0 : 0.12, ambientRef.current.ctx.currentTime, 0.3)
+      if (ambientRef.current.type === 'file') {
+        ambientRef.current.audio.volume = newMuted ? 0 : 0.22
+      } else {
+        ambientRef.current.gain.gain.setTargetAtTime(newMuted ? 0 : 0.12, ambientRef.current.ctx.currentTime, 0.3)
+      }
     }
   }
 
