@@ -7,7 +7,7 @@ const ORB_SIZE = 56
 export default function EliasOrb({ onClick }: { onClick: () => void }) {
   return (
     <div
-      className="fixed bottom-24 md:bottom-8 right-4 md:right-6 z-[60] flex flex-col items-center"
+      className="fixed bottom-[5.9rem] md:bottom-8 right-4 md:right-6 z-[60]"
       style={{
         paddingRight: 'max(0px, env(safe-area-inset-right))',
         paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
@@ -30,8 +30,8 @@ export default function EliasOrb({ onClick }: { onClick: () => void }) {
             alt="Elías Berzosa"
             width={ORB_SIZE}
             height={ORB_SIZE}
-            className="h-full w-full object-cover scale-[1.06]"
-            style={{ objectPosition: 'center 18%' }}
+            className="h-full w-full object-cover scale-[1.05]"
+            style={{ objectPosition: 'center 22%' }}
             unoptimized
           />
         </div>
@@ -39,7 +39,7 @@ export default function EliasOrb({ onClick }: { onClick: () => void }) {
       <button
         type="button"
         onClick={onClick}
-        className="mt-1.5 px-2.5 py-1 rounded-lg glass text-[10px] font-medium text-white/95 border border-white/15 active:scale-95 transition-transform"
+        className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 px-2.5 py-1 rounded-lg glass text-[10px] font-medium text-white/95 border border-white/15 active:scale-95 transition-transform whitespace-nowrap"
         aria-label="Abrir chat de Elías"
       >
         Pregúntame
