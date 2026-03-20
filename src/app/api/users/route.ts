@@ -2,6 +2,16 @@ import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
 import { isEmailNotificationConfigured, sendNotification } from '@/lib/mailer'
 
+function isMissingTableError(message: string): boolean {
+  const lower = message.toLowerCase()
+  return lower.includes("could not find the table 'public.users'") || lower.includes('relation "users" does not exist')
+}
+
+function isMissingColumnError(message: string): boolean {
+  const lower = message.toLowerCase()
+  return lower.includes('does not exist') && lower.includes('column')
+}
+
 export async function GET() {
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
@@ -51,30 +61,83 @@ export async function POST(request: Request) {
   try {
     const { data: existing, error: lookupError } = await supabase
       .from('users')
-      .select('id, nombre')
+      .select('id')
       .ilike('email', emailNorm)
       .maybeSingle()
 
     if (lookupError) {
+      if (isMissingTableError(lookupError.message)) {
+        const { error: leadFallbackError } = await supabase.from('leads').insert({
+          email: emailNorm,
+          name: nameVal,
+          source: 'users-fallback-missing-table',
+        })
+        if (!leadFallbackError) {
+          return NextResponse.json({ ok: true, created: true, table: 'leads_fallback' })
+        }
+      }
       return NextResponse.json({ error: lookupError.message }, { status: 500 })
     }
 
     if (existing) {
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({ nombre: nameVal, last_login_at: new Date().toISOString() })
-        .eq('id', existing.id)
-      if (updateError) {
-        return NextResponse.json({ error: updateError.message }, { status: 500 })
+      const nowIso = new Date().toISOString()
+      const updatePayloads: Array<Record<string, string>> = [
+        { nombre: nameVal, last_login_at: nowIso },
+        { name: nameVal, last_login_at: nowIso },
+        { nombre: nameVal },
+        { name: nameVal },
+        { last_login_at: nowIso },
+      ]
+      let updated = false
+      let lastUpdateError = ''
+      for (const payload of updatePayloads) {
+        const { error: updateError } = await supabase
+          .from('users')
+          .update(payload)
+          .eq('id', existing.id)
+        if (!updateError) {
+          updated = true
+          break
+        }
+        lastUpdateError = updateError.message
+        if (!isMissingColumnError(updateError.message)) break
+      }
+      if (!updated) {
+        return NextResponse.json({ error: lastUpdateError || 'No se pudo actualizar usuario' }, { status: 500 })
       }
       return NextResponse.json({ ok: true, created: false, table: 'users' })
     }
-    const { error } = await supabase.from('users').insert({
+    const insertPayloads: Array<Record<string, string>> = [
+      { email: emailNorm, nombre: nameVal },
+      { email: emailNorm, name: nameVal },
+      { email: emailNorm },
+    ]
+    let inserted = false
+    let lastInsertError = ''
+    for (const payload of insertPayloads) {
+      const { error } = await supabase.from('users').insert(payload)
+      if (!error) {
+        inserted = true
+        break
+      }
+      lastInsertError = error.message
+      if (!isMissingColumnError(error.message)) {
+        if (isMissingTableError(error.message)) break
+      }
+    }
+    if (inserted) {
+      return NextResponse.json({ ok: true, created: true, table: 'users' })
+    }
+
+    const { error: leadFallbackError } = await supabase.from('leads').insert({
       email: emailNorm,
-      nombre: nameVal,
+      name: nameVal,
+      source: 'users-fallback-schema',
     })
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ ok: true, created: true, table: 'users' })
+    if (!leadFallbackError) {
+      return NextResponse.json({ ok: true, created: true, table: 'leads_fallback' })
+    }
+    return NextResponse.json({ error: lastInsertError || leadFallbackError.message }, { status: 500 })
   } catch {
     return NextResponse.json({ error: 'Servicio no disponible' }, { status: 503 })
   }

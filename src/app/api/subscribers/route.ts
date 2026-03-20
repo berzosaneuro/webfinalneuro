@@ -2,6 +2,16 @@ import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
 import { isEmailNotificationConfigured, sendNotification } from '@/lib/mailer'
 
+function isMissingTableError(message: string): boolean {
+  const lower = message.toLowerCase()
+  return lower.includes("could not find the table 'public.subscribers'") || lower.includes('relation "subscribers" does not exist')
+}
+
+function isMissingColumnError(message: string): boolean {
+  const lower = message.toLowerCase()
+  return lower.includes('does not exist') && lower.includes('column')
+}
+
 export async function GET() {
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
@@ -47,6 +57,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: detail }, { status: 503 })
   }
 
+  const saveInLeadsFallback = async (sourceLabel: string): Promise<boolean> => {
+    const { error } = await supabase.from('leads').insert({
+      email: emailNorm,
+      name: nombre || '',
+      source: `subscriber-${sourceLabel}`,
+    })
+    return !error
+  }
+
   // Upsert: if email exists, update source and data
   const { data: existing, error: lookupError } = await supabase
     .from('subscribers')
@@ -55,6 +74,11 @@ export async function POST(request: Request) {
     .maybeSingle()
 
   if (lookupError) {
+    if (isMissingTableError(lookupError.message)) {
+      if (await saveInLeadsFallback('missing-table')) {
+        return NextResponse.json({ success: true, fallback: 'leads' })
+      }
+    }
     return NextResponse.json({ error: lookupError.message }, { status: 500 })
   }
 
@@ -76,6 +100,9 @@ export async function POST(request: Request) {
       .eq('id', existing.id)
 
     if (error) {
+      if ((isMissingColumnError(error.message) || isMissingTableError(error.message)) && await saveInLeadsFallback('update-fallback')) {
+        return NextResponse.json({ success: true, fallback: 'leads' })
+      }
       return NextResponse.json({ error: 'Error al actualizar suscriptor' }, { status: 500 })
     }
 
@@ -91,6 +118,9 @@ export async function POST(request: Request) {
   })
 
   if (error) {
+    if ((isMissingColumnError(error.message) || isMissingTableError(error.message)) && await saveInLeadsFallback('insert-fallback')) {
+      return NextResponse.json({ success: true, fallback: 'leads' })
+    }
     return NextResponse.json({ error: 'Error al guardar suscriptor' }, { status: 500 })
   }
 
