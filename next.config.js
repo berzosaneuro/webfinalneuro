@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['@react-pdf/renderer'],
   async redirects() {
     return [
       { source: '/sonidos', destination: '/', permanent: true },

@@ -12,6 +12,7 @@ type UserContextType = {
   setUser: (profile: UserProfile) => void
   logout: () => void
   loading: boolean
+  isCertified: boolean
 }
 
 const UserContext = createContext<UserContextType>({
@@ -19,11 +20,24 @@ const UserContext = createContext<UserContextType>({
   setUser: () => {},
   logout: () => {},
   loading: true,
+  isCertified: false,
 })
+
+function loadIsCertified(): boolean {
+  try {
+    const raw = localStorage.getItem('neuro_cert_progress')
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed?.completedDays) && parsed.completedDays.length >= 84
+    }
+  } catch {}
+  return false
+}
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUserState] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isCertified, setIsCertified] = useState(false)
 
   useEffect(() => {
     try {
@@ -33,6 +47,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         if (parsed?.email) setUserState(parsed)
       }
     } catch {}
+    setIsCertified(loadIsCertified())
     setLoading(false)
   }, [])
 
@@ -47,7 +62,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <UserContext.Provider value={{ user, setUser, logout, loading }}>
+    <UserContext.Provider value={{ user, setUser, logout, loading, isCertified }}>
       {children}
     </UserContext.Provider>
   )

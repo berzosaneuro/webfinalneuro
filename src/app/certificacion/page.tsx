@@ -1,8 +1,18 @@
+import dynamic from 'next/dynamic'
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
 import EmailCapture from '@/components/EmailCapture'
 import { GraduationCap, Check, Star, Users, Clock, Video, BookOpen, Award, ChevronRight, Brain } from 'lucide-react'
 import { Metadata } from 'next'
+
+const CertificadoDashboard = dynamic(
+  () => import('@/components/certificado/CertificadoDashboard'),
+  { ssr: false, loading: () => (
+    <div className="glass rounded-3xl p-8 flex items-center justify-center">
+      <div className="w-6 h-6 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+    </div>
+  )}
+)
 
 export const metadata: Metadata = {
   title: 'Certificación Guía Berzosa Neuro',
@@ -135,6 +145,18 @@ export default function CertificacionPage() {
                 Reservar mi plaza
               </button>
               <p className="text-text-muted text-xs mt-3">Plazas limitadas a 15 alumnos por convocatoria</p>
+            </div>
+          </FadeInSection>
+        </Container>
+      </section>
+
+      {/* Certificado Dashboard */}
+      <section className="pb-8">
+        <Container>
+          <FadeInSection>
+            <h2 className="font-heading text-2xl font-bold text-white text-center mb-8">Tu Certificado</h2>
+            <div className="max-w-2xl mx-auto">
+              <CertificadoDashboard />
             </div>
           </FadeInSection>
         </Container>

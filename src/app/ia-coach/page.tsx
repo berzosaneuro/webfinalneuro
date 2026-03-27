@@ -3,9 +3,10 @@
 import { useState, useRef, useEffect } from 'react'
 import Container from '@/components/Container'
 import {
-  Brain, Send, Sparkles, Wind, Moon, Sun, Eye
+  Brain, Send, Sparkles, Wind, Moon, Sun, Eye, Award
 } from 'lucide-react'
 import { getProgressContext } from '@/lib/elias-progress'
+import { useUser } from '@/context/UserContext'
 
 type Message = {
   id: string
@@ -29,6 +30,7 @@ const QUICK_ACTIONS: QuickAction[] = [
 ]
 
 export default function IACoachPage() {
+  const { isCertified } = useUser()
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -116,6 +118,11 @@ export default function IACoachPage() {
               <h1 className="font-heading text-xl font-bold text-white flex items-center gap-2">
                 IA Coach
                 <Sparkles className="w-4 h-4 text-purple-400" />
+                {isCertified && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-400 text-[10px] font-semibold">
+                    <Award className="w-3 h-3" /> Moderador
+                  </span>
+                )}
               </h1>
               <p className="text-text-muted text-xs">Inteligencia artificial + neurociencia</p>
             </div>
