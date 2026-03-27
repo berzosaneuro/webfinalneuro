@@ -164,7 +164,7 @@ export default function Navbar() {
               ) : (
                 <Link
                   href="/registro"
-                  className="px-4 py-1.5 bg-white text-black text-xs font-semibold rounded-full hover:bg-white/90 transition-all active:scale-95"
+                  className="px-4 py-1.5 bg-accent-blue text-white text-xs font-semibold rounded-full shadow-[0_0_16px_rgba(0,102,255,0.5)] hover:shadow-[0_0_24px_rgba(0,102,255,0.7)] hover:bg-accent-blue/90 transition-all active:scale-95"
                 >
                   Empezar gratis
                 </Link>

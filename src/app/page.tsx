@@ -55,16 +55,34 @@ export default function Home() {
       <div className="orb w-56 h-56 bg-accent-blue top-96 -right-16" />
 
       {/* Hero greeting */}
-      <section className="relative pt-8 pb-6 md:pt-20 md:pb-16">
+      <section className="relative pt-8 pb-4 md:pt-20 md:pb-10">
         <Container>
           <div className="flex items-center gap-5">
             <div className="flex-1">
-              <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-4 animate-fade-in">
-                Elimina el ruido de tu mente
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-blue/10 border border-accent-blue/20 mb-3 animate-fade-in">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse" />
+                <span className="text-accent-blue text-[11px] font-semibold tracking-wide uppercase">Método Berzosa · Neuroplasticidad</span>
+              </div>
+              <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-3 animate-fade-in">
+                Elimina el ruido<br className="hidden sm:block" /> de tu mente
               </h1>
-              <p className="text-text-secondary text-base md:text-lg animate-fade-in-up max-w-lg">
-                Entrenamiento Mental. Basado en neuroplasticidad.
+              <p className="text-text-secondary text-sm md:text-base animate-fade-in-up max-w-sm mb-5 leading-relaxed">
+                La plataforma de entrenamiento mental que te devuelve el control. Sin apps dispersas. Sin distracciones.
               </p>
+              <div className="flex items-center gap-3 animate-fade-in-up">
+                <Link
+                  href="/registro"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-blue text-white text-sm font-bold shadow-[0_0_24px_rgba(0,102,255,0.45)] hover:shadow-[0_0_32px_rgba(0,102,255,0.6)] hover:bg-accent-blue/90 active:scale-95 transition-all"
+                >
+                  Empezar gratis <ChevronRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/metodo"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl glass-light text-text-secondary text-sm font-medium hover:text-white active:scale-95 transition-all"
+                >
+                  Ver el método
+                </Link>
+              </div>
             </div>
             <div className="w-24 h-32 sm:w-32 sm:h-44 md:w-44 md:h-60 rounded-2xl overflow-hidden ring-2 ring-accent-blue/25 shrink-0 animate-fade-in shadow-xl">
               <Image
@@ -76,6 +94,25 @@ export default function Home() {
                 priority
               />
             </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Stats / social proof bar */}
+      <section className="relative pb-4">
+        <Container>
+          <div className="flex items-center gap-4 overflow-x-auto pb-1 animate-fade-in-up" style={{ scrollbarWidth: 'none' }}>
+            {[
+              { value: '3.200+', label: 'usuarios activos' },
+              { value: '4.8★', label: 'valoración media' },
+              { value: '21 días', label: 'para transformarte' },
+              { value: '97%', label: 'lo recomiendan' },
+            ].map((stat) => (
+              <div key={stat.label} className="flex items-center gap-2.5 shrink-0 px-4 py-2.5 rounded-xl glass-light">
+                <span className="font-heading font-black text-white text-sm">{stat.value}</span>
+                <span className="text-text-muted text-xs">{stat.label}</span>
+              </div>
+            ))}
           </div>
         </Container>
       </section>
@@ -94,9 +131,9 @@ export default function Home() {
                     <Gift className="w-5 h-5 text-accent-blue" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-white font-bold text-sm leading-tight">Regístrate gratis</p>
-                    <p className="text-emerald-400 text-xs font-semibold mt-0.5">🎁 Regalo: Reto de 7 días incluido</p>
-                    <p className="text-text-secondary text-xs mt-1">Meditaciones, IA Coach, NeuroScore y más sin coste</p>
+                    <p className="text-white font-bold text-sm leading-tight">Regístrate gratis — sin tarjeta</p>
+                    <p className="text-emerald-400 text-xs font-semibold mt-0.5">🎁 Reto de 7 días incluido al registrarte</p>
+                    <p className="text-text-secondary text-xs mt-1">Meditaciones, IA Coach, NeuroScore y Diario desbloqueados</p>
                   </div>
                   <div className="shrink-0 px-3 py-1.5 rounded-xl bg-accent-blue text-white text-xs font-bold self-center">
                     Entrar
@@ -379,8 +416,8 @@ export default function Home() {
                       <Crown className="w-6 h-6 text-[#0066FF]" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-heading font-semibold text-white text-base mb-0.5">Desbloquea Premium</h3>
-                      <p className="text-text-secondary text-xs">Todas las meditaciones y artículos por 4,99 &euro;/mes</p>
+                      <h3 className="font-heading font-semibold text-white text-base mb-0.5">Acceso Premium completo</h3>
+                      <p className="text-text-secondary text-xs">Todo sin límites · desde 4,99 &euro;/mes · cancela cuando quieras</p>
                     </div>
                     <ChevronRight className="w-5 h-5 text-text-muted shrink-0" />
                   </div>
