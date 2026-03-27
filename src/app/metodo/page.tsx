@@ -7,7 +7,7 @@ import { ShieldOff, Target, User, Heart, Eye, Clock, Brain, Zap, Activity } from
 
 export const metadata: Metadata = {
   title: 'Método N.E.U.R.O. — Berzosa Neuro',
-  description: 'La presencia no se encuentra. Se entrena. Un framework práctico para entrenar conciencia y cortar el ruido mental.',
+  description: 'Accede a tu supraconciencia, entrena metacognición y produce cambios cerebrales reales mediante neuroplasticidad. El framework científico del Método N.E.U.R.O.',
 }
 
 const steps = [
@@ -70,7 +70,7 @@ export default function MetodoPage() {
               MÉTODO N.E.U.R.O.
             </h1>
             <p className="text-text-secondary text-lg md:text-xl animate-fade-in-up">
-              La presencia no se encuentra. Se entrena.
+              Supraconciencia, metacognición y neuroplasticidad. El framework científico para eliminar el ruido mental.
             </p>
           </div>
         </Container>
@@ -91,24 +91,24 @@ export default function MetodoPage() {
                     Porque cada letra de este método tiene un correlato directo en tu cerebro. No es un nombre comercial. No es marketing. Es lo que es.
                   </p>
                   <p>
-                    Cuando neutralizas un pensamiento, estás reduciendo la actividad de la Red Neuronal por Defecto. Cuando entrenas la atención, estás engrosando tu corteza prefrontal. Cuando te ubicas en el cuerpo, estás fortaleciendo la ínsula. Cuando regulas una emoción, estás frenando la amígdala con tu corteza prefrontal. Cuando observas sin identificarte, estás desactivando el circuito del ego narrativo.
+                    Cuando neutralizas un pensamiento, estás reduciendo la actividad de la Red Neuronal por Defecto. Cuando entrenas la atención, estás engrosando tu corteza prefrontal. Cuando te ubicas en el cuerpo, estás fortaleciendo la ínsula. Cuando regulas una emoción, estás frenando la amígdala con tu corteza prefrontal. Cuando observas sin identificarte, estás practicando metacognición real: la capacidad de ver tus propios procesos mentales como objetos, no como tu identidad.
                   </p>
                   <p className="text-white font-medium">
-                    Cada paso del método tiene nombre y apellido neuronal. Cada ejercicio cambia físicamente la estructura de tu cerebro. Eso es neuroplasticidad. Y por eso se llama NEURO.
+                    El resultado acumulado de esa práctica es acceder a la supraconciencia: el estado en que observas la mente sin ser arrastrado por ella. Cada ejercicio cambia físicamente la estructura de tu cerebro. Eso es neuroplasticidad. Y por eso se llama NEURO.
                   </p>
                 </div>
                 <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-dark-bg/50">
                     <Brain className="w-5 h-5 text-accent-blue shrink-0" />
-                    <span className="text-sm text-white">Neuroplasticidad real</span>
+                    <span className="text-sm text-white">Supraconciencia activa</span>
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-dark-bg/50">
                     <Activity className="w-5 h-5 text-accent-blue shrink-0" />
-                    <span className="text-sm text-white">Medible por neuroimagen</span>
+                    <span className="text-sm text-white">Metacognición aplicada</span>
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-dark-bg/50">
                     <Zap className="w-5 h-5 text-accent-blue shrink-0" />
-                    <span className="text-sm text-white">Cero misticismo</span>
+                    <span className="text-sm text-white">Neuroplasticidad real</span>
                   </div>
                 </div>
               </div>

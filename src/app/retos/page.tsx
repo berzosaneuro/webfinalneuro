@@ -172,7 +172,7 @@ export default function RetosPage() {
       <section className="pt-8 md:pt-16 pb-4">
         <Container>
           <h1 className="font-heading text-3xl font-bold text-white mb-1 animate-fade-in">Retos Semanales</h1>
-          <p className="text-text-secondary text-sm animate-fade-in-up">Microhábitos con base neurocientífica. 7 días cada uno.</p>
+          <p className="text-text-secondary text-sm animate-fade-in-up">Microhábitos de metacognición con base neurocientífica. 7 días para producir cambios reales mediante neuroplasticidad.</p>
         </Container>
       </section>
 

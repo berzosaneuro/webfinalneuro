@@ -6,7 +6,7 @@ import PresenceTimer from './PresenceTimer'
 
 export const metadata: Metadata = {
   title: 'Sala de Meditación — Berzosa Neuro',
-  description: 'Apaga el ruido mental. Vuelve al presente. Meditaciones guiadas por tema y duración.',
+  description: 'Neuroplasticidad en acción. Meditaciones guiadas para entrenar supraconciencia y metacognición con el Método N.E.U.R.O.',
 }
 
 export default function MeditacionPage() {
@@ -21,7 +21,7 @@ export default function MeditacionPage() {
               Meditación
             </h1>
             <p className="text-text-secondary text-base animate-fade-in-up">
-              25 sesiones guiadas. 10 gratis · 15 premium.
+              25 sesiones para entrenar supraconciencia y producir neuroplasticidad real. 10 gratis · 15 premium.
             </p>
           </div>
         </Container>

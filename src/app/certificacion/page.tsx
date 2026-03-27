@@ -6,7 +6,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Certificación Guía Berzosa Neuro',
-  description: 'Formación de 3 meses para convertirte en Guía certificado de Berzosa Neuro. Neurociencia + meditación + facilitación.',
+  description: 'Formación de 3 meses para convertirte en Guía certificado del Método N.E.U.R.O. Supraconciencia, metacognición y neuroplasticidad aplicada.',
 }
 
 const modules = [
@@ -42,7 +42,7 @@ export default function CertificacionPage() {
               Conviértete en Guía<br /><span className="gradient-text">Berzosa Neuro</span>
             </h1>
             <p className="text-text-secondary text-lg animate-fade-in-up">
-              3 meses de formación intensiva. Neurociencia + meditación + facilitación. Crea tu propio negocio de bienestar mental.
+              3 meses de formación intensiva en supraconciencia, metacognición y neuroplasticidad aplicada. Conviértete en guía certificado del Método N.E.U.R.O. y crea tu propio negocio de bienestar mental.
             </p>
           </div>
         </Container>

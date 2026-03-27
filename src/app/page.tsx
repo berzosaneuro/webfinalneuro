@@ -61,13 +61,13 @@ export default function Home() {
             <div className="flex-1">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-blue/10 border border-accent-blue/20 mb-3 animate-fade-in">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse" />
-                <span className="text-accent-blue text-[11px] font-semibold tracking-wide uppercase">Método Berzosa · Neuroplasticidad</span>
+                <span className="text-accent-blue text-[11px] font-semibold tracking-wide uppercase">Supraconciencia · Metacognición · Neuroplasticidad</span>
               </div>
               <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-3 animate-fade-in">
                 Elimina el ruido<br className="hidden sm:block" /> de tu mente
               </h1>
               <p className="text-text-secondary text-sm md:text-base animate-fade-in-up max-w-sm mb-5 leading-relaxed">
-                La plataforma de entrenamiento mental que te devuelve el control. Sin apps dispersas. Sin distracciones.
+                Accede a tu supraconciencia con el Método N.E.U.R.O. Entrena metacognición, mide tu progreso con NeuroScore diario y produce cambios cerebrales reales mediante neuroplasticidad.
               </p>
               <div className="flex items-center gap-3 animate-fade-in-up">
                 <Link
