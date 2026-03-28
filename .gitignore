@@ -1,10 +1,26 @@
+# Dependencies & build
 node_modules
 .next
 out
-.DS_Store
 *.tsbuildinfo
 next-env.d.ts
+
+# Env & secrets
+.env
 .env.local
 .env*.local
 
+# Local / IDE
+.DS_Store
+.claude/
+.cursor/
+
+# Deploy
 .vercel
+
+# Backups / zips (no versionar)
+backups/
+*.zip
+
+# Icono accidental exportado con ruta absoluta en el nombre
+public/icons/c__*
