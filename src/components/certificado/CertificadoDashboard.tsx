@@ -104,8 +104,8 @@ export default function CertificadoDashboard() {
           </p>
         </div>
 
-        <div className="relative">
-          <PDFViewer width="100%" height={360} showToolbar={false} style={{ border: 'none', display: 'block' }}>
+        <div className="relative block">
+          <PDFViewer width="100%" height={360} showToolbar={false} style={{ border: 'none' }}>
             {certDoc}
           </PDFViewer>
 

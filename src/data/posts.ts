@@ -111,8 +111,6 @@ Salir del piloto automático no significa estar hiperconsciente de todo. Signifi
 La conciencia es como un foco de luz: no puedes iluminar todo a la vez, pero puedes elegir qué iluminas.`,
     exercise: 'Elige tres momentos del día (al despertar, al comer, al acostarte) para hacer una "pausa de conciencia" de 30 segundos: para, respira, observa qué sientes y dónde estás. Sin juzgar, solo observar.',
   },
-]
-
   {
     slug: 'la-ansiedad-como-brujula',
     title: 'La ansiedad como brújula',
