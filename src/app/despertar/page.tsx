@@ -13,7 +13,7 @@ const revelations = [
   {
     icon: Heart,
     ecm: 'En una ECM sientes amor incondicional',
-    neuro: 'La meditación de compasión activa las mismas áreas cerebrales (ínsula anterior + córtex cingulado). Sin trauma.',
+    neuro: 'La compasión guiada abre el pecho sin drama: es práctica, no teatro. Sin trauma.',
     color: 'text-rose-400',
     bg: 'bg-rose-500/10',
   },
@@ -27,14 +27,14 @@ const revelations = [
   {
     icon: Sun,
     ecm: 'En una ECM desaparece el miedo',
-    neuro: 'La exposición metacognitiva reduce la actividad de la amígdala. Entrenas tu cerebro para no reaccionar desde el miedo.',
+    neuro: 'Mirar el miedo con un poco de distancia enseña a no reaccionar en automático. Se entrena, como todo lo demás.',
     color: 'text-violet-400',
     bg: 'bg-violet-500/10',
   },
   {
     icon: Sparkles,
     ecm: 'En una ECM sientes unidad con todo',
-    neuro: 'La meditación de presencia profunda desactiva la "red neuronal por defecto" (DMN). El ego se apaga. Sin peligro.',
+    neuro: 'La presencia profunda deja de alimentar el modo rumia. El ruido del “yo” afloja. Sin peligro.',
     color: 'text-cyan-400',
     bg: 'bg-cyan-500/10',
   },
@@ -67,7 +67,7 @@ export default function DespertarPage() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-rose-400">para despertar.</span>
             </h1>
             <p className="text-text-secondary text-base md:text-lg animate-fade-in-up leading-relaxed">
-              Las experiencias cercanas a la muerte revelan verdades profundas. Pero la neurociencia demuestra que puedes acceder a esas mismas revelaciones <strong className="text-white">entrenando tu mente</strong>, no arriesgando tu vida.
+              Las experiencias cercanas a la muerte revelan verdades profundas. Y en el día a día puedes tocar algo parecido <strong className="text-white">entrenando tu mente con método</strong>, sin arriesgar tu vida.
             </p>
             <div className="flex justify-center mt-8 animate-fade-in-up">
               <ArrowDown className="w-5 h-5 text-text-muted animate-bounce" />
@@ -144,7 +144,7 @@ export default function DespertarPage() {
                   No necesitas una experiencia traumática para entender qué importa. No necesitas estar al borde de la muerte para dejar de vivir en piloto automático. Solo necesitas entrenar tu atención y observar tu mente con las herramientas correctas.
                 </p>
                 <p className="text-white/70 text-xs uppercase tracking-widest font-medium">
-                  Neurociencia. No misticismo. No muerte.
+                  Método y experiencia. Sin misticismo vacío. Sin drama innecesario.
                 </p>
               </div>
             </div>

@@ -35,7 +35,7 @@ export default function IACoachPage() {
     {
       id: 'welcome',
       role: 'coach',
-      text: 'Hola. Soy tu Coach de Consciencia, impulsado por inteligencia artificial y neurociencia.\n\nPuedo guiarte con ejercicios de respiración, meditación, metacognición y presencia. Cada respuesta es única para ti.\n\n¿Cómo te sientes ahora mismo?',
+      text: 'Hola. Soy tu Coach de Consciencia: IA con el tono del Método N.E.U.R.O.\n\nPuedo guiarte con respiración, meditación corta y pasos para cuando la cabeza no para. Sin tecnicismos.\n\n¿Cómo estás ahora mismo?',
       timestamp: new Date(),
     },
   ])
@@ -124,7 +124,7 @@ export default function IACoachPage() {
                   </span>
                 )}
               </h1>
-              <p className="text-text-muted text-xs">Inteligencia artificial + neurociencia</p>
+              <p className="text-text-muted text-xs">IA que habla claro, como una persona</p>
             </div>
           </div>
         </Container>

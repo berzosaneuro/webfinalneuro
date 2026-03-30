@@ -18,7 +18,7 @@ const days = [
     title: 'N — Neutraliza: observa el ruido',
     desc: 'Antes de cambiar nada hay que ver qué hay. Hoy mides cuánto ruido mental tienes. Sin juzgar, sin cambiar. Solo contar.',
     exercise: 'Siéntate en silencio con los ojos cerrados. Cada vez que aparezca un pensamiento —cualquiera— cuenta uno en silencio. Hazlo 3 minutos. Al terminar, anota el número. Ese es tu índice de ruido mental inicial: tu punto de partida.',
-    neuro: 'Al observar el propio pensamiento activas la corteza prefrontal dorsolateral, la sede de la metacognición. La Red Neuronal por Defecto (DMN), responsable del rumiar mental, se desactiva parcialmente cuando la observas con intención. Es el mismo mecanismo que la meditación vipassana: la observación consciente interrumpe el bucle automático.',
+    neuro: 'Cuando cuentas sin juzgar, la cabeza afloja. No es teoría: es notar el ruido en lugar de pelear con él. Ese gesto simple ya cambia cómo vives el resto del día.',
     category: 'N — Neutraliza', icon: Brain, exercise_link: 'counter', duration: '3 min',
   },
   {
@@ -26,7 +26,7 @@ const days = [
     title: 'E — Entrena: primer foco sostenido',
     desc: 'La atención es un músculo. Hoy haces tu primera serie. Sencillo en teoría, difícil en práctica. Eso es exactamente lo que lo hace efectivo.',
     exercise: 'Pon un temporizador de 5 minutos. Elige un punto fijo: la llama de una vela, un punto en la pared, el sonido del ambiente. Mantén tu atención ahí. Cada vez que tu mente se desvíe, di mentalmente "distracción" y vuelve. Cuenta cuántas veces regresas. Ese número es tu marcador de entrenamiento del día.',
-    neuro: 'Cada redirección de la atención fortalece las conexiones entre la corteza cingulada anterior y la corteza prefrontal. Con práctica repetida se aumenta la densidad sináptica en estas regiones, lo que se traduce en mayor control del foco, menor impulsividad y mejor filtrado de distractores. Literalmente haces pesas con la corteza prefrontal.',
+    neuro: 'Cada vez que vuelves al foco, entrenas el músculo de la atención. Al principio cansa; luego se vuelve algo que sí puedes elegir.',
     category: 'E — Entrena', icon: Target, exercise_link: 'meditation', duration: '5 min',
   },
   {
@@ -34,7 +34,7 @@ const days = [
     title: 'U — Ubícate: aterriza en el cuerpo',
     desc: 'Tu mente viaja al pasado y al futuro constantemente. Tu cuerpo nunca se mueve del presente. Hoy aprendes a usarlo como ancla.',
     exercise: 'Escaneo corporal de 5 minutos. Empieza por los pies: ¿calor, frío, presión, hormigueo, nada? Sube despacio: pantorrillas, rodillas, muslos, cadera, vientre, pecho, manos, brazos, hombros, cuello, cara. 20-30 segundos por zona. No intentes cambiar nada. Solo observa lo que hay.',
-    neuro: 'El escaneo corporal activa la ínsula, la región encargada de la interocepción. A mayor desarrollo insular, mejor regulación emocional y mejores decisiones (marcadores somáticos de Damasio). También reduce la actividad de la amígdala al cambiar el foco de la amenaza percibida a las sensaciones corporales neutras.',
+    neuro: 'Bajar al cuerpo es la forma más honesta de volver al presente. Cuando la cabeza va a mil, las sensaciones simples te devuelven el suelo.',
     category: 'U — Ubícate', icon: Heart, exercise_link: 'bodyscan', duration: '5 min',
   },
   {
@@ -42,7 +42,7 @@ const days = [
     title: 'R — Regula: etiqueta lo que sientes',
     desc: 'Las emociones no son el problema. El problema es reaccionar desde ellas sin elegirlo. Hoy aprendes a poner nombre a lo que sientes para reducir su intensidad.',
     exercise: 'Durante todo el día, cada vez que notes una emoción intensa: 1) Para. 2) Pregúntate: ¿qué siento exactamente? Nómbralo: "hay ansiedad", "hay irritación", "hay tristeza". 3) Localiza dónde lo sientes en el cuerpo. 4) Respira: inhala 4s, exhala 8s. Tres veces. Después actúa o no. Practica mínimo 3 veces hoy.',
-    neuro: 'El etiquetado emocional (affect labeling) reduce la actividad de la amígdala hasta un 50% según estudios de Lieberman et al. (2007). Al poner nombre a un estado emocional activas la corteza prefrontal ventrolateral, que actúa como freno neurológico del sistema límbico. No es supresión: es regulación descendente consciente.',
+    neuro: 'Nombrar lo que sientes sin drama suele bajar la intensidad. No para negar la emoción: para no actuar desde la ciega.',
     category: 'R — Regula', icon: Shield, exercise_link: 'labeler', duration: 'Todo el día',
   },
   {
@@ -50,7 +50,7 @@ const days = [
     title: 'O — Observa: el espacio entre tú y tus pensamientos',
     desc: 'El más importante de los 5 pasos. No eres tus pensamientos. No eres tus emociones. Eres quien los observa. Hoy lo experimentas por primera vez.',
     exercise: 'Cierra los ojos 5 minutos. Imagina que estás sentado en la orilla de un río. Tus pensamientos son hojas que flotan en el agua. Tu trabajo es solo observar las hojas desde la orilla, sin subirte a ninguna. Cuando notes que te enganchaste a un pensamiento —que ya estás dentro de él— simplemente di "enganchado" y vuelve a la orilla. Cada vuelta es una repetición.',
-    neuro: 'Adoptar la posición del observador desactiva la corteza prefrontal medial (el "yo narrativo") y activa la red de salience y atención ejecutiva. Los estudios de neuroimagen en meditadores muestran reducción de grosor en el córtex prefrontal medial —menos "yo" ruidoso— y aumento en zonas de atención sostenida. El ego no es eterno: tiene un sustrato neural modificable.',
+    neuro: 'Ver el pensamiento pasar sin confundirte con él es el paso que más paz da. No pasa en un día: se entrena como todo lo demás.',
     category: 'O — Observa', icon: Eye, exercise_link: 'meditation', duration: '5 min',
   },
   {
@@ -58,7 +58,7 @@ const days = [
     title: 'Primera integración N.E.U.R.O.',
     desc: 'Hoy juntas las 5 letras por primera vez. No como un repaso: como un flujo continuo. Así es como el método funciona en la vida real.',
     exercise: '1) N (2 min): cuenta pensamientos — ¿cuántos tienes hoy vs. el día 1? 2) E (2 min): foco en un punto fijo, cuenta regresos. 3) U (2 min): escaneo corporal rápido de pies a cabeza. 4) R (1 min): nombra 3 emociones que notes en este momento. 5) O (3 min): observador puro, deja pasar todo. Total: 10 min. Anota qué ha cambiado esta semana.',
-    neuro: 'Al integrar los 5 pasos activas simultáneamente: corteza prefrontal (N), cíngulo anterior (E), ínsula (U), sistema límbico regulado (R) y red ejecutiva (O). Es el entrenamiento cerebral más completo posible sin equipamiento. Los estudios de mindfulness intensivo muestran cambios en conectividad funcional ya en la primera semana.',
+    neuro: 'Juntar las cinco letras en un solo bloque es llevar el método a la vida real. No hace falta laboratorio: hace falta repetición honesta.',
     category: 'Integración', icon: Zap, exercise_link: 'meditation', duration: '10 min',
   },
   {
@@ -66,7 +66,7 @@ const days = [
     title: 'Cierre semana 1: mide tu cambio',
     desc: 'Fin de la primera semana. Hoy mides. Compara con el día 1 y decides si quieres continuar. Los datos no mienten.',
     exercise: '1) Cuenta pensamientos 3 minutos. Compara con el día 1. 2) Haz el Test de Ruido Mental en /test. Guarda tu puntuación. 3) Escribe en el diario: ¿qué momento de esta semana recuerdas más? ¿Cuándo notaste el mayor cambio? ¿Qué quieres seguir entrenando? 4) Meditación libre de 5 minutos: sin guía, solo tú y tu mente.',
-    neuro: '7 días de práctica consistente generan cambios medibles en la conectividad funcional entre la corteza prefrontal y la amígdala. No son cambios estructurales (eso requiere 6-8 semanas), pero sí el inicio del nuevo cableado. La semana 2 consolida lo aprendido y lleva la práctica a situaciones reales de mayor dificultad.',
+    neuro: 'Una semana entera ya deja huella si fuiste constante. La segunda semana es llevar esto a lo incómodo: el trabajo, la familia, el tráfico.',
     category: 'Cierre semana', icon: Sparkles, exercise_link: 'test', duration: '15 min',
   },
 
@@ -76,7 +76,7 @@ const days = [
     title: 'Atención selectiva: escucha sin distracción',
     desc: 'La atención no solo se entrena en silencio. Hoy la llevas a una situación real: escuchar. Solo escuchar.',
     exercise: 'Elige un sonido del entorno —lluvia, coches, música, silencio— y escúchalo durante 3 minutos sin hacer nada más. Luego, en tu próxima conversación real del día, practica escuchar sin preparar tu respuesta mientras el otro habla. Solo recibe. Anota cómo te resultó.',
-    neuro: 'La atención auditiva activa el córtex auditivo primario junto con la corteza prefrontal. Escuchar sin preparar respuesta reduce la actividad del "yo" narrativo y aumenta la empatía neural: las neuronas espejo se activan mejor cuando no hay interferencia del monólogo interno.',
+    neuro: 'Escuchar de verdad —sin ensayar la réplica— cambia las conversaciones. Es práctica de presencia disfrazada de cortesía.',
     category: 'Entrenamiento', icon: Target, exercise_link: 'meditation', duration: '3 min + práctica',
   },
   {
@@ -84,7 +84,7 @@ const days = [
     title: 'Regulación avanzada: el protocolo STOP',
     desc: 'Hoy aprendes el protocolo de emergencia para regular cualquier emoción intensa en cualquier momento y lugar.',
     exercise: 'Memoriza y practica hoy el protocolo STOP: S — Para (Stop). T — Respira profundo (Take a breath). O — Observa: ¿qué piensas? ¿Qué sientes? ¿Qué está pasando en tu cuerpo? P — Procede con intención. Úsalo al menos 3 veces hoy, preferiblemente ante una situación de estrés real.',
-    neuro: 'El protocolo STOP crea un espacio de 3-6 segundos entre estímulo y respuesta. En ese espacio la corteza prefrontal tiene tiempo de activarse antes de que la amígdala dicte la respuesta. Es la diferencia entre reactividad automática y respuesta elegida. Viktor Frankl lo llamó "espacio de libertad". La neurociencia lo llama inhibición de respuesta prefrontal.',
+    neuro: 'STOP es un respiro entre lo que pasa y lo que haces. Ese hueco pequeño es donde deja de mandar el piloto automático.',
     category: 'Regulación', icon: Shield, exercise_link: 'labeler', duration: 'Todo el día',
   },
   {
@@ -92,7 +92,7 @@ const days = [
     title: 'Meditación caminando: presencia en movimiento',
     desc: 'La meditación no es solo quedarse quieto. Hoy llevas la atención al movimiento. Al caminar como práctica.',
     exercise: 'Camina 10 minutos en solitario, sin teléfono, sin música. Presta atención completa a cada paso: la planta del pie tocando el suelo, el cambio de peso, el movimiento de los brazos, la temperatura del aire. Cuando tu mente se vaya a pensamientos, di "pensamiento" y vuelve al paso. Camina despacio si ayuda.',
-    neuro: 'La meditación caminando integra la red somatosensorial (sensaciones del movimiento), la red de atención y el sistema vestibular. Reduce la actividad de la DMN sin requerir postura estática. Estudios con meditadores muestran que la práctica en movimiento mejora la generalización de la atención a la vida cotidiana más que la práctica sedentaria exclusiva.',
+    neuro: 'Caminar despacio con atención en los pasos enseña lo mismo que el cojín, pero en el mundo real. La vida no es solo sentarse.',
     category: 'Presencia', icon: Wind, exercise_link: 'timer', duration: '10 min',
   },
   {
@@ -100,23 +100,23 @@ const days = [
     title: 'Mente del principiante: ver sin filtros',
     desc: 'Tu cerebro economiza energía usando atajos y etiquetas. Hoy lo engañas para ver la realidad directamente, sin filtros del pasado.',
     exercise: 'Elige un objeto cotidiano: una taza, una fruta, tus propias manos. Obsérvalo durante 3 minutos como si fuera la primera vez que lo ves en tu vida. Fíjate en los colores, texturas, formas, sombras que normalmente ignoras. Anota 10 detalles que no habías notado antes. Luego, durante el resto del día, aplica la misma mirada a una situación o persona.',
-    neuro: 'La mente del principiante (shoshin) desactiva el procesamiento top-down —el sistema de predicciones y atajos del cerebro— y activa el procesamiento bottom-up: percepción directa sin filtro conceptual. Esto reduce el sesgo de confirmación y aumenta la creatividad al forzar nuevas conexiones en la corteza asociativa.',
+    neuro: 'Mirar lo cotidiano como si fuera nuevo rompe el piloto automático. Ves detalles que el hábito había borrado.',
     category: 'Presencia', icon: Eye, exercise_link: 'journal', duration: '3 min + observación',
   },
   {
     day: 12, week: 2,
     title: 'Control de impulsos: la pausa de 10 segundos',
-    desc: 'Los impulsos no son inevitables. Son señales que llegan antes de que la corteza prefrontal tenga tiempo de responder. Hoy le das ese tiempo.',
+    desc: 'Los impulsos no son inevitables. Son señales que llegan antes de que puedas elegir. Hoy les das ese tiempo.',
     exercise: 'Regla del día: antes de cualquier acción impulsiva —abrir el móvil sin motivo, comer sin hambre, mandar un mensaje reactivo, decir algo de golpe— espera 10 segundos. Cuenta los 10 en tu cabeza. Luego decide conscientemente si lo haces o no. Al final del día anota cuántos impulsos interceptaste y cuántos seguiste de todas formas.',
-    neuro: 'El córtex prefrontal dorsolateral tarda aproximadamente 300-500ms en activarse tras un estímulo. Los impulsos se generan antes: en el sistema límbico y los ganglios basales. La pausa de 10 segundos da tiempo a la corteza prefrontal para inhibir la respuesta automática. Es el fundamento neurológico del autocontrol: no fuerza de voluntad, sino tiempo de procesamiento.',
+    neuro: 'Diez segundos suenan a nada; en la práctica son un freno real. No es fuerza de voluntad mágica: es dar espacio antes de actuar.',
     category: 'Autocontrol', icon: Brain, exercise_link: 'counter', duration: 'Todo el día',
   },
   {
     day: 13, week: 2,
     title: 'Compasión activa: metta',
-    desc: 'La compasión no es debilidad. Es una de las funciones cerebrales más avanzadas. Y se entrena exactamente igual que la atención.',
+    desc: 'La compasión no es debilidad. Es una forma madura de relacionarte contigo y con los demás. Y se entrena como la atención: con repetición.',
     exercise: 'Siéntate 8 minutos. Visualiza a estas personas en orden y envía mentalmente estas palabras a cada una: "Que estés bien. Que estés en paz. Que seas feliz." 1) Tú mismo. 2) Alguien a quien quieres. 3) Una persona neutral (el cajero, un vecino). 4) Alguien con quien tengas dificultad. Nota qué sientes en el cuerpo con cada persona.',
-    neuro: 'La práctica de metta (loving-kindness) activa la ínsula anterior y la corteza cingulada anterior, regiones clave para la empatía. Estudios de Lutz et al. muestran que incluso principiantes generan estados neurales similares a los meditadores expertos con esta práctica. Aumenta la sensación de conexión social y reduce los marcadores inflamatorios de estrés.',
+    neuro: 'Desear bien —primero a ti, luego a otros— ablanda el día. No es postureo espiritual: es entrenar la mirada con la que te relacionas.',
     category: 'Emoción', icon: Heart, exercise_link: 'meditation', duration: '8 min',
   },
   {
@@ -124,7 +124,7 @@ const days = [
     title: 'Revisión media: mide tu progreso real',
     desc: 'Día 14. La mitad del camino. Hoy mides, comparas y ajustas. Los datos son tu brújula.',
     exercise: '1) Haz el Test de Ruido Mental en /test. Compara con tu puntuación del día 7. 2) Cuenta pensamientos 3 minutos: ¿cuántos tienes ahora vs. el día 1? 3) Revisa tu diario de esta semana: ¿qué patrones ves? ¿Qué ha mejorado? ¿Qué sigue siendo difícil? 4) Escribe 3 compromisos específicos para la semana 3.',
-    neuro: 'A las dos semanas de práctica consistente ya se observan cambios medibles en el grosor cortical de regiones prefrontales mediante neuroimagen. La conectividad entre prefrontal y amígdala se fortalece, reduciendo la reactividad emocional. Lo que mides hoy ya no es la misma mente que empezó el día 1.',
+    neuro: 'A mitad de camino lo que importa es la constancia, no la perfección. Si mides y escribes, ya ves patrones que antes pasaban desapercibidos.',
     category: 'Evaluación', icon: Zap, exercise_link: 'test', duration: '20 min',
   },
 
@@ -132,9 +132,9 @@ const days = [
   {
     day: 15, week: 3,
     title: 'Desconexión digital: presencia sin pantallas',
-    desc: 'Las pantallas interrumpen el foco atencional de media cada 2 minutos. Hoy descubres cómo se siente tu cerebro sin esa interferencia constante.',
+    desc: 'Las pantallas te pican cada poco. Hoy pruebas cómo se siente un tramo largo sin esa interferencia constante.',
     exercise: 'Durante 2 horas consecutivas hoy, desconéctate de todas las pantallas: móvil, ordenador, televisión. Puedes leer en papel, caminar, cocinar, observar, hablar en persona. Al terminar, registra en el diario: ¿qué sentiste durante las primeras dos horas? ¿Qué impulsos notaste? ¿Cómo te sientes ahora vs. antes?',
-    neuro: 'Las notificaciones digitales activan el sistema de recompensa dopaminérgico con recompensas variables de baja calidad, generando un patrón similar a la adicción. La desconexión forzada activa inicialmente el sistema de estrés (FOMO, inquietud) pero en 20-30 minutos el córtex prefrontal recupera su capacidad de funcionamiento en modo profundo. El cerebro necesita periodos sin interrupciones para consolidar memoria y generar insight.',
+    neuro: 'Las pantallas pican y cansan. Un tramo sin ellas al principio incomoda; luego notas más espacio mental y menos tirón hacia el móvil.',
     category: 'Autocontrol', icon: Shield, exercise_link: 'journal', duration: '2 horas',
   },
   {
@@ -142,7 +142,7 @@ const days = [
     title: 'Presencia en relaciones: escucha total',
     desc: 'La presencia no es un estado solitario. Es también cómo te relacionas. Hoy llevas la práctica a la conexión humana.',
     exercise: 'En tu próxima conversación importante del día: 1) Silencia mentalmente tu propio monólogo interno. 2) Escucha para entender, no para responder. 3) Mantén contacto visual sin forzarlo. 4) Cuando la otra persona termine, espera 3 segundos antes de responder. Anota después: ¿qué notaste de la otra persona que no sueles notar? ¿Cómo fue para ti?',
-    neuro: 'Escuchar con plena atención activa las neuronas espejo y la ínsula anterior, las bases neurales de la empatía. Cuando el monólogo interno se silencia, el cerebro puede procesar las microexpresiones y el tono emocional del otro con mucho mayor fidelidad. La calidad de las relaciones mejora directamente con la calidad de la atención que traes a ellas.',
+    neuro: 'Cuando dejas de ensayar tu respuesta mientras el otro habla, escuchas de verdad. Las relaciones cambian con la calidad de la atención que traes.',
     category: 'Presencia', icon: Users, exercise_link: 'journal', duration: 'Práctica real',
   },
   {
@@ -150,7 +150,7 @@ const days = [
     title: 'Restauración: Yoga Nidra',
     desc: 'El descanso profundo no es solo dormir. Hoy aprendes a acceder al estado entre vigilia y sueño donde el cerebro se restaura.',
     exercise: 'Justo antes de dormir, o en cualquier momento del día: túmbate cómodamente con los ojos cerrados. Recorre mentalmente tu cuerpo de pies a cabeza con esta instrucción: "Soy consciente de mis pies... soy consciente de mis pantorrillas..." (nombra cada parte). Después, visualiza estos contrastes en rápida sucesión: frío-calor, luz-oscuridad, pesado-ligero. Mantente en el umbral entre sueño y vigilia 10 minutos. Si te quedas dormido, también sirve.',
-    neuro: 'El Yoga Nidra induce el estado hipnagógico (ondas theta: 4-8 Hz), justo entre vigilia (alfa) y sueño (delta). En este estado, la consolidación de memoria episódica se acelera y el córtex prefrontal se restaura. Investigaciones del Army Research Laboratory muestran que 20 minutos de Yoga Nidra equivalen en recuperación cognitiva a 4 horas de sueño ligero.',
+    neuro: 'Es un descanso profundo sin dormir del todo. Mucha gente nota claridad al día siguiente sin necesidad de prometer milagros de laboratorio.',
     category: 'Restauración', icon: Moon, exercise_link: 'meditation', duration: '10 min',
   },
   {
@@ -158,7 +158,7 @@ const days = [
     title: 'Claridad vital: la pregunta que lo cambia todo',
     desc: 'La mayoría de las personas viven sin haber elegido conscientemente cómo vivir. Hoy te detienes a mirar.',
     exercise: 'Busca 15 minutos de soledad y silencio. Responde por escrito, sin censura: 1) Si te quedara 1 año de vida, ¿qué dejarías de hacer mañana? 2) ¿Qué harías más? 3) ¿Hay algo que nunca le has dicho a alguien importante? 4) ¿Cuál es el miedo que más está frenando tu vida? No busques las respuestas "correctas". Escribe lo primero que llegue.',
-    neuro: 'Este ejercicio activa la corteza prefrontal medial (autorreferencia) y el cíngulo posterior (perspectiva temporal). La confrontación con la finitud —incluso hipotética— desactiva temporalmente el modo "modo automático" y fuerza una evaluación desde la corteza prefrontal en lugar de los circuitos del hábito. Es uno de los ejercicios de claridad cognitiva más potentes conocidos.',
+    neuro: 'Preguntarte qué harías si el tiempo fuera finito corta el ruido. No es morbo: es ver qué importa de verdad.',
     category: 'Claridad', icon: Sparkles, exercise_link: 'despertar', duration: '15 min',
   },
   {
@@ -166,7 +166,7 @@ const days = [
     title: 'Rastreo emocional: diario de estados',
     desc: 'Lo que no se nombra no se puede cambiar. Hoy mapeas tu paisaje emocional real con precisión.',
     exercise: 'Cada 2-3 horas durante el día, para 30 segundos y registra en el diario: 1) ¿Qué emoción predomina ahora? (sé específico: no "mal", sino "frustrado", "ansioso", "aburrido", "tranquilo"...) 2) ¿A qué situación corresponde? 3) ¿Dónde lo sientes en el cuerpo? Mínimo 4 registros. Al final del día, revisa el mapa: ¿qué patrones ves?',
-    neuro: 'El vocabulario emocional preciso (granularidad emocional, Lisa Feldman Barrett) está directamente correlacionado con la regulación emocional. Las personas con mayor granularidad emocional toman mejores decisiones, tienen menos días de baja laboral y responden mejor a situaciones de estrés. Nombrar con precisión es una forma de regulación descendente.',
+    neuro: 'Decir "estoy hecho polvo" no es lo mismo que "estoy enfadado y agotado". Afinar el nombre de lo que sientes te da más manejo sobre el día.',
     category: 'Emoción', icon: Heart, exercise_link: 'journal', duration: 'Todo el día',
   },
   {
@@ -174,7 +174,7 @@ const days = [
     title: 'Estado de flujo: atención total',
     desc: 'El flujo (flow) no es suerte ni talento. Es el resultado de la atención sin fisuras. Hoy lo induces deliberadamente.',
     exercise: 'Elige una actividad que te suponga un reto moderado (no demasiado fácil, no imposible). Puede ser trabajo, música, escritura, deporte, cocina, cualquier cosa. Elimina todas las distracciones posibles. Sumérgete durante 20 minutos con atención completa. Si tu mente se va, vuelve a la tarea. Anota después: ¿lograste el estado de flujo? ¿Cuánto tiempo tardaste en entrar?',
-    neuro: 'El estado de flujo se caracteriza por la desactivación de la corteza prefrontal medial (desaparece el "yo") y la máxima sincronización entre regiones cerebrales relevantes para la tarea. Csikszentmihalyi lo identificó como el estado de mayor bienestar y rendimiento humano. Se accede cuando el nivel de reto está justo por encima de la habilidad actual.',
+    neuro: 'Flujo es quedar absorto sin mirar el reloj. Suele aparecer cuando el reto y tu nivel están en el punto justo: ni aburrido ni ahogado.',
     category: 'Maestría', icon: Flame, exercise_link: 'timer', duration: '20 min',
   },
   {
@@ -182,7 +182,7 @@ const days = [
     title: 'Graduación N.E.U.R.O.',
     desc: 'Día 21. Has llegado. Hoy no es el final: es el punto de partida de una nueva forma de relacionarte con tu mente.',
     exercise: '1) Test de Ruido Mental en /test: compara con los días 7 y 14. 2) Cuenta pensamientos 3 minutos: ¿cuántos vs. el día 1? 3) Meditación del observador de 10 minutos: integra todo lo aprendido. 4) Escribe tu declaración personal: ¿qué ha cambiado en estos 21 días? ¿Qué quieres seguir entrenando? ¿Cuál es tu próximo paso?',
-    neuro: 'A las 3 semanas de práctica consistente, los estudios de neuroimagen muestran cambios estructurales medibles: aumento del grosor cortical prefrontal, reducción del volumen de la amígdala y mayor conectividad entre las redes de atención y regulación emocional. No es metáfora: tu cerebro ha cambiado. El siguiente nivel es hacer de esto un estilo de vida permanente.',
+    neuro: 'Tres semanas honestas dejan una base distinta. Lo que sigue no es un final: es decidir que esto forma parte de cómo vives.',
     category: 'Graduación', icon: Sun, exercise_link: 'graduation', duration: '30 min',
   },
 ]
@@ -349,7 +349,7 @@ export default function ProgramaPage() {
                 <div className="rounded-xl border border-accent-blue/15 bg-accent-blue/5 p-4 mb-6">
                   <div className="flex items-center gap-2 mb-2">
                     <Brain className="w-4 h-4 text-accent-blue" />
-                    <h3 className="text-accent-blue text-xs font-semibold uppercase tracking-wider">Qué pasa en tu cerebro</h3>
+                    <h3 className="text-accent-blue text-xs font-semibold uppercase tracking-wider">Lo que notas al practicar</h3>
                   </div>
                   <p className="text-text-secondary text-sm leading-relaxed">{selected.neuro}</p>
                 </div>
@@ -398,7 +398,7 @@ export default function ProgramaPage() {
                 <Flame className="w-9 h-9 text-accent-blue" />
               </div>
               <h1 className="font-heading text-3xl font-bold text-white mb-3">21 días para apagar el ruido</h1>
-              <p className="text-text-secondary text-base mb-2">Un ejercicio diario de metacognición, atención y presencia.</p>
+              <p className="text-text-secondary text-base mb-2">Un ejercicio diario de observar la mente, entrenar la atención y estar presente.</p>
               <p className="text-text-muted text-sm mb-8">Cada día desbloquea el siguiente. Sin atajos.</p>
               <button
                 onClick={startProgram}

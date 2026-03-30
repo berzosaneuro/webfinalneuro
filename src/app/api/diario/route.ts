@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
+import { requireUserOr401 } from '@/lib/api-auth'
 
 export async function GET(request: Request) {
+  const auth = await requireUserOr401(request)
+  if (auth.error) return auth.error
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
-  const { searchParams } = new URL(request.url)
-  const email = searchParams.get('email')
-
-  if (!email) {
-    return NextResponse.json({ error: 'Email requerido' }, { status: 400 })
-  }
+  const email = auth.email
 
   const { data, error } = await supabase
     .from('diary_entries')
@@ -25,17 +23,20 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireUserOr401(request)
+  if (auth.error) return auth.error
   let body: { email?: string; date?: string; presenceLevel?: number; mood?: string; insight?: string }
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 })
   }
-  const { email, date, presenceLevel, mood, insight } = body
+  const { date, presenceLevel, mood, insight } = body
 
-  if (!email || !date) {
-    return NextResponse.json({ error: 'Email y fecha requeridos' }, { status: 400 })
+  if (!date) {
+    return NextResponse.json({ error: 'Fecha requerida' }, { status: 400 })
   }
+  const email = auth.email
 
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })

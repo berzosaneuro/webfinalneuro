@@ -33,6 +33,7 @@ function generateHRVPath() {
 }
 
 export default function BiofeedbackPage() {
+  const enabled = process.env.NEXT_PUBLIC_ENABLE_BIOFEEDBACK === 'true'
   const [hrv, setHrv] = useState(62)
   const [bpm, setBpm] = useState(68)
   const [coherence, setCoherence] = useState(7.4)
@@ -48,6 +49,18 @@ export default function BiofeedbackPage() {
     return () => clearInterval(interval)
   }, [])
 
+  if (!enabled) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-6 text-center">
+        <div className="glass rounded-3xl p-6 max-w-md">
+          <h1 className="font-heading text-white text-xl font-bold mb-2">Biofeedback no disponible por ahora</h1>
+          <p className="text-text-secondary text-sm">
+            Esta sección se mostraba con datos simulados. Está desactivada hasta conectar dispositivos y métricas reales.
+          </p>
+        </div>
+      </div>
+    )
+  }
   if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -211,7 +224,7 @@ export default function BiofeedbackPage() {
                 <div>
                   <p className="text-white text-sm font-medium mb-1">Variabilidad cardíaca (HRV)</p>
                   <p className="text-text-muted text-xs leading-relaxed">
-                    La HRV mide la variación entre latidos. Un HRV alto indica un sistema nervioso flexible y resiliente. La meditación aumenta la HRV activando el nervio vago.
+                    La HRV mide la variación entre latidos. Un HRV alto suele ir con más flexibilidad para pasar del estrés a la calma. La meditación y la respiración lenta suelen mejorarla con el tiempo.
                   </p>
                 </div>
               </div>
@@ -221,9 +234,9 @@ export default function BiofeedbackPage() {
                   <Activity className="w-4 h-4 text-green-400" />
                 </div>
                 <div>
-                  <p className="text-white text-sm font-medium mb-1">Tono vagal y sistema parasimpático</p>
+                  <p className="text-white text-sm font-medium mb-1">Calma medible: respiración y corazón</p>
                   <p className="text-text-muted text-xs leading-relaxed">
-                    El nervio vago es el freno del estrés. Meditar fortalece el tono vagal, activando la respuesta parasimpática: menor cortisol, mejor digestión, sueño profundo y claridad mental.
+                    Una respiración lenta y regular es la palanca más directa para bajar la alarma interna. Con práctica suele notarse mejor digestión, sueño más profundo y cabeza más clara.
                   </p>
                 </div>
               </div>

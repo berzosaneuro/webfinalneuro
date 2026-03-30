@@ -190,7 +190,7 @@ export default function CertificadoDocument({ nombre, email, completionDate }: P
             Método N.E.U.R.O.® · 12 Semanas · 84 Días de Práctica Continua
           </Text>
           <Text style={styles.pillarsText}>
-            Supraconciencia · Metacognición · Neuroplasticidad
+            Presencia · Claridad · Hábitos que se quedan
           </Text>
           <View style={styles.divider} />
         </View>

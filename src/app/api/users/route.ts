@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
 import { isEmailNotificationConfigured, sendNotification } from '@/lib/mailer'
+import { requireAdminOr401 } from '@/lib/api-auth'
 
 function isMissingTableError(message: string): boolean {
   const lower = message.toLowerCase()
@@ -12,7 +13,9 @@ function isMissingColumnError(message: string): boolean {
   return lower.includes('does not exist') && lower.includes('column')
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authError = await requireAdminOr401(request)
+  if (authError) return authError
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   try {

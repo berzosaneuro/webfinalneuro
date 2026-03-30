@@ -10,7 +10,7 @@ import {
   PhoneCall, PhoneMissed, Star, BookOpen, Map as MapIcon, Activity, Calendar, ClipboardList, ExternalLink, Pencil, X, Music
 } from 'lucide-react'
 
-type Tab = 'resumen' | 'usuarios' | 'audios' | 'biblioteca' | 'suscriptores' | 'clientes' | 'leads' | 'contactos' | 'llamadas' | 'comunidad'
+type Tab = 'resumen' | 'usuarios' | 'payments' | 'audios' | 'biblioteca' | 'suscriptores' | 'clientes' | 'leads' | 'contactos' | 'llamadas' | 'comunidad'
   | 'diario' | 'mapa' | 'neuroscore' | 'programa' | 'test'
 
 type Cliente = {
@@ -37,7 +37,24 @@ type MapaEntry = { id: string; user_email: string; date: string; presencia: numb
 type NeuroEntry = { id: string; user_email: string; date: string; score: number; meditated: boolean; exercise_done: boolean; test_done: boolean; despertar_done: boolean; journal_done: boolean }
 type ProgramaEntry = { id: string; user_email: string; start_date: string; completed_days: number[] }
 type TestResult = { id: string; user_email: string; score: number; level: string; created_at: string }
-type UserRow = { id: string; email: string; nombre: string; last_login_at: string; created_at: string }
+type PaymentRow = {
+  id: string
+  user_email: string
+  amount_paid: number
+  currency: string
+  status: string
+  paid_at: string | null
+  stripe_invoice_id: string
+}
+type UserRow = {
+  id: string
+  email: string
+  nombre: string
+  last_login_at: string
+  created_at: string
+  is_premium?: boolean
+  subscription_status?: string | null
+}
 type BiblioPost = { id: string; slug: string; title: string; date: string; summary: string; content: string; exercise: string; free: boolean }
 
 function EditBiblioForm({ post, onSave, onCancel }: { post: BiblioPost; onSave: (d: Partial<BiblioPost>) => void; onCancel: () => void }) {
@@ -116,7 +133,7 @@ function downloadCSV(data: Record<string, unknown>[], filename: string) {
 }
 
 export default function AdminPage() {
-  const { isAdmin, adminLogout } = useAdmin()
+  const { isAdmin, loading: adminLoading, adminLogout } = useAdmin()
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('resumen')
   const [loading, setLoading] = useState(true)
@@ -132,6 +149,7 @@ export default function AdminPage() {
   const [neuroscore, setNeuroscore] = useState<NeuroEntry[]>([])
   const [programa, setPrograma] = useState<ProgramaEntry[]>([])
   const [testResults, setTestResults] = useState<TestResult[]>([])
+  const [payments, setPayments] = useState<PaymentRow[]>([])
   const [usuarios, setUsuarios] = useState<UserRow[]>([])
   const [editingPost, setEditingPost] = useState<Post | null>(null)
   const [audioConfig, setAudioConfig] = useState<{ slot: string; url: string }[]>([])
@@ -147,7 +165,7 @@ export default function AdminPage() {
   const fetchAll = useCallback(async () => {
     setLoading(true)
     try {
-      const [cRes, lRes, coRes, llRes, pRes, sRes, uRes, aRes, bRes, dRes, mRes, nRes, progRes, tRes] = await Promise.allSettled([
+      const [cRes, lRes, coRes, llRes, pRes, sRes, uRes, payRes, aRes, bRes, dRes, mRes, nRes, progRes, tRes] = await Promise.allSettled([
         fetch('/api/clients'),
         fetch('/api/leads'),
         fetch('/api/contact'),
@@ -155,6 +173,7 @@ export default function AdminPage() {
         fetch('/api/community'),
         fetch('/api/subscribers'),
         fetch('/api/admin/users'),
+        fetch('/api/admin/payments'),
         fetch('/api/admin/audio-config'),
         fetch('/api/admin/biblioteca'),
         fetch('/api/admin/diario'),
@@ -170,6 +189,7 @@ export default function AdminPage() {
       if (pRes.status === 'fulfilled' && pRes.value.ok) setPosts(await pRes.value.json())
       if (sRes.status === 'fulfilled' && sRes.value.ok) setSubscribers(await sRes.value.json())
       if (uRes.status === 'fulfilled' && uRes.value.ok) setUsuarios(await uRes.value.json())
+      if (payRes.status === 'fulfilled' && payRes.value.ok) setPayments(await payRes.value.json())
       if (aRes.status === 'fulfilled' && aRes.value.ok) setAudioConfig(await aRes.value.json())
       if (dRes.status === 'fulfilled' && dRes.value.ok) setDiario(await dRes.value.json())
       if (mRes.status === 'fulfilled' && mRes.value.ok) setMapa(await mRes.value.json())
@@ -184,17 +204,19 @@ export default function AdminPage() {
   }, [])
 
   useEffect(() => {
+    if (adminLoading) return
     if (!isAdmin) {
       router.push('/admin/login')
       return
     }
     fetchAll()
-  }, [isAdmin, router, fetchAll])
+  }, [adminLoading, isAdmin, router, fetchAll])
 
+  if (adminLoading) return null
   if (!isAdmin) return null
 
-  const handleLogout = () => {
-    adminLogout()
+  const handleLogout = async () => {
+    await adminLogout()
     router.push('/admin/login')
   }
 
@@ -234,6 +256,25 @@ export default function AdminPage() {
       if (table === 'biblioteca_posts') setBiblioteca((prev) => prev.filter((b) => b.id !== id))
     } catch (err) {
       console.error('Error al eliminar:', err)
+    }
+  }
+
+  const updateUserPremium = async (u: UserRow, enablePremium: boolean) => {
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: u.id,
+          is_premium: enablePremium,
+          subscription_status: enablePremium ? 'manual_admin' : 'free',
+        }),
+      })
+      if (!res.ok) return
+      const updated = await res.json() as UserRow
+      setUsuarios((prev) => prev.map((row) => (row.id === u.id ? { ...row, ...updated } : row)))
+    } catch (err) {
+      console.error('Error al actualizar premium manual:', err)
     }
   }
 
@@ -279,6 +320,7 @@ export default function AdminPage() {
   const tabs: { id: Tab; label: string; icon: typeof Users; count: number }[] = [
     { id: 'resumen', label: 'Resumen', icon: BarChart3, count: 0 },
     { id: 'usuarios', label: 'Usuarios', icon: Users, count: usuarios.length },
+    { id: 'payments', label: 'Pagos', icon: Crown, count: payments.length },
     { id: 'audios', label: 'Audios', icon: Music, count: 0 },
     { id: 'biblioteca', label: 'Biblioteca', icon: BookOpen, count: biblioteca.length },
     { id: 'suscriptores', label: 'Emails', icon: Star, count: totalEmails },
@@ -404,11 +446,72 @@ export default function AdminPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-sm font-medium truncate">{u.email}</p>
-                      <p className="text-text-muted text-xs">{u.nombre || '—'} · Último acceso: {u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('es') : '—'}</p>
+                      <p className="text-text-muted text-xs">
+                        {u.nombre || '—'} · Último acceso: {u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('es') : '—'}
+                      </p>
+                      <div className="mt-1 flex items-center gap-2">
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full border ${u.is_premium ? 'text-emerald-300 border-emerald-500/30 bg-emerald-500/10' : 'text-text-muted border-white/10 bg-white/5'}`}>
+                          {u.is_premium ? 'Premium activo' : 'Free'}
+                        </span>
+                        <span className="text-[10px] text-text-muted">
+                          {u.subscription_status || 'none'}
+                        </span>
+                      </div>
                     </div>
+                    <button
+                      onClick={() => updateUserPremium(u, !u.is_premium)}
+                      className={`px-2.5 py-2 rounded-lg text-[10px] font-semibold shrink-0 ${u.is_premium ? 'bg-amber-500/15 text-amber-300 hover:bg-amber-500/25' : 'bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25'}`}
+                    >
+                      {u.is_premium ? 'Quitar PRO' : 'Dar PRO'}
+                    </button>
                     <button onClick={() => deleteItem('users', u.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 shrink-0">
                       <Trash2 className="w-4 h-4" />
                     </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {tab === 'payments' && (
+            <div className="space-y-2 animate-fade-in">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-text-secondary text-sm">Pagos Stripe registrados</p>
+                {payments.length > 0 && (
+                  <button
+                    onClick={() => downloadCSV(payments.map((p) => ({
+                      email: p.user_email,
+                      amount_paid: p.amount_paid,
+                      currency: p.currency,
+                      status: p.status,
+                      paid_at: p.paid_at,
+                      invoice: p.stripe_invoice_id,
+                    })), 'pagos-stripe')}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-accent-blue/10 text-accent-blue rounded-lg text-[10px] font-medium"
+                  >
+                    <Download className="w-3 h-3" /> CSV
+                  </button>
+                )}
+              </div>
+              {payments.length === 0 ? (
+                <div className="glass rounded-2xl p-8 text-center">
+                  <Crown className="w-10 h-10 text-text-muted mx-auto mb-3" />
+                  <p className="text-text-secondary text-sm">No hay pagos registrados</p>
+                </div>
+              ) : (
+                payments.map((p) => (
+                  <div key={p.id} className="glass rounded-2xl p-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                      <Crown className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-medium truncate">{p.user_email}</p>
+                      <p className="text-text-muted text-xs">
+                        {(p.amount_paid / 100).toFixed(2)} {p.currency.toUpperCase()} · {p.status}
+                        {p.paid_at ? ` · ${new Date(p.paid_at).toLocaleDateString('es')}` : ''}
+                      </p>
+                    </div>
+                    <span className="text-[10px] text-text-muted truncate max-w-[130px]">{p.stripe_invoice_id}</span>
                   </div>
                 ))
               )}

@@ -20,7 +20,7 @@ const features = [
 
 const ages = [
   { range: '6-8 años', desc: 'Sesiones cortas (3 min), muy visuales, con personajes animados.' },
-  { range: '9-10 años', desc: 'Sesiones de 5 min, introducción a la metacognición simple.' },
+  { range: '9-10 años', desc: 'Sesiones de 5 min, juegos simples para notar pensamientos y emociones.' },
   { range: '11-12 años', desc: 'Sesiones de 8 min, concepto de observador, diario de emociones.' },
 ]
 

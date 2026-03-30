@@ -121,7 +121,7 @@ export default function AdminDocsPage() {
               Entrenamiento Mental Diario
             </h2>
             <p className="text-text-secondary text-sm leading-relaxed mb-3">
-              Sección en la home: <strong>Entrenamiento N.E.U.R.O. del día</strong>. Ejercicio de metacognición que cambia cada día. Almacenamiento: <code>neuro_training_daily</code>. +10 NeuroScore al completar.
+              Sección en la home: <strong>Entrenamiento N.E.U.R.O. del día</strong>. Ejercicio breve de observación de la mente que cambia cada día. Almacenamiento: <code>neuro_training_daily</code>. +10 NeuroScore al completar.
             </p>
             <ul className="text-text-secondary text-sm space-y-1">
               <li>Lib: <code>lib/daily-training.ts</code></li>

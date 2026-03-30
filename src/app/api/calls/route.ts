@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
+import { requireAdminOr401 } from '@/lib/api-auth'
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authError = await requireAdminOr401(request)
+  if (authError) return authError
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { data, error } = await supabase
@@ -30,6 +33,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const authError = await requireAdminOr401(request)
+  if (authError) return authError
   let body: { clienteNombre?: string; telefono?: string; fecha?: string; hora?: string; notas?: string; motivo?: string }
   try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
   const { clienteNombre, telefono, fecha, hora, notas, motivo } = body
@@ -70,6 +75,8 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const authError = await requireAdminOr401(request)
+  if (authError) return authError
   let body: { id?: string; tipo?: string; duracion?: number }
   try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
   const supabase = getSupabase()

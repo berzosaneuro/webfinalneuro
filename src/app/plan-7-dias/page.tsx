@@ -24,7 +24,7 @@ const days = [
     bg: 'bg-violet-500/10',
     desc: 'La N del Método N.E.U.R.O. El primer paso no es callar la mente: es darte cuenta de cuánto ruido hay. Sin juzgar, sin cambiar nada. Solo observar y contar.',
     exercise: 'Siéntate en silencio con los ojos cerrados durante 3 minutos. Cada vez que aparezca un pensamiento —cualquiera— cuenta uno en silencio. Al terminar, anota el número total. Ese número es tu punto de partida: tu índice de ruido mental inicial.',
-    neuro: 'Estás activando la corteza prefrontal dorsolateral para monitorizar la Red Neuronal por Defecto (DMN). La DMN es la responsable del rumiar y el piloto automático. Observarla sin seguirla ya es el primer paso para desactivarla. Este acto de metacognición —pensar sobre el pensamiento— es lo que diferencia el cerebro consciente del reactivo.',
+    neuro: 'Contar sin juzgar te saca del piloto automático. No hace falta callar la mente: basta con ver el ruido. Ese gesto ya cambia cómo respondes al día.',
     link: '/ejercicios',
     duration: '3 min',
   },
@@ -37,7 +37,7 @@ const days = [
     bg: 'bg-cyan-500/10',
     desc: 'La E del Método N.E.U.R.O. La atención es un músculo. Se entrena, se debilita con el desuso y se fortalece con la práctica deliberada. Hoy haces tu primer entrenamiento real.',
     exercise: 'Elige un objeto del entorno: una vela, un punto en la pared, el sonido del ambiente. Mantén tu atención en ese objeto durante 5 minutos completos. Cada vez que tu mente se desvíe a un pensamiento, dite "distracción" y vuelve al objeto. El momento en que te das cuenta de que te fuiste ya ES el entrenamiento. Cuenta cuántas veces volviste.',
-    neuro: 'Cada vez que notas la distracción y redirigen tu atención, estás fortaleciendo las conexiones entre la corteza cingulada anterior y la corteza prefrontal. Con la práctica repetida, esto se traduce en mayor control del foco atencional, menor impulsividad y mejor toma de decisiones. Es literalmente hacer pesas con el cerebro.',
+    neuro: 'Cada vez que notas la distracción y vuelves al foco, entrenas la atención como un músculo. Al principio cansa; con el tiempo eliges mejor dónde pones la mirada.',
     link: '/meditacion',
     duration: '5 min',
   },
@@ -50,7 +50,7 @@ const days = [
     bg: 'bg-rose-500/10',
     desc: 'La U del Método N.E.U.R.O. Tu mente viaja al pasado y al futuro sin parar. Tu cuerpo siempre está aquí, en el presente. Hoy aprendes a usarlo como ancla de presencia.',
     exercise: 'Siéntate o túmbate cómodamente. Empieza por los pies: ¿notas calor, frío, presión, hormigueo? Sube despacio por piernas, cadera, vientre, pecho, manos, brazos, hombros, cuello, cara. En cada zona dedica 20-30 segundos. No intentes cambiar nada. Solo observa lo que hay. Total: 5 minutos.',
-    neuro: 'El escaneo corporal activa y fortalece la ínsula, la región cerebral encargada de la interocepción (la capacidad de sentir el interior del cuerpo). A mayor desarrollo de la ínsula, mejor regulación emocional y mejores decisiones. Antonio Damasio demostró que los "marcadores somáticos" —señales corporales— son esenciales para decidir bien. Sin cuerpo, no hay brújula.',
+    neuro: 'Sentir el cuerpo con calma te devuelve al presente cuando la cabeza va a mil. Es la ancla más simple y la que menos discute la mente.',
     link: '/ejercicios',
     duration: '5 min',
   },
@@ -63,7 +63,7 @@ const days = [
     bg: 'bg-emerald-500/10',
     desc: 'La R del Método N.E.U.R.O. Las emociones no son el problema. El problema es reaccionar desde ellas sin elegirlo. Hoy aprendes el protocolo de 3 pasos para regularlas antes de actuar.',
     exercise: 'Durante el día de hoy, cada vez que sientas una emoción intensa (ansiedad, enfado, tristeza, frustración): 1) Para. Detecta dónde la sientes en el cuerpo. 2) Nómbrala en voz baja o mentalmente: "hay enfado", "hay ansiedad". 3) Inhala 4 segundos, exhala 8 segundos. Tres veces. Luego decide qué hacer. Practica mínimo 2 veces hoy.',
-    neuro: 'Nombrar una emoción activa la corteza prefrontal ventrolateral y reduce la actividad de la amígdala hasta un 50% según estudios de Lieberman. Es el "affect labeling": poner palabra al estado emocional literalmente baja el voltaje del sistema límbico. La exhalación larga estimula el nervio vago y activa el sistema parasimpático. Tres capas de regulación en 30 segundos.',
+    neuro: 'Nombrar lo que sientes y alargar la exhalación suele bajar la intensidad. No es magia: es dejar de reaccionar en automático durante unos segundos.',
     link: '/ejercicios',
     duration: 'Todo el día',
   },
@@ -76,7 +76,7 @@ const days = [
     bg: 'bg-accent-blue/10',
     desc: 'La O del Método N.E.U.R.O. Este es el núcleo de todo. No eres tus pensamientos. No eres tus emociones. Eres quien los observa. Hoy lo experimentas por primera vez.',
     exercise: 'Cierra los ojos 5 minutos. Imagina que estás sentado en la orilla de un río tranquilo. Tus pensamientos son hojas que flotan en el agua. Tu único trabajo es observar las hojas desde la orilla sin subirte a ninguna. Cuando notes que te has subido a una hoja —que estás siguiendo un pensamiento— simplemente di "enganchado" y vuelve a la orilla. Vuelve tantas veces como haga falta. Cada vuelta es una repetición.',
-    neuro: 'Al adoptar la posición del observador desactivas la corteza prefrontal medial (el "yo" narrativo que crea la historia de ti mismo) y activas la red de atención ejecutiva. El ego no es una entidad mística: tiene coordenadas neurales precisas. Practicar la desidentificación reduce la actividad de estas regiones y aumenta la estabilidad emocional medida en estudios de meditadores experimentados.',
+    neuro: 'Ver el pensamiento pasar sin subirte a él es el paso que más claridad da. Se entrena: cada vuelta a la orilla cuenta.',
     link: '/meditacion',
     duration: '5 min',
   },
@@ -89,7 +89,7 @@ const days = [
     bg: 'bg-violet-500/10',
     desc: 'Hoy juntas las 5 letras en una sola práctica. No es un repaso: es la primera vez que experimentas el método como un flujo continuo. Así es como funciona en la vida real.',
     exercise: '1) N — Cuenta tus pensamientos durante 2 minutos (¿cuántos tienes hoy vs. el día 1?). 2) E — Foco en un punto fijo durante 2 minutos. 3) U — Escaneo corporal rápido de pies a cabeza (2 minutos). 4) R — Nombra 3 emociones que notes ahora mismo. 5) O — Observador 3 minutos: deja pasar todo. Anota: ¿qué ha cambiado esta semana?',
-    neuro: 'Al integrar las 5 prácticas activas simultáneamente la corteza prefrontal (metacognición), el cíngulo anterior (atención), la ínsula (interocepción), el sistema límbico regulado (emoción) y la red ejecutiva (observación). Es lo más cercano a un entrenamiento cerebral completo que puedes hacer sin equipamiento. En 7 días ya hay cambios en la conectividad funcional.',
+    neuro: 'Juntar las cinco letras en un solo bloque es cómo el método entra en la vida real. No necesitas laboratorio: necesitas repetición honesta.',
     link: '/meditacion',
     duration: '10 min',
   },
@@ -102,7 +102,7 @@ const days = [
     bg: 'bg-violet-500/10',
     desc: 'Último día. Hoy no aprendes nada nuevo: mides lo que ha cambiado. Y decides si quieres ir más lejos.',
     exercise: '1) Cuenta tus pensamientos 3 minutos. Compara el número con el día 1. 2) Haz el Test de Ruido Mental en /test. Compara tu puntuación. 3) Responde por escrito: ¿qué momento de esta semana recuerdas más? ¿Cuándo notaste el mayor cambio? ¿Qué quieres seguir entrenando? 4) Si quieres continuar: el Programa de 21 días te espera.',
-    neuro: '7 días de práctica consistente generan cambios medibles en la conectividad funcional del cerebro, especialmente entre la corteza prefrontal y la amígdala. No son cambios estructurales todavía (eso requiere 8 semanas), pero sí el inicio del nuevo cableado. La neuroplasticidad depende de la repetición: cada vez que practicaste esta semana, reforzaste un circuito que antes no existía.',
+    neuro: 'Una semana con práctica real ya deja sensación distinta: menos piloto automático, más opciones. Lo que importa es que puedas repetirlo mañana.',
     link: '/test',
     duration: '15 min',
   },
@@ -262,7 +262,7 @@ export default function Plan7DiasPage() {
                   Tu introducción al Método N.E.U.R.O. en una semana.
                 </p>
                 <p className="text-text-muted text-sm mb-8">
-                  Un ejercicio diario de neurociencia aplicada. Cada día trabajas una letra del método. Gratis al suscribirte.
+                  Un ejercicio diario claro y repetible. Cada día trabajas una letra del método. Gratis al suscribirte.
                 </p>
 
                 {/* Preview of what they get */}
@@ -271,7 +271,7 @@ export default function Plan7DiasPage() {
                   <div className="space-y-2">
                     {[
                       '7 ejercicios prácticos guiados',
-                      'Base neurocientífica de cada ejercicio',
+                      'Nota breve: qué notarás al practicar',
                       'Progreso desbloqueado día a día',
                       'Acceso al Método N.E.U.R.O. completo',
                       'Enlace directo al Programa de 21 días',
@@ -310,7 +310,7 @@ export default function Plan7DiasPage() {
                     {sending ? 'Activando...' : 'Acceder gratis'}
                   </button>
                   <p className="text-text-muted text-[10px]">
-                    Sin spam. Solo contenido de neurociencia y consciencia.
+                    Sin spam. Solo práctica, claridad y método.
                   </p>
                 </div>
               </div>
@@ -363,7 +363,7 @@ export default function Plan7DiasPage() {
               <div className="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4 mb-6">
                 <div className="flex items-center gap-2 mb-2">
                   <Brain className="w-4 h-4 text-purple-400" />
-                  <h3 className="text-purple-400 text-sm font-semibold uppercase tracking-wider">Qué pasa en tu cerebro</h3>
+                  <h3 className="text-purple-400 text-sm font-semibold uppercase tracking-wider">Lo que notas al practicar</h3>
                 </div>
                 <p className="text-text-secondary text-sm leading-relaxed">{selected.neuro}</p>
               </div>
@@ -523,7 +523,7 @@ export default function Plan7DiasPage() {
                 <Flame className="w-8 h-8 text-accent-blue mx-auto mb-3" />
                 <h3 className="font-heading text-lg font-bold text-white mb-2">¿Listo para el siguiente nivel?</h3>
                 <p className="text-text-secondary text-sm mb-4">
-                  El Curso 21 Días consolida los cambios neuronales y crea hábitos permanentes.
+                  El Curso 21 Días consolida lo que empezaste aquí y lo lleva al día a día con más profundidad.
                 </p>
                 <Link
                   href="/programa"
@@ -545,7 +545,7 @@ export default function Plan7DiasPage() {
               <div className="glass rounded-2xl p-4 flex items-center gap-3">
                 <Brain className="w-5 h-5 text-purple-400 shrink-0" />
                 <p className="text-text-secondary text-xs flex-1">
-                  Cada ejercicio está basado en el Método N.E.U.R.O. y tiene respaldo en neurociencia.
+                  Cada ejercicio sigue el Método N.E.U.R.O.: pasos claros, vividos en la práctica, sin postureo.
                 </p>
                 <Link href="/metodo" className="text-accent-blue text-xs font-medium shrink-0">
                   Ver método

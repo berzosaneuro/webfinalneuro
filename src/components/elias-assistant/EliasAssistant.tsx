@@ -1,13 +1,20 @@
 'use client'
 
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
+import { createPortal } from 'react-dom'
+import { usePathname } from 'next/navigation'
 import EliasOrb from './EliasOrb'
-
-const EliasChatPanel = lazy(() => import('./EliasChatPanel'))
+import EliasChatPanel from './EliasChatPanel'
 
 export default function EliasAssistant() {
   const [open, setOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const pathname = usePathname()
+
+  useLayoutEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)')
@@ -17,28 +24,38 @@ export default function EliasAssistant() {
     return () => mq.removeEventListener('change', fn)
   }, [])
 
-  return (
+  const hideLauncher =
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/ia-coach')
+
+  const tree = (
     <>
-      <EliasOrb onClick={() => setOpen(true)} />
+      {!hideLauncher && <EliasOrb onClick={() => setOpen(true)} />}
       {open && (
         <>
           <div
-            className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            style={{ zIndex: 100 }}
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="fixed inset-0 z-[101] pointer-events-none flex items-end justify-center md:items-center md:justify-end md:pr-8 md:pb-8">
-            <div className="pointer-events-auto w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
-              <Suspense fallback={null}>
-                <EliasChatPanel
-                  onClose={() => setOpen(false)}
-                  isMobile={isMobile}
-                />
-              </Suspense>
+          <div
+            className="fixed inset-0 pointer-events-none flex items-end justify-center md:items-center md:justify-end md:pr-6 md:pb-6 md:pt-6"
+            style={{ zIndex: 101 }}
+          >
+            <div
+              className="pointer-events-auto w-full max-w-lg max-h-[100dvh] md:max-h-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <EliasChatPanel onClose={() => setOpen(false)} isMobile={isMobile} />
             </div>
           </div>
         </>
       )}
     </>
   )
+
+  if (!mounted) return null
+
+  return createPortal(tree, document.body)
 }

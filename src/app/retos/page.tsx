@@ -23,8 +23,8 @@ const challenges: Challenge[] = [
   {
     id: 'zero-queja',
     title: '0 quejas conscientes',
-    description: 'Cada vez que te pilles quejándote, pulsa el botón. La queja activa cortisol y refuerza circuitos negativos.',
-    science: 'Quejarse repetidamente recablea el hipocampo hacia patrones negativos. 21 días sin queja reduce cortisol un 23%.',
+    description: 'Cada vez que te pilles quejándote, pulsa el botón. La queja mantiene el cuerpo en tensión y el foco en lo malo.',
+    science: 'Repetir el mismo relato negativo refuerza el hábito. Unas semanas eligiendo otro enfoque suele cambiar el tono del día.',
     icon: Shield,
     color: 'bg-rose-500/15 text-rose-400',
     days: 7,
@@ -33,8 +33,8 @@ const challenges: Challenge[] = [
   {
     id: 'atencion-3min',
     title: '3 min de atención pura',
-    description: 'Cada día, 3 minutos observando un objeto sin que tu mente se vaya. Entrena la corteza prefrontal.',
-    science: 'La atención sostenida fortalece las conexiones prefrontales-parietales, mejorando el control ejecutivo.',
+    description: 'Cada día, 3 minutos observando un objeto sin que tu mente se vaya. Entrena el músculo del foco.',
+    science: 'Sostener la mirada unos minutos devuelve la mente al aquí y ahora; con el tiempo, cuesta menos no dispersarse.',
     icon: Eye,
     color: 'bg-violet-500/15 text-violet-400',
     days: 7,
@@ -44,7 +44,7 @@ const challenges: Challenge[] = [
     id: 'body-check',
     title: 'Body check cada 2 horas',
     description: 'Pon alarma cada 2h. Para. Siente tu cuerpo 30 segundos. Rompe el piloto automático.',
-    science: 'Las interrupciones conscientes desactivan la Red Neuronal por Defecto (DMN) y activan la ínsula anterior.',
+    science: 'Parar un momento y sentir el cuerpo corta el piloto automático: vuelves al presente sin esfuerzo teatral.',
     icon: Heart,
     color: 'bg-teal-500/15 text-teal-400',
     days: 7,
@@ -54,7 +54,7 @@ const challenges: Challenge[] = [
     id: 'respiracion-478',
     title: 'Respiración 4-7-8 al despertar',
     description: 'Antes de mirar el móvil, 3 ciclos de respiración 4-7-8. Configura tu sistema nervioso para el día.',
-    science: 'La respiración lenta activa el nervio vago, reduciendo la frecuencia cardíaca y activando el parasimpático.',
+    science: 'Exhalar más largo que inhalar suele frenar la alarma interna y bajar el ritmo cardíaco en pocos ciclos.',
     icon: Wind,
     color: 'bg-cyan-500/15 text-cyan-400',
     days: 7,
@@ -64,7 +64,7 @@ const challenges: Challenge[] = [
     id: 'gratitud-3',
     title: '3 gratitudes con detalle',
     description: 'Cada noche, escribe 3 cosas específicas por las que estás agradecido. No vale genérico.',
-    science: 'La práctica de gratitud aumenta la actividad en la corteza prefrontal medial y libera dopamina.',
+    science: 'Nombrar con detalle por qué agradeces algo cambia el estado de ánimo: la mente deja de quedarse solo con lo que falta.',
     icon: Zap,
     color: 'bg-teal-500/15 text-teal-400',
     days: 7,
@@ -74,7 +74,7 @@ const challenges: Challenge[] = [
     id: 'pantalla-consciente',
     title: 'Detox digital: 1h sin pantallas',
     description: 'Una hora al día sin móvil, tablet ni ordenador. Tu cerebro necesita espacio para pensar.',
-    science: 'El scroll constante reduce la materia gris en la corteza cingulada anterior, centro de la autoregulación.',
+    science: 'Sin pausa de pantallas, la cabeza recupera espacio: menos tirón, más capacidad de elegir en qué fijarte.',
     icon: Brain,
     color: 'bg-emerald-500/15 text-emerald-400',
     days: 7,
@@ -84,7 +84,7 @@ const challenges: Challenge[] = [
     id: 'observador-10',
     title: '10 min como observador',
     description: 'Siéntate y observa tus pensamientos sin engancharte a ninguno. Solo mira.',
-    science: 'Desidentificarse del pensamiento fortalece la corteza prefrontal dorsolateral, sede del metacognición.',
+    science: 'Ver el pensamiento pasar sin confundirte con él entrena la distancia sana: menos reacción automática.',
     icon: Target,
     color: 'bg-purple-500/15 text-purple-400',
     days: 7,
@@ -94,7 +94,7 @@ const challenges: Challenge[] = [
     id: 'sleep-ritual',
     title: 'Ritual de sueño sagrado',
     description: 'Sin pantallas 30 min antes de dormir + 5 min de relajación progresiva.',
-    science: 'La luz azul suprime melatonina un 50%. La relajación progresiva reduce el tiempo de inicio de sueño en 36%.',
+    science: 'Menos luz de pantalla antes de dormir ayuda a que el cuerpo entienda que toca bajar revoluciones; la relajación guiada acorta el tirón de “no puedo apagar”.',
     icon: Moon,
     color: 'bg-indigo-500/15 text-indigo-400',
     days: 7,
@@ -172,7 +172,7 @@ export default function RetosPage() {
       <section className="pt-8 md:pt-16 pb-4">
         <Container>
           <h1 className="font-heading text-3xl font-bold text-white mb-1 animate-fade-in">Retos Semanales</h1>
-          <p className="text-text-secondary text-sm animate-fade-in-up">Microhábitos de metacognición con base neurocientífica. 7 días para producir cambios reales mediante neuroplasticidad.</p>
+          <p className="text-text-secondary text-sm animate-fade-in-up">Pequeños retos cada semana para no volver al piloto automático. Lo suficientemente cortos como para cumplirlos.</p>
         </Container>
       </section>
 
@@ -232,7 +232,7 @@ export default function RetosPage() {
 
                 <div className="bg-accent-blue/5 rounded-xl p-3 mb-4">
                   <p className="text-text-secondary text-xs leading-relaxed">
-                    <span className="text-accent-blue font-semibold">Neurociencia:</span> {activeChallenge.science}
+                    <span className="text-accent-blue font-semibold">En la práctica:</span> {activeChallenge.science}
                   </p>
                 </div>
 

@@ -40,7 +40,7 @@ const questions = [
       { label: 'Nunca. No sé por dónde empezar', icon: Brain, profile: 'ansioso' as Profile },
       { label: 'Intenté pero no aguanto quieto', icon: Eye, profile: 'disperso' as Profile },
       { label: 'Sí, algo. Quiero ir más profundo', icon: Sparkles, profile: 'buscador' as Profile },
-      { label: 'Sí, pero busco algo basado en ciencia', icon: Target, profile: 'ejecutivo' as Profile },
+      { label: 'Sí, pero busco pasos claros y repetibles', icon: Target, profile: 'ejecutivo' as Profile },
     ],
   },
   {
@@ -64,7 +64,7 @@ const profiles: Record<Profile, {
   ansioso: {
     title: 'El Nervioso Consciente',
     subtitle: 'Tu sistema nervioso necesita un reset',
-    description: 'Tu mente está en modo supervivencia constante. El cortisol domina tu día. La buena noticia: la neuroplasticidad permite recablear estos circuitos en semanas.',
+    description: 'Tu mente está en modo supervivencia constante: alerta, corto aliento, cabeza acelerada. La buena noticia: con práctica breve y repetida el sistema puede aflojar en semanas.',
     recommended: [
       { label: 'Modo SOS — Respiración 4-7-8', href: '/sos' },
       { label: 'Meditación: Calma Rápida (3 min)', href: '/meditacion' },
@@ -76,7 +76,7 @@ const profiles: Record<Profile, {
   disperso: {
     title: 'El Mono Mental',
     subtitle: 'Tu atención salta de rama en rama',
-    description: 'Tu red neuronal por defecto (DMN) está hiperactiva. Tu mente prefiere divagar que estar presente. Entrenar la atención es como ir al gym: duele al principio, pero transforma.',
+    description: 'Tu mente prefiere divagar que estar presente: es el hábito, no un defecto. Entrenar la atención es como ir al gym: duele al principio, pero transforma.',
     recommended: [
       { label: 'Meditación: Atención Plena (10 min)', href: '/meditacion' },
       { label: 'Ejercicio: Contador de Pensamientos', href: '/ejercicios' },
@@ -100,7 +100,7 @@ const profiles: Record<Profile, {
   ejecutivo: {
     title: 'El Optimizador',
     subtitle: 'Quieres resultados medibles',
-    description: 'Tu cerebro es tu herramienta principal de trabajo y lo estás usando sin manual. La meditación basada en neurociencia aumenta la densidad de materia gris prefrontal en 8 semanas.',
+    description: 'Tu cabeza es tu herramienta principal de trabajo y a veces la usas sin pausa. Unos minutos de práctica al día suelen devolver foco y menos dispersión —sin prometer milagros de laboratorio.',
     recommended: [
       { label: 'Meditación: Flow State (20 min)', href: '/meditacion' },
       { label: 'Meditación: Claridad y Foco (10 min)', href: '/meditacion' },
@@ -112,7 +112,7 @@ const profiles: Record<Profile, {
   emocional: {
     title: 'El Sensible Consciente',
     subtitle: 'Sientes mucho. A veces demasiado',
-    description: 'Tu amígdala es reactiva y tu corteza prefrontal necesita refuerzo. No se trata de sentir menos, sino de procesar mejor. La regulación emocional se entrena.',
+    description: 'Sientes fuerte y a veces te desborda. No se trata de sentir menos, sino de tener un poco más de espacio antes de reaccionar. Eso se entrena con pasos concretos.',
     recommended: [
       { label: 'Meditación: Autocompasión (5 min)', href: '/meditacion' },
       { label: 'Meditación: Regulación Emocional (12 min)', href: '/meditacion' },

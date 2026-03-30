@@ -9,16 +9,16 @@ type UserProfile = {
 
 type UserContextType = {
   user: UserProfile | null
-  setUser: (profile: UserProfile) => void
-  logout: () => void
+  setUser: (profile: UserProfile) => Promise<boolean>
+  logout: () => Promise<void>
   loading: boolean
   isCertified: boolean
 }
 
 const UserContext = createContext<UserContextType>({
   user: null,
-  setUser: () => {},
-  logout: () => {},
+  setUser: async () => false,
+  logout: async () => {},
   loading: true,
   isCertified: false,
 })
@@ -40,25 +40,43 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [isCertified, setIsCertified] = useState(false)
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('neuroconciencia_user') || localStorage.getItem('neuroconciencia-user')
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        if (parsed?.email) setUserState(parsed)
-      }
-    } catch {}
+    const load = async () => {
+      try {
+        const res = await fetch('/api/auth/session')
+        if (!res.ok) return
+        const data = await res.json() as { user?: UserProfile | null }
+        if (data?.user?.email) setUserState(data.user)
+      } catch {}
+      setLoading(false)
+    }
+    void load()
     setIsCertified(loadIsCertified())
-    setLoading(false)
   }, [])
 
-  const setUser = (profile: UserProfile) => {
+  const setUser = async (profile: UserProfile) => {
+    const payload = {
+      email: profile.email.trim().toLowerCase(),
+      nombre: (profile.nombre || profile.email.split('@')[0] || 'Usuario').trim(),
+    }
+    try {
+      const res = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) return false
+    } catch {
+      return false
+    }
     setUserState(profile)
-    localStorage.setItem('neuroconciencia_user', JSON.stringify(profile))
+    return true
   }
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/session', { method: 'DELETE' })
+    } catch {}
     setUserState(null)
-    localStorage.removeItem('neuroconciencia_user')
   }
 
   return (

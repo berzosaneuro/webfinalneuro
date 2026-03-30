@@ -4,43 +4,59 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 interface AdminContextType {
   isAdmin: boolean
-  adminLogin: (password: string) => boolean
-  adminLogout: () => void
+  loading: boolean
+  adminLogin: (password: string) => Promise<boolean>
+  adminLogout: () => Promise<void>
 }
 
 const AdminContext = createContext<AdminContextType>({
   isAdmin: false,
-  adminLogin: () => false,
-  adminLogout: () => {},
+  loading: true,
+  adminLogin: async () => false,
+  adminLogout: async () => {},
 })
-
-const ADMIN_KEY = 'neuroconciencia-admin'
 
 export function AdminProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const saved = localStorage.getItem(ADMIN_KEY)
-    if (saved === 'true') setIsAdmin(true)
+    const load = async () => {
+      try {
+        const res = await fetch('/api/admin/session')
+        if (!res.ok) return
+        const data = await res.json() as { isAdmin?: boolean }
+        if (data?.isAdmin) setIsAdmin(true)
+      } catch {}
+      setLoading(false)
+    }
+    void load()
   }, [])
 
-  const adminLogin = (password: string): boolean => {
-    const expected = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'berzosaneuro'
-    if (password === expected) {
+  const adminLogin = async (password: string): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/admin/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      })
+      if (!res.ok) return false
       setIsAdmin(true)
-      localStorage.setItem(ADMIN_KEY, 'true')
       return true
+    } catch {
+      return false
     }
-    return false
   }
 
-  const adminLogout = () => {
+  const adminLogout = async () => {
+    try {
+      await fetch('/api/admin/session', { method: 'DELETE' })
+    } catch {}
     setIsAdmin(false)
-    localStorage.removeItem(ADMIN_KEY)
   }
 
   return (
-    <AdminContext.Provider value={{ isAdmin, adminLogin, adminLogout }}>
+    <AdminContext.Provider value={{ isAdmin, loading, adminLogin, adminLogout }}>
       {children}
     </AdminContext.Provider>
   )

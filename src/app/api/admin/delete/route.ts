@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
+import { requireAdminOr401 } from '@/lib/api-auth'
 
 const ALLOWED_TABLES = [
   'clients', 'leads', 'contacts', 'calls', 'community_posts', 'subscribers', 'users',
@@ -7,6 +8,8 @@ const ALLOWED_TABLES = [
 ]
 
 export async function DELETE(request: Request) {
+  const authError = await requireAdminOr401(request)
+  if (authError) return authError
   let body: { table?: string; id?: string }
   try {
     body = await request.json()

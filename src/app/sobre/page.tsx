@@ -7,7 +7,7 @@ import { Brain } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Sobre — Berzosa Neuro',
-  description: 'Soy Berzosa Neuro. Berzosa Neuro nace para enseñar lo que casi nadie explica.',
+  description: 'No soy un gurú ni un científico de laboratorio. Berzosa Neuro es lo que aprendí viviendo el ruido mental y saliendo al otro lado.',
 }
 
 export default function SobrePage() {
@@ -63,7 +63,7 @@ export default function SobrePage() {
                   No necesitas escapar de tu vida. Necesitas dejar de vivir secuestrado por tu mente.
                 </p>
                 <p>
-                  Todo lo que comparto aquí está basado en neurociencia, metacognición y experiencia real. Sin misticismo innecesario, sin promesas vacías, sin espiritualidad de escaparate.
+                  Todo lo que comparto sale de haberlo vivido y de haberlo probado con miles de personas. Sin misticismo de escaparate, sin promesas mágicas, sin venderte humo.
                 </p>
                 <p>
                   La mente es una herramienta. Aprende a usarla en lugar de ser usado por ella.
@@ -73,7 +73,7 @@ export default function SobrePage() {
 
             <FadeInSection>
               <div className="mt-12 flex flex-col sm:flex-row gap-4">
-                <Button href="/metodo">Ver el método</Button>
+                <Button href="/metodo">Cómo nació el método</Button>
                 <Button href="/contacto" variant="secondary">Contactar</Button>
               </div>
             </FadeInSection>

@@ -141,6 +141,50 @@ create table if not exists users (
 );
 create unique index if not exists users_email_unique on users (lower(email));
 
+-- 11b. Stripe / Premium (idempotente; ejecutar también en BD ya existentes)
+alter table users add column if not exists stripe_customer_id text;
+alter table users add column if not exists subscription_status text default 'none';
+alter table users add column if not exists is_premium boolean default false;
+create index if not exists users_stripe_customer_id_idx on users (stripe_customer_id) where stripe_customer_id is not null;
+
+-- 11c. Suscripciones / pagos Stripe (auditoría operacional)
+create table if not exists subscriptions (
+  id uuid default gen_random_uuid() primary key,
+  user_email text not null,
+  stripe_customer_id text not null,
+  stripe_subscription_id text not null unique,
+  status text not null default 'incomplete',
+  current_period_start timestamptz null,
+  current_period_end timestamptz null,
+  cancel_at_period_end boolean default false,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+create index if not exists subscriptions_user_email_idx on subscriptions (lower(user_email));
+create index if not exists subscriptions_customer_idx on subscriptions (stripe_customer_id);
+
+create table if not exists payments (
+  id uuid default gen_random_uuid() primary key,
+  user_email text not null,
+  stripe_customer_id text not null,
+  stripe_subscription_id text default '',
+  stripe_invoice_id text not null unique,
+  amount_paid integer not null default 0,
+  currency text not null default 'eur',
+  status text not null default 'paid',
+  paid_at timestamptz null,
+  created_at timestamptz default now()
+);
+create index if not exists payments_user_email_idx on payments (lower(user_email));
+create index if not exists payments_customer_idx on payments (stripe_customer_id);
+
+create table if not exists stripe_events (
+  id uuid default gen_random_uuid() primary key,
+  stripe_event_id text not null unique,
+  event_type text not null,
+  processed_at timestamptz default now()
+);
+
 -- 12. Configuración de audios (meditaciones)
 create table if not exists audio_config (
   slot text primary key,
@@ -209,6 +253,14 @@ create policy "Full access calls" on calls for all using (true);
 alter table users enable row level security;
 create policy "Full access users" on users for all using (true);
 
+-- Subscriptions / payments / stripe events: acceso completo por API (endurecer en producción con auth real)
+alter table subscriptions enable row level security;
+create policy "Full access subscriptions" on subscriptions for all using (true);
+alter table payments enable row level security;
+create policy "Full access payments" on payments for all using (true);
+alter table stripe_events enable row level security;
+create policy "Full access stripe_events" on stripe_events for all using (true);
+
 -- Audio config: acceso completo
 alter table audio_config enable row level security;
 create policy "Full access audio_config" on audio_config for all using (true);
@@ -236,6 +288,45 @@ create policy "Full access programa" on programa_progress for all using (true);
 -- Test results: acceso completo
 alter table test_results enable row level security;
 create policy "Full access test_results" on test_results for all using (true);
+
+-- 16. Hardening producción: quitar políticas abiertas y permitir solo service_role
+drop policy if exists "Anyone can insert contacts" on contacts;
+drop policy if exists "Anyone can read contacts" on contacts;
+drop policy if exists "Anyone can insert leads" on leads;
+drop policy if exists "Anyone can read leads" on leads;
+drop policy if exists "Anyone can read posts" on community_posts;
+drop policy if exists "Anyone can insert posts" on community_posts;
+drop policy if exists "Anyone can update posts" on community_posts;
+drop policy if exists "Full access clients" on clients;
+drop policy if exists "Full access calls" on calls;
+drop policy if exists "Full access users" on users;
+drop policy if exists "Full access subscriptions" on subscriptions;
+drop policy if exists "Full access payments" on payments;
+drop policy if exists "Full access stripe_events" on stripe_events;
+drop policy if exists "Full access audio_config" on audio_config;
+drop policy if exists "Full access subscribers" on subscribers;
+drop policy if exists "Full access diary" on diary_entries;
+drop policy if exists "Full access mapa" on mapa_entries;
+drop policy if exists "Full access neuroscore" on neuroscore_entries;
+drop policy if exists "Full access programa" on programa_progress;
+drop policy if exists "Full access test_results" on test_results;
+
+create policy "Service role contacts" on contacts for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role leads" on leads for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role posts" on community_posts for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role clients" on clients for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role calls" on calls for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role users" on users for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role subscriptions" on subscriptions for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role payments" on payments for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role stripe events" on stripe_events for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role audio config" on audio_config for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role subscribers" on subscribers for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role diary" on diary_entries for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role mapa" on mapa_entries for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role neuroscore" on neuroscore_entries for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role programa" on programa_progress for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
+create policy "Service role test results" on test_results for all using (auth.role() = 'service_role') with check (auth.role() = 'service_role');
 
 -- ===========================================
 -- Datos demo para comunidad

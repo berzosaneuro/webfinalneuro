@@ -6,7 +6,7 @@ Guía completa para asistentes de IA que trabajen en este repositorio.
 
 ## Visión general del proyecto
 
-**Berzosa Neuro** es una aplicación web progresiva (PWA) de bienestar mental basada en neurociencia, creada por el Dr. Berzosa. Combina supraconciencia, metacognición y neuroplasticidad bajo el **Método N.E.U.R.O.**:
+**Berzosa Neuro** es una aplicación web progresiva (PWA) de bienestar mental con tono experiencial (sin postureo de laboratorio), creada por el Dr. Berzosa. El contenido gira en torno al **Método N.E.U.R.O.** — presencia, observación de la mente y hábitos repetibles:
 
 - **N** — Neutraliza el pensamiento
 - **E** — Entrena la atención
@@ -62,7 +62,7 @@ El idioma de la app y todo su contenido es **español**. Mantén siempre el espa
 │   │   │
 │   │   ├── meditacion/         # Meditaciones guiadas (70+ meditaciones)
 │   │   ├── programa/           # Programa 21 días
-│   │   ├── ejercicios/         # Ejercicios de metacognición interactivos
+│   │   ├── ejercicios/         # Ejercicios interactivos (observación de la mente)
 │   │   ├── despertar/          # Módulo "Despertar en Vida"
 │   │   ├── neuroscore/         # Tracker de hábitos diario
 │   │   ├── diario/             # Diario de presencia

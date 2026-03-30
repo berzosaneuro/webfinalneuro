@@ -12,7 +12,7 @@ import Link from 'next/link'
 const TESTIMONIOS = [
   { nombre: 'Elena R.', texto: 'En 3 semanas dejé de vivir en piloto automático. Ahora estoy presente.', stars: 5 },
   { nombre: 'Marcos T.', texto: 'La app me ayudó a entender mis patrones mentales. Cambió todo.', stars: 5 },
-  { nombre: 'Sofía L.', texto: 'Nunca pensé que la neurociencia pudiera ser tan accesible y práctica.', stars: 5 },
+  { nombre: 'Sofía L.', texto: 'Por fin algo que habla como una persona, no como un manual.', stars: 5 },
   { nombre: 'Javier M.', texto: 'Mi ansiedad bajó un 70% en el primer mes. Datos reales, no promesas.', stars: 5 },
 ]
 
@@ -52,17 +52,16 @@ export default function CaptacionPage() {
             <div className="text-center max-w-2xl mx-auto">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 text-purple-400 text-xs font-medium mb-6">
                 <Sparkles className="w-3.5 h-3.5" />
-                Método científico · Resultados medibles
+                Experiencia real · Pasos claros
               </div>
               <h1 className="font-heading text-4xl md:text-6xl font-bold tracking-tight text-white mb-4 leading-tight">
-                Despierta tu
+                Vuelve a estar
                 <span className="block bg-gradient-to-r from-accent-blue via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                  supraconsciencia
+                  presente de verdad
                 </span>
               </h1>
               <p className="text-text-secondary text-lg md:text-xl mb-8 leading-relaxed">
-                El primer programa que combina neurociencia aplicada, meditación guiada y
-                métricas de consciencia para transformar tu mente en 21 días.
+                Meditación guiada, método N.E.U.R.O. y una forma honesta de ver si avanzas—sin promesas vacías, en 21 días que puedes sostener.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link
@@ -112,24 +111,24 @@ export default function CaptacionPage() {
               ¿Por qué Berzosa Neuro es diferente?
             </h2>
             <p className="text-text-secondary text-center mb-8 max-w-lg mx-auto">
-              Basado en neurociencia aplicada, neuroplasticidad y metacognición.
+              Nació de vivir el agotamiento y la mente a mil, no de un laboratorio.
             </p>
             <div className="grid md:grid-cols-3 gap-3">
               {[
                 {
                   icon: Brain, color: 'text-purple-400', bg: 'bg-purple-500/10',
-                  titulo: 'Neurociencia real',
-                  desc: 'No meditación genérica. Cada ejercicio está basado en neuroplasticidad, con protocolos que reconectan tu cerebro.',
+                  titulo: 'Práctica con sentido',
+                  desc: 'No es meditación de fondo en Spotify. Cada ejercicio encaja en el método y en lo que te pasa en la vida real.',
                 },
                 {
                   icon: Target, color: 'text-accent-blue', bg: 'bg-accent-blue/10',
-                  titulo: 'Métricas de consciencia',
-                  desc: 'NeuroScore mide tu progreso real. Sabes exactamente cuánto avanzas cada día con datos, no con sensaciones.',
+                  titulo: 'Progreso que ves',
+                  desc: 'NeuroScore te muestra constancia y cambios sin engañarte. Menos “yo creo que sí” y más “lo veo escrito”.',
                 },
                 {
                   icon: Eye, color: 'text-cyan-400', bg: 'bg-cyan-500/10',
-                  titulo: 'Supraconsciencia práctica',
-                  desc: 'Técnicas de observador consciente, disolución del ego y despertar vital aplicadas al día a día.',
+                  titulo: 'Mirar sin perderse',
+                  desc: 'Aprender a observar pensamientos y emociones sin confundirte con ellos—en lenguaje simple, paso a paso.',
                 },
               ].map((item) => (
                 <div key={item.titulo} className="glass rounded-2xl p-5 card-hover">
@@ -159,12 +158,12 @@ export default function CaptacionPage() {
                   desc: 'Aprende a ver tus pensamientos como nubes. La técnica del observador consciente del Método N.E.U.R.O. aplicada con guía paso a paso.',
                 },
                 {
-                  num: '02', titulo: 'Reconexión neuronal', icon: Zap, color: 'text-accent-blue',
-                  desc: 'Ejercicios de neuroplasticidad que crean nuevos patrones. 10 minutos al día durante 21 días generan cambios medibles.',
+                  num: '02', titulo: 'Nuevos hábitos de cabeza', icon: Zap, color: 'text-accent-blue',
+                  desc: 'Repites hasta que el nuevo modo sea más fácil que el viejo. Unos minutos al día, 21 días de estructura.',
                 },
                 {
                   num: '03', titulo: 'Medir y ajustar', icon: TrendingUp, color: 'text-green-400',
-                  desc: 'NeuroScore te da feedback en tiempo real. Sabes qué funciona y qué ajustar. Ciencia, no fe ciega.',
+                  desc: 'NeuroScore te dice si te estás cayendo del carro o si vas en serio. Ajustas sin dramatizar.',
                 },
                 {
                   num: '04', titulo: 'Integrar y escalar', icon: Heart, color: 'text-rose-400',
@@ -295,10 +294,10 @@ export default function CaptacionPage() {
                 <Gift className="w-8 h-8 text-accent-blue" />
               </div>
               <h2 className="font-heading text-2xl font-bold text-white mb-2">
-                Reto gratuito: 7 días de neurociencia aplicada
+                Reto gratuito: 7 días con el método
               </h2>
               <p className="text-text-secondary mb-6 max-w-md mx-auto">
-                7 ejercicios prácticos del Método N.E.U.R.O. con la base neurocientífica de cada uno. Gratis al suscribirte.
+                7 ejercicios del Método N.E.U.R.O., uno al día, con explicación clara de para qué sirve. Gratis al suscribirte.
               </p>
 
               {!enviado ? (

@@ -48,7 +48,8 @@ export default function AccederPage() {
       if (!userRes.ok) {
         throw new Error(await getApiError(userRes))
       }
-      setUser({ email, nombre })
+      const ok = await setUser({ email, nombre })
+      if (!ok) throw new Error('No se pudo iniciar sesión segura')
       router.push('/')
     } catch (err) {
       console.error('Error de acceso:', err)

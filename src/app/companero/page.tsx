@@ -17,12 +17,25 @@ const FOCUS_TOPICS = [
 ]
 
 export default function CompaneroPage() {
+  const enabled = process.env.NEXT_PUBLIC_ENABLE_COMPANERO === 'true'
   const [searching, setSearching] = useState(false)
   const [language, setLanguage] = useState('es')
   const [timezone, setTimezone] = useState('espana')
   const [frequency, setFrequency] = useState('semanal')
   const [topics, setTopics] = useState<string[]>(['ansiedad'])
 
+  if (!enabled) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-6 text-center">
+        <div className="glass rounded-3xl p-6 max-w-md">
+          <h1 className="font-heading text-white text-xl font-bold mb-2">Compañero no disponible por ahora</h1>
+          <p className="text-text-secondary text-sm">
+            El emparejamiento aún no está conectado a backend real. Está desactivado para evitar experiencias falsas.
+          </p>
+        </div>
+      </div>
+    )
+  }
   const toggleTopic = (id: string) =>
     setTopics(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id])
 

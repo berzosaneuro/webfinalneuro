@@ -42,23 +42,23 @@ const SALAS = [
 const CHAT_INICIAL: Record<string, ChatMsg[]> = {
   general: [
     { id: '1', autor: 'Lucía M.', avatar: '🧠', nivel: 'Nivel 28', texto: 'Buenos días comunidad. Acabo de terminar la meditación de las 7am. Hoy he notado por primera vez ese espacio entre pensamiento y reacción. Es muy sutil pero está ahí.', hora: '07:14', },
-    { id: '2', autor: 'Dr. Berzosa', avatar: '🔬', nivel: 'Guía', texto: 'Lucía, eso es exactamente la corteza prefrontal frenando la amígdala. Ese microsegundo de pausa ES neuroplasticidad en acción. Sigue así.', hora: '07:18', esGuia: true },
+    { id: '2', autor: 'Dr. Berzosa', avatar: '🔬', nivel: 'Guía', texto: 'Lucía, eso es oro: notar el hueco antes de reaccionar. Ahí empieza el cambio de verdad. Sigue así.', hora: '07:18', esGuia: true },
     { id: '3', autor: 'Pablo R.', avatar: '🌊', nivel: 'Nivel 15', texto: 'Yo llevo 3 semanas y aún me cuesta no engancharme a los pensamientos. ¿Es normal?', hora: '07:22', },
-    { id: '4', autor: 'Ana G.', avatar: '✨', nivel: 'Nivel 42', texto: 'Pablo, totalmente normal. La DMN lleva toda tu vida funcionando en automático. Dale tiempo. Yo no noté cambio real hasta la semana 4.', hora: '07:25', },
+    { id: '4', autor: 'Ana G.', avatar: '✨', nivel: 'Nivel 42', texto: 'Pablo, totalmente normal. El piloto automático lleva años entrenado. Dale tiempo. Yo no noté cambio real hasta la semana 4.', hora: '07:25', },
     { id: '5', autor: 'Carlos V.', avatar: '🧘', nivel: 'Nivel 33', texto: '¿Alguien ha probado la meditación nueva de "Observar sin nombre"? Es brutal. 15 minutos que se pasan volando.', hora: '07:31', },
     { id: '6', autor: 'Marina S.', avatar: '🌙', nivel: 'Nivel 19', texto: 'Día 12 de racha. Hoy tuve un momento de estrés en el trabajo y automáticamente usé el R.E.U.R.O.: detectar, nombrar, elegir. Funcionó.', hora: '08:02', },
-    { id: '7', autor: 'Dr. Berzosa', avatar: '🔬', nivel: 'Guía', texto: 'Marina, eso se llama "transferencia". Cuando lo que practicas en la meditación aparece espontáneamente en tu vida real. Ahí es cuando sabes que tu cerebro está cambiando de verdad. Enhorabuena.', hora: '08:05', esGuia: true },
+    { id: '7', autor: 'Dr. Berzosa', avatar: '🔬', nivel: 'Guía', texto: 'Marina, eso es transferencia: lo que entrenas en silencio aparece cuando hay estrés. Ahí sabes que no es teoría. Enhorabuena.', hora: '08:05', esGuia: true },
   ],
   dudas: [
     { id: '1', autor: 'Javier L.', avatar: '🤔', nivel: 'Nivel 8', texto: '¿Cuál es la diferencia entre la N (neutralizar) y la O (observar)? Me parecen similares.', hora: '09:12', },
-    { id: '2', autor: 'Dr. Berzosa', avatar: '🔬', nivel: 'Guía', texto: 'Buena pregunta Javier. La N es el primer paso: reconoces que un pensamiento es solo un pensamiento (reduces DMN). La O es el nivel avanzado: no solo lo reconoces, sino que te das cuenta de que TÚ no eres ese pensamiento. Es la diferencia entre "eso es un pensamiento" y "¿quién está observando ese pensamiento?". Metacognición pura.', hora: '09:18', esGuia: true },
+    { id: '2', autor: 'Dr. Berzosa', avatar: '🔬', nivel: 'Guía', texto: 'Buena pregunta Javier. La N es ver el pensamiento como pensamiento, sin engancharse. La O es dar un paso más: notar quién mira ese pensamiento sin confundirse con él. Primero etiquetas, luego sueltas la identificación.', hora: '09:18', esGuia: true },
     { id: '3', autor: 'Elena R.', avatar: '💡', nivel: 'Nivel 22', texto: '¿El escaneo corporal (la U) se puede hacer con los ojos abiertos? En el trabajo no puedo cerrar los ojos.', hora: '10:45', },
-    { id: '4', autor: 'Ana G.', avatar: '✨', nivel: 'Nivel 42', texto: 'Elena, sí. La ínsula funciona igual. Yo lo hago en reuniones aburridas: pies en el suelo, sensación de las manos, respiración. Nadie se entera y tú vuelves al presente.', hora: '10:52', },
+    { id: '4', autor: 'Ana G.', avatar: '✨', nivel: 'Nivel 42', texto: 'Elena, sí. Yo lo hago en reuniones aburridas: pies en el suelo, manos, respiración. Nadie se entera y tú vuelves al presente.', hora: '10:52', },
   ],
   logros: [
     { id: '1', autor: 'Diego M.', avatar: '🏆', nivel: 'Nivel 50', texto: '¡50 días de racha! Nunca pensé que llegaría. Mi NeuroScore lleva 2 semanas por encima de 85.', hora: '06:30', },
     { id: '2', autor: 'Sara P.', avatar: '🎯', nivel: 'Nivel 31', texto: 'Primer día que completo los 5 pilares del score: meditación + ejercicio + test + despertar + diario. 100/100. Se puede.', hora: '11:20', },
-    { id: '3', autor: 'Marcos T.', avatar: '🧬', nivel: 'Nivel 27', texto: 'Mi test de ruido mental bajó de 78 a 34 en 6 semanas. La neuroplasticidad es real.', hora: '14:05', },
+    { id: '3', autor: 'Marcos T.', avatar: '🧬', nivel: 'Nivel 27', texto: 'Mi test de ruido mental bajó de 78 a 34 en 6 semanas. Constancia sí se nota.', hora: '14:05', },
   ],
   silencio: [
     { id: '1', autor: 'Sistema', avatar: '🔇', nivel: '', texto: 'Esta sala es para practicar presencia compartida. Sin conversación. Solo estar.', hora: '', },
@@ -86,7 +86,7 @@ const SESIONES_GRUPALES: SesionGrupal[] = [
     participantes: 47, maxParticipantes: 100, tipo: 'meditacion', enVivo: true,
   },
   {
-    id: '2', titulo: 'Charla: Neuroplasticidad y hábitos', guia: 'Equipo Neuro',
+    id: '2', titulo: 'Charla: Hábitos que sí se quedan', guia: 'Equipo Berzosa Neuro',
     fecha: '2026-02-26', hora: '19:00', duracion: '45 min',
     participantes: 23, maxParticipantes: 50, tipo: 'charla', enVivo: false,
   },

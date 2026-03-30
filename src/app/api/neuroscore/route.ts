@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
+import { requireUserOr401 } from '@/lib/api-auth'
 
 export async function GET(request: Request) {
+  const auth = await requireUserOr401(request)
+  if (auth.error) return auth.error
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
-  const { searchParams } = new URL(request.url)
-  const email = searchParams.get('email')
-
-  if (!email) {
-    return NextResponse.json({ error: 'Email requerido' }, { status: 400 })
-  }
+  const email = auth.email
 
   const { data, error } = await supabase
     .from('neuroscore_entries')
@@ -25,17 +23,20 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireUserOr401(request)
+  if (auth.error) return auth.error
   const bodyType = {} as {
     email?: string; date?: string; meditated?: boolean; exerciseDone?: boolean
     testDone?: boolean; despertarDone?: boolean; journalDone?: boolean; trainingDone?: boolean
   }
   let body: typeof bodyType
   try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
-  const { email, date, meditated, exerciseDone, testDone, despertarDone, journalDone, trainingDone } = body
+  const { date, meditated, exerciseDone, testDone, despertarDone, journalDone, trainingDone } = body
 
-  if (!email || !date) {
-    return NextResponse.json({ error: 'Email y fecha requeridos' }, { status: 400 })
+  if (!date) {
+    return NextResponse.json({ error: 'Fecha requerida' }, { status: 400 })
   }
+  const email = auth.email
 
   let score = 0
   if (meditated) score += 30

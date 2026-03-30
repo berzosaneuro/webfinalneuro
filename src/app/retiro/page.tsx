@@ -287,8 +287,8 @@ export default function RetiroPage() {
               </div>
               <p className="text-text-secondary text-sm leading-relaxed">
                 Un espacio guiado donde apagas todo estímulo externo y te sumerges en la observación pura.
-                Basado en retiros Vipassana + neurociencia moderna. Incluye fases progresivas que
-                te llevan del anclaje corporal al silencio profundo.
+                Inspirado en retiros Vipassana y en lo que yo mismo necesité en silencio. Fases progresivas que
+                te llevan del cuerpo al silencio, sin complicarte la vida.
               </p>
             </div>
           </FadeInSection>

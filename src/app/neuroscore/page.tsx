@@ -180,7 +180,7 @@ export default function NeuroScorePage() {
 
   const tasks = [
     { key: 'meditated' as const, label: 'Meditar', desc: 'Cualquier sesión', icon: Brain, points: 30, href: '/meditacion' },
-    { key: 'exerciseDone' as const, label: 'Ejercicio NEURO', desc: 'Método o metacognición', icon: Target, points: 25, href: '/metodo' },
+    { key: 'exerciseDone' as const, label: 'Ejercicio NEURO', desc: 'Método u observación de la mente', icon: Target, points: 25, href: '/metodo' },
     { key: 'trainingDone' as const, label: 'Entrenamiento del día', desc: 'Ejercicio N.E.U.R.O. diario', icon: Target, points: 10, href: '/' },
     { key: 'testDone' as const, label: 'Test completado', desc: 'Test de ruido mental', icon: Activity, points: 15, href: '/test' },
     { key: 'despertarDone' as const, label: 'Despertar', desc: 'Claridad vital', icon: Zap, points: 15, href: '/despertar' },

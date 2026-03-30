@@ -130,7 +130,7 @@ export function getDailyRecommendation(): Recommendation {
     return {
       type: 'training',
       title: 'Entrenamiento N.E.U.R.O. del día',
-      description: 'Completa el ejercicio de metacognición de hoy.',
+      description: 'Completa el ejercicio de observación de la mente de hoy.',
       href: '/',
     }
   }

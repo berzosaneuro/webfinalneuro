@@ -84,8 +84,21 @@ const nivelColor: Record<string, string> = {
 }
 
 export default function EventosPage() {
+  const enabled = process.env.NEXT_PUBLIC_ENABLE_EVENTOS === 'true'
   const [ciudadActiva, setCiudadActiva] = useState('Todas')
 
+  if (!enabled) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-6 text-center">
+        <div className="glass rounded-3xl p-6 max-w-md">
+          <h1 className="font-heading text-white text-xl font-bold mb-2">Eventos no disponible por ahora</h1>
+          <p className="text-text-secondary text-sm">
+            El módulo de eventos aún usa datos de demostración. Está desactivado en producción hasta su integración real.
+          </p>
+        </div>
+      </div>
+    )
+  }
   const eventosFiltrados = ciudadActiva === 'Todas'
     ? EVENTOS
     : EVENTOS.filter(e => e.ciudad === ciudadActiva)

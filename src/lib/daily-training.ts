@@ -1,6 +1,6 @@
 /**
  * Entrenamiento Mental Diario (Método N.E.U.R.O.)
- * Ejercicios diarios de metacognición. Almacenamiento en localStorage.
+ * Ejercicios diarios de observación de la mente. Almacenamiento en localStorage.
  */
 
 export const STORAGE_KEY = 'neuro_training_daily'
@@ -13,8 +13,8 @@ export type DailyTrainingData = {
 
 const EXERCISES: { title: string; text: string }[] = [
   { title: 'Observa un pensamiento sin reaccionar', text: 'Hoy, cuando aparezca un pensamiento, obsérvalo solo. No lo sigas. No lo juzgues. Di mentalmente "pensamiento" y deja que pase.' },
-  { title: 'Tres respiraciones conscientes ante el estrés', text: 'Hoy, en algún momento de tensión, haz tres respiraciones profundas. Inhala 4 segundos, exhala 6. Eso activa tu corteza prefrontal.' },
-  { title: 'Detecta un pensamiento automático', text: 'Hoy, identifica un pensamiento que aparezca sin que lo invites. Solo nómbralo: "automático". Eso ya es metacognición.' },
+  { title: 'Tres respiraciones conscientes ante el estrés', text: 'Hoy, en algún momento de tensión, haz tres respiraciones profundas. Inhala 4 segundos, exhala 6. Eso te da un segundo entre el estímulo y la reacción.' },
+  { title: 'Detecta un pensamiento automático', text: 'Hoy, identifica un pensamiento que aparezca sin que lo invites. Solo nómbralo: "automático". Eso ya es observar la mente con distancia.' },
   { title: 'Observa una emoción sin etiquetarla', text: 'Hoy, cuando sientas una emoción intensa, obsérvala en el cuerpo sin ponerle nombre. Solo nota dónde está y cómo se mueve.' },
   { title: 'Pausa antes de reaccionar', text: 'Hoy, en un momento en que quieras reaccionar de golpe, haz una pausa de 5 segundos. Respira. Luego decide si actúas o no.' },
   { title: 'Un minuto de presencia', text: 'Hoy, durante 1 minuto, dirige la atención solo a tu respiración. Cada vez que te vayas, vuelve. Sin juzgar.' },

@@ -227,7 +227,7 @@ export default function SOSPage() {
           </h1>
           <p className="text-cyan-400 text-sm font-medium mb-1">Respiración 4-7-8</p>
           <p className="text-text-muted text-sm mb-8">
-            Activa tu sistema parasimpático y reduce la ansiedad en menos de 2 minutos.
+            Activa tu modo calma y reduce la ansiedad en menos de 2 minutos.
           </p>
 
           <button

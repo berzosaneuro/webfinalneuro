@@ -6,18 +6,18 @@ import FadeInSection from '@/components/FadeInSection'
 import { BookOpen, QrCode, Brain, Sparkles, ChevronRight, Star, Package, Mail, Check, ShoppingCart } from 'lucide-react'
 
 const chapters = [
-  { num: 1, title: 'Tu cerebro en piloto automático', meditation: 'Presencia inicial' },
+  { num: 1, title: 'Tu mente en piloto automático', meditation: 'Presencia inicial' },
   { num: 2, title: 'La tiranía del pensamiento', meditation: 'Observación de pensamientos' },
   { num: 3, title: 'El sistema nervioso: amigo o enemigo', meditation: 'Regulación vagal' },
-  { num: 4, title: 'Neuroplasticidad: reescribe tu mente', meditation: 'Visualización de cambio' },
-  { num: 5, title: 'La red neuronal por defecto (DMN)', meditation: 'Silenciar la DMN' },
-  { num: 6, title: 'Meditación basada en evidencia', meditation: 'Atención focalizada' },
-  { num: 7, title: 'El secuestro amigdalino', meditation: 'Calma amigdalina' },
-  { num: 8, title: 'Ondas cerebrales y estados de conciencia', meditation: 'Ondas alfa guiadas' },
+  { num: 4, title: 'Nuevos hábitos: cambiar de verdad', meditation: 'Visualización de cambio' },
+  { num: 5, title: 'Cuando la mente divaga sin tarea', meditation: 'Volver al silencio activo' },
+  { num: 6, title: 'Meditación que puedes repetir', meditation: 'Atención focalizada' },
+  { num: 7, title: 'Cuando la emoción llega antes que tú', meditation: 'Calma antes de reaccionar' },
+  { num: 8, title: 'Estados de atención y calma', meditation: 'Calma guiada' },
   { num: 9, title: 'El ego: una ilusión útil', meditation: 'Desidentificación' },
-  { num: 10, title: 'Compasión y circuitos neuronales', meditation: 'Compasión radical' },
+  { num: 10, title: 'Compasión que se entrena', meditation: 'Compasión radical' },
   { num: 11, title: 'Flow: el estado óptimo', meditation: 'Entrada al flow' },
-  { num: 12, title: 'Despertar - más allá del cerebro', meditation: 'Consciencia pura' },
+  { num: 12, title: 'Despertar: más allá del ruido mental', meditation: 'Consciencia pura' },
 ]
 
 const bundles = [
@@ -54,7 +54,7 @@ export default function LibroPage() {
               Neuro<span className="gradient-text">Conciencia</span>
             </h1>
             <p className="text-text-secondary text-lg md:text-xl max-w-xl mx-auto animate-fade-in-up">
-              Despierta tu cerebro dormido
+              Menos ruido mental, más presencia en el día a día
             </p>
             <p className="text-text-muted text-sm mt-2 animate-fade-in-up">por Berzosa</p>
           </div>
@@ -73,7 +73,7 @@ export default function LibroPage() {
                   <h2 className="font-heading text-xl font-bold gradient-text leading-tight">Conciencia</h2>
                 </div>
                 <div className="text-center">
-                  <p className="text-text-muted text-[10px] tracking-widest uppercase mb-1">Despierta tu cerebro dormido</p>
+                  <p className="text-text-muted text-[10px] tracking-widest uppercase mb-1">Claridad sin postureo</p>
                   <div className="w-8 h-px bg-violet-500/40 mx-auto mb-2" />
                   <p className="text-text-secondary text-xs font-medium">Berzosa</p>
                 </div>
@@ -91,7 +91,7 @@ export default function LibroPage() {
               <Sparkles className="w-6 h-6 text-violet-400 mx-auto mb-3" />
               <p className="text-text-secondary text-sm md:text-base leading-relaxed">
                 12 capítulos. Cada uno con un código QR que conecta con la meditación correspondiente en la app.
-                Ciencia + práctica en tus manos.
+                Ideas claras + práctica en tus manos.
               </p>
             </div>
           </FadeInSection>
@@ -184,13 +184,12 @@ export default function LibroPage() {
                 </div>
                 <div>
                   <h3 className="font-heading text-lg font-bold text-white">Berzosa</h3>
-                  <p className="text-text-muted text-xs">Autor &middot; Neurocientífico &middot; Meditador</p>
+                  <p className="text-text-muted text-xs">Autor &middot; Guía &middot; Practicante</p>
                 </div>
               </div>
               <p className="text-text-secondary text-sm leading-relaxed">
-                Investigador en neurociencia contemplativa con más de 15 años de práctica meditativa.
-                Combina la evidencia científica con la experiencia directa para crear un puente entre
-                el laboratorio y la consciencia. Creador del Método N.E.U.R.O. y la plataforma Berzosa Neuro.
+                Lleva más de 15 años practicando y acompañando a gente real. Esto no sale de un laboratorio:
+                sale de haberlo vivido, tropezado y vuelto a probar. Creador del Método N.E.U.R.O. y de Berzosa Neuro.
               </p>
             </div>
           </FadeInSection>

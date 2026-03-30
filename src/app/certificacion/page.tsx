@@ -16,13 +16,13 @@ const CertificadoDashboard = dynamic(
 
 export const metadata: Metadata = {
   title: 'Certificación Guía Berzosa Neuro',
-  description: 'Formación de 3 meses para convertirte en Guía certificado del Método N.E.U.R.O. Supraconciencia, metacognición y neuroplasticidad aplicada.',
+  description: 'Formación de 3 meses para convertirte en Guía certificado del Método N.E.U.R.O.: enseñar presencia, claridad y pasos repetibles, vividos en la práctica.',
 }
 
 const modules = [
-  { week: '1-4', title: 'Fundamentos de Neurociencia Contemplativa', topics: ['Neuroanatomía funcional', 'Red Neuronal por Defecto', 'Neuroplasticidad y meditación', 'Regulación emocional'] },
-  { week: '5-8', title: 'Técnicas de Meditación y Facilitación', topics: ['Meditaciones guiadas (diseño y guión)', 'Respiración y sistema nervioso', 'Body scan y propriocepción', 'Facilitación de grupos'] },
-  { week: '9-12', title: 'Práctica Supervisada y Certificación', topics: ['Facilitar tu propio círculo', 'Supervisión con mentor', 'Caso práctico final', 'Examen y certificación'] },
+  { week: '1-4', title: 'Fundamentos para guiar con método', topics: ['El mapa del N.E.U.R.O. en la vida real', 'Ruido mental y cómo volver al presente', 'Hábitos de práctica sin postureo', 'Emociones: nombrar, regular, actuar'] },
+  { week: '5-8', title: 'Meditación guiada y facilitación', topics: ['Diseño de meditaciones y guiones', 'Respiración y cuerpo en grupo', 'Escaneo corporal y anclas simples', 'Sostener un círculo con seguridad'] },
+  { week: '9-12', title: 'Práctica supervisada y certificación', topics: ['Facilitar tu propio círculo', 'Supervisión con mentor', 'Caso práctico final', 'Examen y certificación'] },
 ]
 
 const benefits = [
@@ -52,7 +52,7 @@ export default function CertificacionPage() {
               Conviértete en Guía<br /><span className="gradient-text">Berzosa Neuro</span>
             </h1>
             <p className="text-text-secondary text-lg animate-fade-in-up">
-              3 meses de formación intensiva en supraconciencia, metacognición y neuroplasticidad aplicada. Conviértete en guía certificado del Método N.E.U.R.O. y crea tu propio negocio de bienestar mental.
+              3 meses para enseñar el Método N.E.U.R.O. con honestidad: menos ruido, más claridad, pasos que la gente puede repetir en su día a día. Conviértete en guía certificado y lleva esto a otros con confianza.
             </p>
           </div>
         </Container>
@@ -140,7 +140,7 @@ export default function CertificacionPage() {
                 <span className="text-4xl font-bold text-white">997 &euro;</span>
               </div>
               <p className="text-text-secondary text-sm mb-1">Pago único o 3 cuotas de 349 &euro;</p>
-              <p className="text-text-muted text-xs mb-6">Próxima convocatoria: Marzo 2025</p>
+              <p className="text-text-muted text-xs mb-6">Próxima convocatoria: Marzo 2026</p>
               <button className="w-full max-w-sm mx-auto py-4 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-2xl font-semibold active:scale-95 transition-transform">
                 Reservar mi plaza
               </button>

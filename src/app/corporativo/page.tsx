@@ -6,7 +6,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Berzosa Neuro for Teams — Bienestar corporativo',
-  description: 'Programa de bienestar mental para empresas basado en neurociencia. Reduce estrés, mejora foco y retiene talento.',
+  description: 'Programa de bienestar mental para equipos: menos estrés rumiante, más claridad y hábitos repetibles. Foco y retención desde la práctica, no desde el postureo.',
 }
 
 const stats = [
@@ -49,7 +49,7 @@ export default function CorporativoPage() {
               Mentes sanas,<br />empresas que <span className="gradient-text">crecen</span>
             </h1>
             <p className="text-text-secondary text-lg animate-fade-in-up">
-              El 76% de empleados reportan estrés crónico. Berzosa Neuro lo reduce con neurociencia, no con pizza los viernes.
+              El 76% de empleados reportan estrés crónico. Berzosa Neuro lo aborda con método y práctica en el día a día, no con parches de una tarde.
             </p>
           </div>
         </Container>

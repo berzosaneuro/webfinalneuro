@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
+import { requireAdminOr401 } from '@/lib/api-auth'
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authError = await requireAdminOr401(request)
+  if (authError) return authError
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json([])
   const { data } = await supabase.from('biblioteca_posts').select('*').order('date', { ascending: false })
@@ -9,6 +12,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const authError = await requireAdminOr401(request)
+  if (authError) return authError
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'BD no configurada' }, { status: 503 })
   let body: { slug: string; title: string; date?: string; summary?: string; content?: string; exercise?: string; free?: boolean }
@@ -28,6 +33,8 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const authError = await requireAdminOr401(request)
+  if (authError) return authError
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'BD no configurada' }, { status: 503 })
   let body: { id: string; slug?: string; title?: string; date?: string; summary?: string; content?: string; exercise?: string; free?: boolean }

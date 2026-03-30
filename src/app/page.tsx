@@ -25,7 +25,7 @@ const quickActions = [
 
 const moreActions = [
   { href: '/programa', label: 'Curso 21 Días', icon: Calendar, desc: 'Programa completo', color: 'bg-orange-500/15 text-orange-400' },
-  { href: '/ejercicios', label: 'Ejercicios', icon: Dumbbell, desc: 'Metacognición interactiva', color: 'bg-emerald-500/15 text-emerald-400' },
+  { href: '/ejercicios', label: 'Ejercicios', icon: Dumbbell, desc: 'Pausas guiadas paso a paso', color: 'bg-emerald-500/15 text-emerald-400' },
   { href: '/diario', label: 'Diario', icon: PenLine, desc: 'Registra tu presencia', color: 'bg-cyan-500/15 text-cyan-400' },
   { href: '/test', label: 'Test Ruido Mental', icon: Brain, desc: 'Mide tu ruido mental', color: 'bg-sky-500/15 text-sky-400' },
 ]
@@ -61,13 +61,13 @@ export default function Home() {
             <div className="flex-1">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-blue/10 border border-accent-blue/20 mb-3 animate-fade-in">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse" />
-                <span className="text-accent-blue text-[11px] font-semibold tracking-wide uppercase">Supraconciencia · Metacognición · Neuroplasticidad</span>
+                <span className="text-accent-blue text-[11px] font-semibold tracking-wide uppercase">Claridad · Calma · Lo que a mí me funcionó</span>
               </div>
               <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-3 animate-fade-in">
-                Elimina el ruido<br className="hidden sm:block" /> de tu mente
+                Baja el volumen<br className="hidden sm:block" /> de tu cabeza
               </h1>
               <p className="text-text-secondary text-sm md:text-base animate-fade-in-up max-w-sm mb-5 leading-relaxed">
-                Accede a tu supraconciencia con el Método N.E.U.R.O. Entrena metacognición, mide tu progreso con NeuroScore diario y produce cambios cerebrales reales mediante neuroplasticidad.
+                No soy científico: soy alguien que vivió el agotamiento y la mente a mil. El Método N.E.U.R.O. es lo que me sacó del bucle—ahora en tu móvil, sin discursos vacíos.
               </p>
               <div className="flex items-center gap-3 animate-fade-in-up">
                 <Link
@@ -80,7 +80,7 @@ export default function Home() {
                   href="/metodo"
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl glass-light text-text-secondary text-sm font-medium hover:text-white active:scale-95 transition-all"
                 >
-                  Ver el método
+                  Cómo nació esto
                 </Link>
               </div>
             </div>
@@ -132,8 +132,8 @@ export default function Home() {
                   </div>
                   <div className="flex-1">
                     <p className="text-white font-bold text-sm leading-tight">Regístrate gratis — sin tarjeta</p>
-                    <p className="text-emerald-400 text-xs font-semibold mt-0.5">🎁 Reto de 7 días incluido al registrarte</p>
-                    <p className="text-text-secondary text-xs mt-1">Meditaciones, IA Coach, NeuroScore y Diario desbloqueados</p>
+                    <p className="text-emerald-400 text-xs font-semibold mt-0.5">🎁 Reto de 7 días de regalo al entrar</p>
+                    <p className="text-text-secondary text-xs mt-1">Para empezar a notar cambio sin complicarte la vida</p>
                   </div>
                   <div className="shrink-0 px-3 py-1.5 rounded-xl bg-accent-blue text-white text-xs font-bold self-center">
                     Entrar
@@ -186,7 +186,7 @@ export default function Home() {
                   <span className="text-xs font-semibold text-white uppercase tracking-wider">Dato del día</span>
                 </div>
                 <p className="text-white font-medium text-sm leading-relaxed">
-                  Tu cerebro recibe más estímulos en un día que el de tus abuelos en un mes. Entrenar la atención ya no es opcional.
+                  Hoy la cabeza va a mil sin permiso. Un minuto de pausa honesta ya cambia cómo vuelves al día.
                 </p>
               </div>
             </div>
@@ -294,10 +294,10 @@ export default function Home() {
                     ))}
                   </div>
                   <p className="text-white/50 text-xs leading-relaxed mb-3">
-                    5 pasos basados en neurociencia para entrenar tu mente y salir del piloto automático.
+                    Cinco pasos que salieron de vivirlo, no de un manual. Para salir del piloto automático.
                   </p>
                   <div className="flex items-center gap-1 text-white text-xs font-semibold">
-                    Ver el método completo <ChevronRight className="w-3.5 h-3.5" />
+                    Leer la historia del método <ChevronRight className="w-3.5 h-3.5" />
                   </div>
                 </div>
               </div>
@@ -392,7 +392,7 @@ export default function Home() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-heading font-semibold text-white text-base mb-0.5">Historias de transformación</h3>
-                    <p className="text-text-secondary text-xs">Personas reales con NeuroScore verificado</p>
+                    <p className="text-text-secondary text-xs">Gente que estaba donde tú y dio el primer paso</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-text-muted shrink-0" />
                 </div>
@@ -416,8 +416,8 @@ export default function Home() {
                       <Crown className="w-6 h-6 text-[#0066FF]" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-heading font-semibold text-white text-base mb-0.5">Acceso Premium completo</h3>
-                      <p className="text-text-secondary text-xs">Todo sin límites · desde 4,99 &euro;/mes · cancela cuando quieras</p>
+                      <h3 className="font-heading font-semibold text-white text-base mb-0.5">Pásate a Premium</h3>
+                      <p className="text-text-secondary text-xs">Todo el acompañamiento para no volver atrás · desde 4,99 &euro;/mes</p>
                     </div>
                     <ChevronRight className="w-5 h-5 text-text-muted shrink-0" />
                   </div>

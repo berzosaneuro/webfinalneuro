@@ -50,18 +50,23 @@ export default function EliasChatPanel({ onClose, isMobile }: Props) {
       text: text.trim(),
     }
 
-    setMessages((prev) => [...prev, userMsg])
     setInput('')
     setIsTyping(true)
 
+    let thread: Message[] = []
+
+    setMessages((prev) => {
+      thread = [...prev, userMsg]
+      return thread
+    })
+
     try {
-      const allMessages = [...messages, userMsg]
       const progress = getProgressContext()
       const res = await fetch('/api/ia-coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: allMessages.map((m) => ({ role: m.role === 'assistant' ? 'coach' : 'user', text: m.text })),
+          messages: thread.map((m) => ({ role: m.role === 'assistant' ? 'coach' : 'user', text: m.text })),
           progress: progress?.summary ?? 'Sin datos de progreso.',
         }),
       })
@@ -81,7 +86,7 @@ export default function EliasChatPanel({ onClose, isMobile }: Props) {
     } finally {
       setIsTyping(false)
     }
-  }, [messages, isTyping])
+  }, [isTyping])
 
   const handleSuggestion = (prompt: string) => {
     sendMessage(prompt)

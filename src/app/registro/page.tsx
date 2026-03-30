@@ -71,7 +71,8 @@ export default function RegistroPage() {
         throw new Error(errors.join(' | '))
       }
 
-      setUser({ nombre, email })
+      const ok = await setUser({ nombre, email })
+      if (!ok) throw new Error('No se pudo iniciar sesión segura')
 
       setSuccess(true)
       setTimeout(() => router.push('/plan-7-dias'), 2000)

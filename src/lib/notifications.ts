@@ -47,7 +47,7 @@ export const NOTIFICATION_TEMPLATES: Record<NotificationType, { title: string; b
   },
   challenge_continuation_reminder: {
     title: 'Sigue con tu reto',
-    body: 'Un día más. La neuroplasticidad se construye con consistencia.',
+    body: 'Un día más. El cambio de verdad se construye con constancia.',
   },
 }
 

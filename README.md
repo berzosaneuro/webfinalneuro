@@ -1,6 +1,6 @@
 # Berzosa Neuro (NeuroConciencia)
 
-Aplicación web progresiva (PWA) de bienestar mental basada en neurociencia. Método N.E.U.R.O.: Neutraliza el pensamiento, Entrena la atención, Ubícate en el cuerpo, Regula la emoción, Observa sin identificarte.
+Aplicación web progresiva (PWA) de bienestar mental con método vivido en la práctica: menos ruido, más claridad. Método N.E.U.R.O.: Neutraliza el pensamiento, Entrena la atención, Ubícate en el cuerpo, Regula la emoción, Observa sin identificarte.
 
 **Autor:** Berzosa Neuro
 

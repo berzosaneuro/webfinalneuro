@@ -12,7 +12,7 @@ import { UserProvider } from '@/context/UserContext'
 
 export const metadata: Metadata = {
   title: 'Berzosa Neuro — Método N.E.U.R.O.',
-  description: 'Entrena tu cerebro. Apaga el ruido mental. Vive desde el presente. Neurociencia aplicada a la conciencia.',
+  description: 'Menos ruido en la cabeza, más claridad en el día a día. Método N.E.U.R.O.: pasos prácticos nacidos de experiencia real, en tu móvil.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -20,19 +20,19 @@ export const metadata: Metadata = {
     title: 'Berzosa Neuro',
   },
   openGraph: {
-    title: 'Berzosa Neuro — Entrena tu cerebro',
-    description: 'Neuroplasticidad, metacognición y presencia. El método N.E.U.R.O. para apagar el ruido mental y vivir despierto. Sin misticismo.',
+    title: 'Berzosa Neuro — Menos ruido, más presencia',
+    description: 'No soy científico: soy alguien que pasó por esto y encontró una salida. El Método N.E.U.R.O. te guía paso a paso, sin postureo.',
     siteName: 'Berzosa Neuro',
     locale: 'es_ES',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Berzosa Neuro — Entrena tu cerebro',
-    description: 'Neuroplasticidad, metacognición y presencia. El método N.E.U.R.O. para apagar el ruido mental.',
+    title: 'Berzosa Neuro — Menos ruido, más presencia',
+    description: 'Método N.E.U.R.O.: claridad y calma con práctica real, en tu móvil. Sin promesas mágicas.',
     creator: '@berzosaneuro',
   },
-  keywords: ['neurociencia', 'meditación', 'neuroplasticidad', 'metacognición', 'conciencia', 'método neuro', 'ruido mental', 'presencia', 'berzosa neuro'],
+  keywords: ['ruido mental', 'ansiedad', 'meditación', 'presencia', 'método neuro', 'calma', 'hábitos', 'berzosa neuro', 'bienestar'],
   authors: [{ name: 'Berzosa Neuro' }],
   creator: 'Berzosa Neuro',
 }

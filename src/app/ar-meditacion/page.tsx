@@ -19,9 +19,22 @@ const steps = [
 ]
 
 export default function ARMeditacionPage() {
+  const enabled = process.env.NEXT_PUBLIC_ENABLE_AR === 'true'
   const [selected, setSelected] = useState('particles')
   const [cameraOn, setCameraOn] = useState(false)
 
+  if (!enabled) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-6 text-center">
+        <div className="glass rounded-3xl p-6 max-w-md">
+          <h1 className="font-heading text-white text-xl font-bold mb-2">AR no disponible por ahora</h1>
+          <p className="text-text-secondary text-sm">
+            Esta función está desactivada en producción hasta completar integración real de cámara y WebXR.
+          </p>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="relative overflow-hidden">
       <div className="orb w-96 h-96 bg-violet-600 -top-20 -right-40" />

@@ -32,7 +32,7 @@ export default function ReferidosPage() {
     if (navigator.share) {
       navigator.share({
         title: 'Berzosa Neuro',
-        text: 'Entrena tu mente con neurociencia. Pruébalo gratis:',
+        text: 'Menos ruido en la cabeza, más claridad. Pruébalo gratis:',
         url: referralLink,
       }).catch(() => {})
     } else {

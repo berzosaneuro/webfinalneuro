@@ -2,33 +2,61 @@
 
 import Image from 'next/image'
 
-const ORB_SIZE = 56
+const AVATAR_PX = 56
 
+/**
+ * FAB del coach: fijo en viewport, derecha, centrado vertical sin depender de ancestros (ideal con portal a body).
+ */
 export default function EliasOrb({ onClick }: { onClick: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="Habla con Elías"
-      className="elias-orb-glow fixed bottom-24 md:bottom-8 left-1/2 -translate-x-1/2 z-[60] rounded-full overflow-hidden shadow-lg transition-transform active:scale-95 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent-blue/50 focus:ring-offset-2 focus:ring-offset-dark-primary"
+    <div
+      className="pointer-events-none flex flex-col items-center gap-1.5"
       style={{
-        width: ORB_SIZE,
-        height: ORB_SIZE,
-        boxShadow: '0 0 20px rgba(0, 102, 255, 0.3), 0 4px 12px rgba(0,0,0,0.4)',
-        paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
+        position: 'fixed',
+        zIndex: 95,
+        right: 'max(0.75rem, env(safe-area-inset-right, 0px))',
+        top: 0,
+        bottom: 0,
+        height: 'fit-content',
+        marginTop: 'auto',
+        marginBottom: 'auto',
+        width: 'max-content',
+        maxWidth: 'min(100vw - 1rem, 5.5rem)',
       }}
     >
-      <div className="relative w-full h-full rounded-full overflow-hidden ring-2 ring-white/20">
-        <Image
-          src="/elias-1.jpg"
-          alt="Elías Berzosa"
-          width={ORB_SIZE}
-          height={ORB_SIZE}
-          className="h-full w-full object-cover"
-          style={{ objectPosition: 'center 25%' }}
-          unoptimized
-        />
-      </div>
-    </button>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label="Abrir IA Coach — pregúntame"
+        className="pointer-events-auto shrink-0 rounded-full overflow-hidden transition-transform duration-200 active:scale-95 hover:scale-[1.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080B16] touch-manipulation"
+        style={{
+          width: AVATAR_PX,
+          height: AVATAR_PX,
+          boxShadow:
+            '0 10px 28px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.14), 0 0 20px rgba(124,58,237,0.2)',
+        }}
+      >
+        <div className="relative h-full w-full rounded-full overflow-hidden ring-2 ring-white/30">
+          <Image
+            src="/elias-1.jpg"
+            alt=""
+            width={AVATAR_PX}
+            height={AVATAR_PX}
+            className="h-full w-full object-cover"
+            style={{ objectPosition: 'center 25%' }}
+            unoptimized
+            priority
+          />
+        </div>
+      </button>
+      <span
+        className="pointer-events-none select-none whitespace-nowrap text-center text-[11px] font-semibold leading-tight tracking-tight text-white"
+        style={{
+          textShadow: '0 1px 3px rgba(0,0,0,0.95), 0 0 12px rgba(0,0,0,0.6)',
+        }}
+      >
+        pregúntame
+      </span>
+    </div>
   )
 }

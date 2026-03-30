@@ -13,21 +13,19 @@ export default function AdminLoginPage() {
   const { adminLogin } = useAdmin()
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(false)
 
-    setTimeout(() => {
-      const success = adminLogin(password)
-      if (success) {
-        router.push('/admin')
-      } else {
-        setError(true)
-        setPassword('')
-      }
-      setLoading(false)
-    }, 500)
+    const success = await adminLogin(password)
+    if (success) {
+      router.push('/admin')
+    } else {
+      setError(true)
+      setPassword('')
+    }
+    setLoading(false)
   }
 
   return (
