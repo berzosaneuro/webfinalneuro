@@ -14,23 +14,32 @@ function isPremiumFromStripeStatus(status: Stripe.Subscription.Status): boolean 
   return status === 'active' || status === 'trialing'
 }
 
-async function alreadyProcessedEvent(eventId: string, eventType: string): Promise<boolean> {
+async function claimEventProcessing(eventId: string, eventType: string): Promise<boolean> {
   const supabase = getSupabaseServiceRole()
-  if (!supabase) return false
-  const { data } = await supabase
-    .from('stripe_events')
-    .select('id')
-    .eq('stripe_event_id', eventId)
-    .maybeSingle()
-  if (data?.id) return true
+  if (!supabase) throw new Error('SUPABASE_SERVICE_ROLE_KEY no configurado')
   const { error } = await supabase.from('stripe_events').insert({
     stripe_event_id: eventId,
     event_type: eventType,
   })
-  if (error && !error.message.toLowerCase().includes('duplicate')) {
+  if (!error) return true
+  const msg = error.message.toLowerCase()
+  if (
+    msg.includes('duplicate') ||
+    msg.includes('already exists') ||
+    msg.includes('unique')
+  ) {
+    return false
+  }
+  if (error) {
     console.error('[stripe webhook] stripe_events insert', error.message)
   }
   return false
+}
+
+async function releaseEventClaim(eventId: string) {
+  const supabase = getSupabaseServiceRole()
+  if (!supabase) return
+  await supabase.from('stripe_events').delete().eq('stripe_event_id', eventId)
 }
 
 async function upsertSubscriptionRecord(input: {
@@ -249,7 +258,8 @@ async function syncPremiumForSubscription(sub: Stripe.Subscription) {
 export async function POST(request: Request) {
   const stripe = getStripe()
   const secret = process.env.STRIPE_WEBHOOK_SECRET
-  if (!stripe || !secret) {
+  const supabase = getSupabaseServiceRole()
+  if (!stripe || !secret || !supabase) {
     return NextResponse.json({ error: 'Webhook no configurado' }, { status: 503 })
   }
 
@@ -268,9 +278,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (await alreadyProcessedEvent(event.id, event.type)) {
+    const claimed = await claimEventProcessing(event.id, event.type)
+    if (!claimed) {
       return NextResponse.json({ received: true, duplicate: true })
     }
+
     switch (event.type) {
       case 'checkout.session.completed':
         return await activatePremiumForCheckoutSession(event.data.object as Stripe.Checkout.Session)
@@ -287,6 +299,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ received: true })
     }
   } catch (e) {
+    await releaseEventClaim(event.id)
     console.error('[stripe webhook]', e)
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })
   }

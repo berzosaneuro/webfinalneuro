@@ -195,23 +195,23 @@ export default function PlanesPage() {
         <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto relative">
           {tiers.map((tier) => (
             <FadeInSection key={tier.name}>
-              <div className={`relative rounded-3xl p-6 md:p-8 border transition-all h-full flex flex-col ${
+              <div className={`relative rounded-3xl p-6 md:p-8 border transition-all h-full flex flex-col overflow-visible ${
                 tier.popular
                   ? 'border-[#0066FF]/40 bg-dark-surface ring-1 ring-[#0066FF]/20'
                   : 'border-dark-border bg-dark-surface/50 hover:border-white/10'
-              }`}>
+              } ${(tier.popular || tier.soon || (tier.name === 'Premium' && !tier.soon && !isPremium)) ? 'pt-12 md:pt-14' : ''}`}>
                 {tier.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#0066FF] text-white text-xs font-semibold rounded-full">
+                  <div className="absolute top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#0066FF] text-white text-xs font-semibold rounded-full z-20 whitespace-nowrap">
                     Más popular
                   </div>
                 )}
                 {tier.soon && (
-                  <div className="absolute -top-3 right-4 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1" style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#F59E0B' }}>
+                  <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 z-20 whitespace-nowrap max-w-[calc(100%-1.5rem)]" style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)', color: '#F59E0B' }}>
                     <Clock className="w-3 h-3" /> Próximamente
                   </div>
                 )}
                 {tier.name === 'Premium' && !tier.soon && !isPremium && (
-                  <div className="absolute -top-3 right-4 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                  <div className="absolute top-10 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 z-20 whitespace-nowrap max-w-[calc(100%-1.5rem)]">
                     Suscripción mensual
                   </div>
                 )}

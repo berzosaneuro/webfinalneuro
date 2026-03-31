@@ -18,12 +18,7 @@ type UserPayload = z.infer<typeof userPayloadSchema>
 type AdminPayload = z.infer<typeof adminPayloadSchema>
 
 function getSecret(): string {
-  return (
-    process.env.APP_SESSION_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    process.env.STRIPE_WEBHOOK_SECRET ||
-    ''
-  )
+  return process.env.APP_SESSION_SECRET || process.env.NEXTAUTH_SECRET || ''
 }
 
 function toBase64Url(input: string): string {

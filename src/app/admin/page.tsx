@@ -156,6 +156,9 @@ export default function AdminPage() {
   const [audioSaving, setAudioSaving] = useState(false)
   const [biblioteca, setBiblioteca] = useState<BiblioPost[]>([])
   const [editingBiblio, setEditingBiblio] = useState<BiblioPost | null>(null)
+  const [manualPremiumEmail, setManualPremiumEmail] = useState('')
+  const [manualPremiumLoading, setManualPremiumLoading] = useState(false)
+  const [manualPremiumMsg, setManualPremiumMsg] = useState<{ type: 'ok' | 'error'; text: string } | null>(null)
 
   const supabaseUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_SUPABASE_URL || '') : ''
   const supabaseDashboardUrl = supabaseUrl
@@ -275,6 +278,42 @@ export default function AdminPage() {
       setUsuarios((prev) => prev.map((row) => (row.id === u.id ? { ...row, ...updated } : row)))
     } catch (err) {
       console.error('Error al actualizar premium manual:', err)
+    }
+  }
+
+  const setPremiumByEmail = async (mode: 'grant' | 'revoke') => {
+    const email = manualPremiumEmail.trim().toLowerCase()
+    if (!email || !email.includes('@')) {
+      setManualPremiumMsg({ type: 'error', text: 'Introduce un email válido.' })
+      return
+    }
+    setManualPremiumLoading(true)
+    setManualPremiumMsg(null)
+    try {
+      const endpoint = mode === 'grant' ? '/api/admin/grant-premium' : '/api/admin/revoke-premium'
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json() as { error?: string; user?: { email?: string; is_premium?: boolean; subscription_status?: string } }
+      if (!res.ok) {
+        setManualPremiumMsg({ type: 'error', text: data?.error || 'No se pudo actualizar premium.' })
+        return
+      }
+      setManualPremiumMsg({ type: 'ok', text: `Actualizado: ${data.user?.email || email}` })
+      setUsuarios((prev) => prev.map((u) => {
+        if (u.email.toLowerCase() !== email) return u
+        return {
+          ...u,
+          is_premium: data.user?.is_premium ?? (mode === 'grant'),
+          subscription_status: data.user?.subscription_status ?? 'manual',
+        }
+      }))
+    } catch {
+      setManualPremiumMsg({ type: 'error', text: 'Error de conexión.' })
+    } finally {
+      setManualPremiumLoading(false)
     }
   }
 
@@ -431,6 +470,39 @@ export default function AdminPage() {
                     </button>
                   )}
                 </div>
+              </div>
+              <div className="glass rounded-2xl p-3 mb-3">
+                <p className="text-text-secondary text-xs mb-2">Control manual por email</p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="email"
+                    value={manualPremiumEmail}
+                    onChange={(e) => setManualPremiumEmail(e.target.value)}
+                    placeholder="usuario@email.com"
+                    className="flex-1 px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void setPremiumByEmail('grant')}
+                    disabled={manualPremiumLoading}
+                    className="px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 disabled:opacity-60"
+                  >
+                    Dar premium
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void setPremiumByEmail('revoke')}
+                    disabled={manualPremiumLoading}
+                    className="px-3 py-2 rounded-xl text-xs font-semibold bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 disabled:opacity-60"
+                  >
+                    Quitar premium
+                  </button>
+                </div>
+                {manualPremiumMsg && (
+                  <p className={`text-xs mt-2 ${manualPremiumMsg.type === 'ok' ? 'text-emerald-300' : 'text-rose-300'}`}>
+                    {manualPremiumMsg.text}
+                  </p>
+                )}
               </div>
               {usuarios.length === 0 ? (
                 <div className="glass rounded-2xl p-8 text-center">
