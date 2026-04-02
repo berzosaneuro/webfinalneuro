@@ -8,7 +8,7 @@ import { ShieldOff, Target, User, Heart, Eye, Clock, Brain, Zap, Activity } from
 export const metadata: Metadata = {
   title: 'Método N.E.U.R.O. — Berzosa Neuro',
   description:
-    'Cinco pasos prácticos nacidos de experiencia real: menos ruido en la cabeza, más claridad en el día a día. Sin tecnicismos, sin postureo.',
+    'Cinco pasos para bajar el ruido mental y ganar claridad. Práctica diaria, lenguaje claro, resultados que notas.',
 }
 
 const steps = [
@@ -17,55 +17,55 @@ const steps = [
     title: 'Neutraliza el pensamiento',
     icon: ShieldOff,
     explanation:
-      'El pensamiento no es tu enemigo, pero tampoco es la realidad. La mayoría de lo que piensas son proyecciones, repeticiones y narrativas automáticas. Neutralizar no es suprimir: es quitar al pensamiento su poder de arrastre. Cuando observas un pensamiento sin engancharte, pierde fuerza. Se convierte en lo que realmente es: actividad mental, no verdad absoluta.',
+      'La mente repite y proyecta. Neutralizar no es callarla: es ver el pensamiento como pensamiento y dejar de seguirlo. Cuando no le das el mando, pierde intensidad.',
     neuro:
-      'Cuando dejo de seguir cada idea hasta el final, el día cambia de textura. Lo aprendí a fuerza de noches en vela: etiquetar el pensamiento y soltarlo no es debilidad; es recuperar el mando. Si lo practicas, notas que el mismo problema ocupa menos espacio.',
+      'Etiquetar “pensamiento” y soltar el hilo me devolvió el día entero. Con práctica, el mismo asunto ocupa menos cabeza.',
     exercise:
-      'Siéntate 3 minutos en silencio. Cada vez que aparezca un pensamiento, etiquétalo mentalmente como "pensamiento" sin importar su contenido. No lo sigas, no lo analices. Solo etiqueta y suelta. Repite hasta que notes que los pensamientos pierden intensidad.',
+      '3 minutos en silencio. Cada pensamiento que aparezca, etiquétalo como “pensamiento”. No lo sigas ni lo analices. Repite hasta notar que afloja.',
   },
   {
     letter: 'E',
     title: 'Entrena la atención',
     icon: Target,
     explanation:
-      'La atención es la herramienta más poderosa que tienes y la menos entrenada. Sin atención, no hay presencia. Sin presencia, no hay control sobre tu experiencia. La atención se entrena como un músculo: con repeticiones. Cada vez que notas que tu mente se ha ido y la traes de vuelta, estás haciendo una repetición.',
+      'La atención se entrena con repeticiones: notas que te fuiste y vuelves al foco. Sin eso, no hay presencia ni elección consciente.',
     neuro:
-      'Antes me castigaba cada vez que me distraía. Con el tiempo entendí que volver al foco es el entrenamiento. No hace falta ser monje: unos minutos al día bastan para sentir que eliges dónde pones la mirada, en lugar de que ella te arrastre.',
+      'Dejé de castigarme por distraerme. Volver al foco es la repetición que cuenta. Unos minutos al día bastan para notar que tú eliges dónde miras.',
     exercise:
-      'Enfócate en tu respiración durante 5 minutos. No la modifiques, solo obsérvala. Cada vez que tu mente se desvíe, nótalo y vuelve a la respiración. Cuenta cuántas veces vuelves: ese es tu entrenamiento del día.',
+      '5 minutos mirando la respiración sin cambiarla. Cada desvío, vuelves. Cuenta las vueltas: ese es tu entrenamiento de hoy.',
   },
   {
     letter: 'U',
     title: 'Ubícate en el cuerpo',
     icon: User,
     explanation:
-      'Tu cuerpo siempre está en el presente. Tu mente casi nunca. Cuando llevas la atención al cuerpo, sales del bucle mental automático y aterrizas en el ahora. Las sensaciones corporales son un ancla perfecta porque son inmediatas, tangibles y siempre disponibles.',
+      'El cuerpo está en el presente; la mente vuela. Llevar la atención a sensaciones concretas corta el piloto automático.',
     neuro:
-      'Cuando bajo del ruido a lo que siento físicamente, la tormenta baja sola. No es mística: es lo más simple que probé y lo que más me estabilizó en momentos feos. El cuerpo no discute; solo está.',
+      'Pies, hombros, respiración: lo más simple fue lo que más me estabilizó cuando la cabeza no paraba.',
     exercise:
-      'Haz un escaneo corporal rápido: empieza por los pies y sube lentamente hasta la cabeza. En cada zona, nota qué sientes: tensión, calor, hormigueo, nada. No intentes cambiar nada, solo observa. Dedica 2 minutos a este recorrido.',
+      'Escaneo rápido de pies a cabeza. En cada zona, nota lo que hay. Sin corregir nada. Dos minutos.',
   },
   {
     letter: 'R',
     title: 'Regula la emoción',
     icon: Heart,
     explanation:
-      'Las emociones no son el problema. El problema es la reactividad automática. Regular no es reprimir ni controlar: es crear un espacio entre el estímulo y tu respuesta. En ese espacio está tu libertad. La regulación emocional se basa en tres pasos: detectar, nombrar y elegir.',
+      'La emoción no es el problema: la reacción automática sí. Regulación = espacio entre lo que sientes y lo que haces: detectar, nombrar, respirar, elegir.',
     neuro:
-      'Nombrar lo que siento antes de abrir la boca me ahorró discusiones que ya no quiero repetir. Ese microespacio entre el golpe y la respuesta es donde dejas de reaccionar y empiezas a elegir. Nadie te lo enseña en el instituto; aquí lo entrenas en frío.',
+      'Nombrar antes de hablar me ahorró respuestas que ya no quiero repetir. Ese hueco pequeño es donde mandas tú.',
     exercise:
-      'La próxima vez que sientas una emoción intensa (irritación, ansiedad, frustración), para y haz esto: 1) Detecta dónde sientes la emoción en tu cuerpo. 2) Nómbrala mentalmente. 3) Respira tres veces antes de responder o actuar. Nota la diferencia.',
+      'Ante una emoción fuerte: localízala en el cuerpo, nómbrala, tres respiraciones, luego actúas (o no). Compara antes y después.',
   },
   {
     letter: 'O',
     title: 'Observa sin identificarte',
     icon: Eye,
     explanation:
-      'Este es el nivel más profundo. Observar sin identificarte significa ser consciente de tus pensamientos, emociones y sensaciones sin creer que eres ellos. Tú no eres tu ansiedad. No eres tu autocrítica. No eres tu miedo. Eres la conciencia que puede observar todo eso. Cuando te identificas con un pensamiento, te arrastra. Cuando lo observas, eres libre.',
+      'No eres cada pensamiento ni cada emoción: eres quien puede mirarlos. Observar sin confundirte con el contenido es libertad práctica.',
     neuro:
-      'Cuando dejo de confundirme con el drama de la cabeza, el volumen baja. No me volví frío: simplemente vi que el ruido no era todo lo que soy. Eso cambia cómo enfrentas el día sin fingir que todo está perfecto.',
+      'Dejar de ser el drama de la cabeza bajó el volumen sin fingir que todo va bien. El día se enfrenta distinto.',
     exercise:
-      'Durante 5 minutos, adopta la posición del observador. Imagina que estás sentado en la orilla de un río y tus pensamientos son hojas que flotan en el agua. Obsérvalos pasar sin subirte a ninguno. Si te enganchas, nótalo y vuelve a la orilla.',
+      '5 minutos: orilla del río, pensamientos como hojas. No subas a ninguna. Si te enganchas, vuelves a la orilla.',
   },
 ]
 
@@ -86,7 +86,7 @@ export default function MetodoPage() {
               MÉTODO N.E.U.R.O.
             </h1>
             <p className="text-text-secondary text-lg md:text-xl animate-fade-in-up">
-              No nació en un paper. Nació de vivir la mente a mil y necesitar una salida simple, repetible y honesta.
+              Nació de la necesidad real: mente a mil, salida clara. Cinco pasos que repites cada día.
             </p>
           </div>
         </Container>
@@ -104,17 +104,14 @@ export default function MetodoPage() {
                 </div>
                 <div className="space-y-4 text-text-secondary leading-relaxed">
                   <p>
-                    No soy científico. Soy alguien que estuvo agotado, sobrepensando y fingiendo que &quot;estaba bien&quot;.
-                    Estas cinco letras son la brújula que fui probando hasta que hubo orden: qué hacer cuando la cabeza
-                    no para.
+                    Salió de agotamiento, sobrepensamiento y la fachada de &quot;estoy bien&quot;. Estas cinco letras son la
+                    brújula que fui probando hasta tener orden cuando la cabeza no para.
                   </p>
                   <p>
-                    No te vendo escáneres ni promesas de laboratorio. Te ofrezco lo que a mí me funcionó: pasos claros,
-                    sin humo, para bajar el ruido y volver a elegir cómo vives el día.
+                    Aquí tienes pasos claros para bajar el ruido y recuperar criterio en el día. Sin humo, sin discurso de laboratorio.
                   </p>
                   <p className="text-white font-medium">
-                    Si lo practicas con constancia honesta—notando, sin engañarte—la vida se siente distinta. No porque
-                    la realidad cambie sola, sino porque tú cambias cómo la atraviesas.
+                    Con práctica honesta cambia cómo vives lo que te pasa. No porque el mundo se arregle solo: porque tú atraviesas distinto.
                   </p>
                 </div>
                 <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -124,11 +121,11 @@ export default function MetodoPage() {
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-dark-bg/50">
                     <Activity className="w-5 h-5 text-accent-blue shrink-0" />
-                    <span className="text-sm text-white">Pasos que puedes repetir</span>
+                    <span className="text-sm text-white">Pasos repetibles cada día</span>
                   </div>
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-dark-bg/50">
                     <Zap className="w-5 h-5 text-accent-blue shrink-0" />
-                    <span className="text-sm text-white">Cambios que se notan</span>
+                    <span className="text-sm text-white">Resultados que ves tú</span>
                   </div>
                 </div>
               </div>
@@ -158,7 +155,7 @@ export default function MetodoPage() {
                     <div className="flex items-center gap-2 mb-3">
                       <Brain className="w-4 h-4 text-purple-400" />
                       <h3 className="text-purple-400 font-semibold text-sm uppercase tracking-wider">
-                        Lo que esto cambia cuando lo practicas
+                        En la práctica
                       </h3>
                     </div>
                     <p className="text-text-secondary text-sm leading-relaxed">{step.neuro}</p>

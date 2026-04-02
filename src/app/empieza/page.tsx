@@ -30,22 +30,22 @@ export default function EmpiezaPage() {
         <Container>
           <div className="max-w-[22rem] sm:max-w-lg">
             <p className="text-accent-blue text-[10px] font-bold tracking-[0.12em] uppercase mb-2">
-              Berzosa Neuro · experiencia real, sin postureo
+              Berzosa Neuro · método y práctica diaria
             </p>
             <h1 className="font-heading text-[1.65rem] sm:text-4xl font-black tracking-tight text-white leading-[1.12]">
               Por fuera aguantas. Por dentro no paras.
               <span className="block mt-1 text-text-primary">
-                Imagina cerrar el día sin esa película mental en bucle.
+                Cierra el día sin la misma película en bucle.
               </span>
             </h1>
             <p className="text-text-secondary text-sm mt-3 leading-snug">
-              No vengo de un laboratorio: pasé por esto y armé un camino claro. Sin tarjeta · acceso al instante.
+              Pasé por esto y monté un camino claro: Método N.E.U.R.O., en el móvil. Sin tarjeta. Acceso al momento.
             </p>
             <Button
               href="/registro"
               className="mt-5 w-full sm:w-auto !py-3.5 !px-6 !rounded-xl !font-bold !text-sm shadow-[0_0_22px_rgba(124,58,237,0.4)]"
             >
-              Empieza gratis ahora <ChevronRight className="w-4 h-4 ml-1 inline" />
+              Empieza hoy, gratis <ChevronRight className="w-4 h-4 ml-1 inline" />
             </Button>
           </div>
         </Container>
@@ -64,7 +64,7 @@ export default function EmpiezaPage() {
                   Scrolleas, respondes &quot;bien&quot;… y por dentro llevas semanas a fuego lento.
                 </h2>
                 <p className="text-text-secondary text-xs sm:text-sm mt-1.5 leading-snug">
-                  Yo también lo disimulé un tiempo. Si te reconoces aquí, no estás solo.
+                  También lo disimulé. Si te reconoces, hay un siguiente paso concreto.
                 </p>
               </div>
             </div>
@@ -78,7 +78,7 @@ export default function EmpiezaPage() {
           <div className="flex items-center gap-2 mb-2.5">
             <Zap className="w-4 h-4 text-accent-blue shrink-0" />
             <h2 className="font-heading font-bold text-white text-sm sm:text-base">
-              No es &quot;piensa positivo&quot;: son 5 pasos que fui probando hasta que hubo orden.
+              No es &quot;piensa positivo&quot;: son cinco pasos que ordenan la cabeza con práctica.
             </h2>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -99,7 +99,7 @@ export default function EmpiezaPage() {
       <section className="relative py-3 md:py-6">
         <Container>
           <p className="text-center text-amber-400/95 text-[11px] font-semibold tracking-wide uppercase mb-3">
-            Plazas limitadas al abrir Premium · quien entra antes, antes transforma el hábito
+            Premium con cupos controlados · Mentoría en lista de espera
           </p>
 
           <div className="max-w-md mx-auto flex flex-col gap-3">
@@ -144,7 +144,7 @@ export default function EmpiezaPage() {
                   color: '#93c5fd',
                 }}
               >
-                Quiero reservar Premium <ArrowRight className="w-4 h-4" />
+                Ver planes Premium <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
@@ -158,13 +158,13 @@ export default function EmpiezaPage() {
                 <span className="text-white font-black text-sm">0 €</span>
               </div>
               <p className="text-text-muted text-[11px] leading-snug mb-3">
-                Sin tarjeta · Prueba el test y meditaciones gratis antes de decidir.
+                Sin tarjeta: test, meditaciones base y método en abierto.
               </p>
               <Link
                 href="/registro"
                 className="block w-full py-2.5 rounded-xl text-center text-xs font-bold text-accent-blue bg-accent-blue/10 border border-accent-blue/25 active:scale-[0.98] transition-transform"
               >
-                Probar gratis primero
+                Crear cuenta gratis
               </Link>
             </div>
           </div>
@@ -180,16 +180,16 @@ export default function EmpiezaPage() {
           >
             <div className="absolute inset-0 border border-accent-blue/20 rounded-2xl pointer-events-none" />
             <p className="relative font-heading font-bold text-white text-sm sm:text-base mb-1">
-              Empieza hoy o sigues igual mañana.
+              El cambio empieza con un primer acceso.
             </p>
             <p className="relative text-text-secondary text-xs mb-4 leading-snug">
-              Sin tarjeta · Empieza en 30 segundos · Acceso inmediato a lo gratis
+              Sin tarjeta · Un minuto para registrarte · Reto 7 días incluido
             </p>
             <Button
               href="/registro"
               className="relative !py-3 !px-6 !rounded-xl !text-sm !font-bold w-full sm:w-auto"
             >
-              Quiero dejar de sobrepensar <ChevronRight className="w-4 h-4 ml-1 inline" />
+              Registrar y empezar <ChevronRight className="w-4 h-4 ml-1 inline" />
             </Button>
           </div>
         </Container>
@@ -202,7 +202,7 @@ export default function EmpiezaPage() {
             href="/registro"
             className="flex w-full items-center justify-center gap-2 py-3.5 rounded-xl bg-accent-blue text-white text-sm font-bold shadow-[0_0_24px_rgba(124,58,237,0.45)] active:scale-[0.98] transition-transform"
           >
-            Empieza en 30 segundos — gratis
+            Registro en un minuto — gratis
             <ChevronRight className="w-4 h-4" />
           </Link>
         </Container>

@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { useUser } from '@/context/UserContext'
 
 interface AdminContextType {
   isAdmin: boolean
@@ -17,41 +18,22 @@ const AdminContext = createContext<AdminContextType>({
 })
 
 export function AdminProvider({ children }: { children: ReactNode }) {
+  const { user, logout } = useUser()
   const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await fetch('/api/admin/session')
-        if (!res.ok) return
-        const data = await res.json() as { isAdmin?: boolean }
-        if (data?.isAdmin) setIsAdmin(true)
-      } catch {}
-      setLoading(false)
-    }
-    void load()
-  }, [])
+    setIsAdmin(user?.role === 'master')
+    setLoading(false)
+  }, [user?.role])
 
   const adminLogin = async (password: string): Promise<boolean> => {
-    try {
-      const res = await fetch('/api/admin/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-      })
-      if (!res.ok) return false
-      setIsAdmin(true)
-      return true
-    } catch {
-      return false
-    }
+    void password
+    return false
   }
 
   const adminLogout = async () => {
-    try {
-      await fetch('/api/admin/session', { method: 'DELETE' })
-    } catch {}
+    await logout()
     setIsAdmin(false)
   }
 

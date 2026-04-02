@@ -30,10 +30,7 @@ async function claimEventProcessing(eventId: string, eventType: string): Promise
   ) {
     return false
   }
-  if (error) {
-    console.error('[stripe webhook] stripe_events insert', error.message)
-  }
-  return false
+  throw new Error(`[stripe webhook] stripe_events insert: ${error.message}`)
 }
 
 async function releaseEventClaim(eventId: string) {
@@ -114,6 +111,9 @@ async function upsertUserByStripeIdentity(input: {
   const nombre = emailNorm.split('@')[0] || 'Usuario'
 
   if (emailNorm) {
+    console.info(
+      `[stripe webhook] actualizar usuario por email=${emailNorm} customerId=${input.customerId} is_premium=${input.isPremium} subscription_status=${input.subscriptionStatus}`
+    )
     const { data: updatedByEmail, error: upErrEmail } = await supabase
       .from('users')
       .update({
@@ -121,11 +121,20 @@ async function upsertUserByStripeIdentity(input: {
         subscription_status: input.subscriptionStatus,
         is_premium: input.isPremium,
       })
-      .ilike('email', emailNorm)
+      .eq('email', emailNorm)
       .select('id')
-    if (upErrEmail) return { ok: false as const, error: upErrEmail.message }
-    if (updatedByEmail?.length) return { ok: true as const }
+    if (upErrEmail) {
+      console.error('[stripe webhook] update users por email falló', upErrEmail.message)
+      return { ok: false as const, error: upErrEmail.message }
+    }
+    if (updatedByEmail?.length) {
+      console.info(
+        `[stripe webhook] users actualizado por email id=${updatedByEmail[0]?.id} is_premium=${input.isPremium}`
+      )
+      return { ok: true as const }
+    }
 
+    console.info(`[stripe webhook] insert usuario nuevo email=${emailNorm}`)
     const { error: insErr } = await supabase.from('users').insert({
       email: emailNorm,
       nombre,
@@ -133,10 +142,17 @@ async function upsertUserByStripeIdentity(input: {
       subscription_status: input.subscriptionStatus,
       is_premium: input.isPremium,
     })
-    if (insErr) return { ok: false as const, error: insErr.message }
+    if (insErr) {
+      console.error('[stripe webhook] insert users falló', insErr.message)
+      return { ok: false as const, error: insErr.message }
+    }
+    console.info(`[stripe webhook] users insertado is_premium=${input.isPremium}`)
     return { ok: true as const }
   }
 
+  console.info(
+    `[stripe webhook] actualizar usuario solo por stripe_customer_id=${input.customerId} is_premium=${input.isPremium}`
+  )
   const { data: updatedByCustomer, error: upErrCustomer } = await supabase
     .from('users')
     .update({
@@ -145,10 +161,17 @@ async function upsertUserByStripeIdentity(input: {
     })
     .eq('stripe_customer_id', input.customerId)
     .select('id')
-  if (upErrCustomer) return { ok: false as const, error: upErrCustomer.message }
+  if (upErrCustomer) {
+    console.error('[stripe webhook] update por customerId falló', upErrCustomer.message)
+    return { ok: false as const, error: upErrCustomer.message }
+  }
   if (!updatedByCustomer?.length) {
+    console.warn(`[stripe webhook] ningún usuario con stripe_customer_id=${input.customerId}`)
     return { ok: false as const, error: 'No se encontró usuario por stripe_customer_id' }
   }
+  console.info(
+    `[stripe webhook] users actualizado por customerId id=${updatedByCustomer[0]?.id} is_premium=${input.isPremium}`
+  )
   return { ok: true as const }
 }
 
@@ -259,6 +282,20 @@ export async function POST(request: Request) {
   const stripe = getStripe()
   const secret = process.env.STRIPE_WEBHOOK_SECRET
   const supabase = getSupabaseServiceRole()
+  if (!stripe) {
+    console.error('[stripe webhook] Falta STRIPE_SECRET_KEY (getStripe() null)')
+  }
+  if (!secret) {
+    console.error('[stripe webhook] Falta STRIPE_WEBHOOK_SECRET')
+  }
+  if (!supabase) {
+    const urlOk = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL?.trim())
+    const sr = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim())
+    console.error(
+      '[stripe webhook] getSupabaseServiceRole() null — el webhook necesita SUPABASE_SERVICE_ROLE_KEY y NEXT_PUBLIC_SUPABASE_URL en Vercel (producción).',
+      { hasUrl: urlOk, hasServiceRoleKey: sr }
+    )
+  }
   if (!stripe || !secret || !supabase) {
     return NextResponse.json({ error: 'Webhook no configurado' }, { status: 503 })
   }
@@ -266,6 +303,7 @@ export async function POST(request: Request) {
   const body = await request.text()
   const sig = request.headers.get('stripe-signature')
   if (!sig) {
+    console.warn('[stripe webhook] petición sin cabecera stripe-signature')
     return NextResponse.json({ error: 'Sin firma' }, { status: 400 })
   }
 
@@ -274,8 +312,11 @@ export async function POST(request: Request) {
     event = stripe.webhooks.constructEvent(body, sig, secret)
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Firma inválida'
+    console.error('[stripe webhook] verificación de firma fallida', msg)
     return NextResponse.json({ error: msg }, { status: 400 })
   }
+
+  console.info(`[stripe webhook] evento recibido id=${event.id} type=${event.type}`)
 
   try {
     const claimed = await claimEventProcessing(event.id, event.type)

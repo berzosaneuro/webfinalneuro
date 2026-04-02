@@ -245,6 +245,7 @@ export async function fetchElevenLabsTTS(
     const res = await fetch('/api/elevenlabs/tts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
       body: JSON.stringify({ text: normalizedText }),
       signal: controller.signal,
     })

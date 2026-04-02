@@ -218,7 +218,7 @@ export default function NeuroScorePage() {
             NeuroScore
           </h1>
           <p className="text-text-secondary text-sm animate-fade-in-up">
-            Tu rendimiento mental, medido.
+            Hábitos del día en un número. Lo que haces cuenta en la pantalla.
           </p>
         </Container>
       </section>
@@ -407,8 +407,8 @@ export default function NeuroScorePage() {
             <EmailCapture
               source="neuroscore"
               title="Sincroniza tu progreso"
-              subtitle="Recibe un resumen semanal de tu NeuroScore y racha."
-              buttonText="Activar"
+              subtitle="Opcional: resumen semanal por email con NeuroScore y racha."
+              buttonText="Activar resumen"
               extraData={{ todayScore, streak, perfectDays: data.logs.filter(l => calculateScore(l) >= maxScore).length }}
             />
           </FadeInSection>

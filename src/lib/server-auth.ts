@@ -1,21 +1,15 @@
 import { z } from 'zod'
 
 export const USER_COOKIE_NAME = 'bn_user_session'
-export const ADMIN_COOKIE_NAME = 'bn_admin_session'
 
 const userPayloadSchema = z.object({
   email: z.string().email(),
   nombre: z.string().min(1).max(120),
-  exp: z.number().int().positive(),
-})
-
-const adminPayloadSchema = z.object({
-  role: z.literal('admin'),
+  role: z.enum(['user', 'master']).default('user'),
   exp: z.number().int().positive(),
 })
 
 type UserPayload = z.infer<typeof userPayloadSchema>
-type AdminPayload = z.infer<typeof adminPayloadSchema>
 
 function getSecret(): string {
   return process.env.APP_SESSION_SECRET || process.env.NEXTAUTH_SECRET || ''
@@ -76,12 +70,13 @@ function parseCookie(headers: Headers, cookieName: string): string {
   return match ? decodeURIComponent(match.slice(cookieName.length + 1)) : ''
 }
 
-export async function createUserSessionToken(email: string, nombre: string): Promise<string> {
+export async function createUserSessionToken(email: string, nombre: string, role: 'user' | 'master' = 'user'): Promise<string> {
   const secret = getSecret()
   if (!secret) throw new Error('Falta APP_SESSION_SECRET/NEXTAUTH_SECRET')
   const payload: UserPayload = {
     email: email.trim().toLowerCase(),
     nombre: nombre.trim() || email.trim().toLowerCase().split('@')[0] || 'Usuario',
+    role,
     exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 14,
   }
   return encodeToken(payload, secret)
@@ -99,23 +94,3 @@ export async function getUserSessionFromHeaders(headers: Headers): Promise<UserP
   return parsed.data
 }
 
-export async function createAdminSessionToken(): Promise<string> {
-  const secret = getSecret()
-  if (!secret) throw new Error('Falta APP_SESSION_SECRET/NEXTAUTH_SECRET')
-  const payload: AdminPayload = {
-    role: 'admin',
-    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 12,
-  }
-  return encodeToken(payload, secret)
-}
-
-export async function isAdminSession(headers: Headers): Promise<boolean> {
-  const secret = getSecret()
-  if (!secret) return false
-  const token = parseCookie(headers, ADMIN_COOKIE_NAME)
-  if (!token) return false
-  const raw = await decodeToken(token, secret)
-  const parsed = adminPayloadSchema.safeParse(raw)
-  if (!parsed.success) return false
-  return parsed.data.exp > Math.floor(Date.now() / 1000)
-}

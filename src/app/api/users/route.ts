@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     const { data: existing, error: lookupError } = await supabase
       .from('users')
       .select('id')
-      .ilike('email', emailNorm)
+      .eq('email', emailNorm)
       .maybeSingle()
 
     if (lookupError) {

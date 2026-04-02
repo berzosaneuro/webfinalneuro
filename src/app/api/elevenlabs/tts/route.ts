@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireUserOr401 } from '@/lib/api-auth'
 
 const ELEVENLABS_API = 'https://api.elevenlabs.io'
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
@@ -41,6 +42,8 @@ function setCachedAudio(key: string, bytes: ArrayBuffer): void {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireUserOr401(req)
+  if (auth.error) return auth.error
   const apiKey = process.env.ELEVENLABS_API_KEY
   const voiceId = process.env.ELEVENLABS_VOICE_ID
 

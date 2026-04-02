@@ -16,9 +16,9 @@ interface EmailCaptureProps {
 
 export default function EmailCapture({
   source,
-  title = 'Guarda tus resultados',
-  subtitle = 'Introduce tu email para guardar tus datos y recibir tu progreso.',
-  buttonText = 'Guardar',
+  title = 'Guarda tu progreso',
+  subtitle = 'Email para sincronizar resultados y avisos puntuales.',
+  buttonText = 'Guardar email',
   onSuccess,
   onClose,
   extraData,

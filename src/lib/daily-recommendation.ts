@@ -94,7 +94,7 @@ export function getDailyRecommendation(): Recommendation {
     return {
       type: 'meditation',
       title: 'Meditación guiada',
-      description: 'Empieza el día con una práctica breve de 3-5 minutos.',
+      description: '3–5 minutos. Anclas el día antes de que la cabeza arranque sola.',
       href: '/meditacion',
     }
   }
@@ -103,7 +103,7 @@ export function getDailyRecommendation(): Recommendation {
     return {
       type: 'challenge',
       title: `Reto día ${retoDay.day}`,
-      description: `Continúa con tu reto semanal. Día ${retoDay.day} de ${retoDay.total}.`,
+      description: `Reto activo: día ${retoDay.day} de ${retoDay.total}. Un paso y listo.`,
       href: '/retos',
     }
   }
@@ -112,7 +112,7 @@ export function getDailyRecommendation(): Recommendation {
     return {
       type: 'challenge',
       title: `Reto 7 días — Día ${plan7Day}`,
-      description: 'Sigue con el plan gratuito de 7 días.',
+      description: 'Siguiente día del plan gratuito. Una letra del método, un ejercicio.',
       href: '/plan-7-dias',
     }
   }
@@ -121,7 +121,7 @@ export function getDailyRecommendation(): Recommendation {
     return {
       type: 'challenge',
       title: `Programa 21 días — Día ${programaDay}`,
-      description: 'Avanza en el programa de 21 días.',
+      description: 'Sigue el día que toca. El calendario te mantiene en ritmo.',
       href: '/programa',
     }
   }
@@ -130,15 +130,15 @@ export function getDailyRecommendation(): Recommendation {
     return {
       type: 'training',
       title: 'Entrenamiento N.E.U.R.O. del día',
-      description: 'Completa el ejercicio de observación de la mente de hoy.',
+      description: 'El ejercicio de observación de hoy está en inicio. Márcalo cuando lo hagas.',
       href: '/',
     }
   }
 
   return {
     type: 'training',
-    title: '¡Buen trabajo hoy!',
-    description: 'Has completado meditación y entrenamiento. Descansa o explora más prácticas.',
+    title: 'Base del día cubierta',
+    description: 'Meditación y entrenamiento hechos. Explora o descansa; el día cuenta.',
     href: '/meditacion',
   }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getSupabase } from '@/lib/supabase'
+import { requireUserOr401 } from '@/lib/api-auth'
 
 export async function GET() {
   const supabase = getSupabase()
@@ -17,6 +18,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireUserOr401(request)
+  if (auth.error) return auth.error
   let body: { autor?: string; avatar?: string; nivel?: string; texto?: string; tag?: string }
   try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
   const { autor, avatar, nivel, texto, tag } = body
@@ -27,8 +30,9 @@ export async function POST(request: Request) {
 
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+  const displayAutor = (autor && String(autor).trim()) || auth.nombre || 'Usuario'
   const { data, error } = await supabase.from('community_posts').insert({
-    autor: autor || 'Anónimo',
+    autor: displayAutor,
     avatar: avatar || '🌟',
     nivel: nivel || 'Observador',
     texto,
@@ -43,6 +47,8 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  const auth = await requireUserOr401(request)
+  if (auth.error) return auth.error
   let body: { id?: string; likes?: number; autor?: string; avatar?: string; nivel?: string; texto?: string; tag?: string }
   try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
   const supabase = getSupabase()

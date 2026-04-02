@@ -6,28 +6,28 @@ import { Sparkles, Heart, Eye, Sun, Flame, ArrowDown } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Despertar en Vida — Berzosa Neuro',
-  description: 'No hace falta morir para despertar. La claridad que otros buscan en experiencias extremas, tú la entrenas aquí.',
+  description: 'La misma claridad que muchos asocian a una crisis, aquí la entrenas con método y sin riesgos.',
 }
 
 const revelations = [
   {
     icon: Heart,
     ecm: 'En una ECM sientes amor incondicional',
-    neuro: 'La compasión guiada abre el pecho sin drama: es práctica, no teatro. Sin trauma.',
+    neuro: 'Compasión guiada: abrir el pecho con práctica, sin drama ni forzar nada.',
     color: 'text-rose-400',
     bg: 'bg-rose-500/10',
   },
   {
     icon: Eye,
     ecm: 'En una ECM ves tu vida pasar ante tus ojos',
-    neuro: 'El ejercicio de "Revisión consciente" te da la misma perspectiva. Cada día, no solo al borde de la muerte.',
+    neuro: 'Revisión consciente: la misma perspectiva, en el sofá, cada vez que la practicas.',
     color: 'text-violet-400',
     bg: 'bg-violet-500/10',
   },
   {
     icon: Sun,
     ecm: 'En una ECM desaparece el miedo',
-    neuro: 'Mirar el miedo con un poco de distancia enseña a no reaccionar en automático. Se entrena, como todo lo demás.',
+    neuro: 'Mirar el miedo con distancia corta el piloto automático. Se entrena igual que un músculo.',
     color: 'text-violet-400',
     bg: 'bg-violet-500/10',
   },
@@ -41,7 +41,7 @@ const revelations = [
   {
     icon: Flame,
     ecm: 'En una ECM cambias tus prioridades',
-    neuro: 'El ejercicio de "Claridad vital" te obliga a confrontar qué importa AHORA. Hoy. Sin esperar a una crisis.',
+    neuro: 'Claridad vital: prioridades al día, sin esperar a que algo grave pase.',
     color: 'text-orange-400',
     bg: 'bg-orange-500/10',
   },
@@ -67,7 +67,7 @@ export default function DespertarPage() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-rose-400">para despertar.</span>
             </h1>
             <p className="text-text-secondary text-base md:text-lg animate-fade-in-up leading-relaxed">
-              Las experiencias cercanas a la muerte revelan verdades profundas. Y en el día a día puedes tocar algo parecido <strong className="text-white">entrenando tu mente con método</strong>, sin arriesgar tu vida.
+              Mucha gente describe claridad extrema tras una experiencia límite. Aquí vas a lo mismo con <strong className="text-white">entrenamiento de mente</strong>, sin ponerte en peligro.
             </p>
             <div className="flex justify-center mt-8 animate-fade-in-up">
               <ArrowDown className="w-5 h-5 text-text-muted animate-bounce" />
@@ -84,13 +84,13 @@ export default function DespertarPage() {
               <div className="absolute top-0 right-0 w-40 h-40 bg-violet-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
               <div className="relative">
                 <h2 className="font-heading font-bold text-white text-xl md:text-2xl mb-2">
-                  La ciencia detrás del despertar
+                  Qué se repite en experiencias límite
                 </h2>
                 <p className="text-text-secondary text-sm md:text-base leading-relaxed">
-                  Las personas que viven una ECM reportan: pérdida del miedo a la muerte, sensación de amor incondicional, claridad total sobre sus prioridades, y desaparición del ego. Investigadores como Pim van Lommel y Sam Parnia han documentado miles de casos.
+                  En relatos de experiencia cercana a la muerte vuelven los mismos temas: menos miedo, más conexión, prioridades claras, ego en segundo plano. Miles de casos están documentados.
                 </p>
                 <p className="text-white text-sm md:text-base leading-relaxed mt-3 font-medium">
-                  Pero lo que no te cuentan es que cada uno de esos efectos tiene un correlato neurológico que se puede entrenar sin ningún riesgo.
+                  Esos estados tienen equivalentes entrenables en la vida normal. Aquí trabajas eso con ejercicio, no con riesgo.
                 </p>
               </div>
             </div>
@@ -141,10 +141,10 @@ export default function DespertarPage() {
                   Nosotros te entrenamos para <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-purple-400">vivir despierto</span>.
                 </h2>
                 <p className="text-text-secondary text-sm md:text-base leading-relaxed mb-6">
-                  No necesitas una experiencia traumática para entender qué importa. No necesitas estar al borde de la muerte para dejar de vivir en piloto automático. Solo necesitas entrenar tu atención y observar tu mente con las herramientas correctas.
+                  No hace falta trauma para saber qué importa. Hace falta atención entrenada y herramientas que ya tienes en la app.
                 </p>
                 <p className="text-white/70 text-xs uppercase tracking-widest font-medium">
-                  Método y experiencia. Sin misticismo vacío. Sin drama innecesario.
+                  Método, práctica, cero postureo.
                 </p>
               </div>
             </div>
@@ -158,7 +158,7 @@ export default function DespertarPage() {
           <FadeInSection>
             <h2 className="font-heading font-semibold text-white text-lg mb-2">Ejercicio: Claridad vital</h2>
             <p className="text-text-secondary text-sm mb-5">
-              Las personas que vuelven de una ECM saben exactamente qué importa. Este ejercicio te da esa misma claridad. Ahora.
+              Misma pregunta que muchos hacen tras una crisis: qué importa de verdad. Respuesta por escrito, hoy.
             </p>
             <ClarityExercise />
           </FadeInSection>

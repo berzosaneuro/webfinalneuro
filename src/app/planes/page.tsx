@@ -6,86 +6,86 @@ import { Check, X, Crown, Sparkles, Brain, Star, Clock, Loader2 } from 'lucide-r
 import Container from '@/components/Container'
 import FadeInSection from '@/components/FadeInSection'
 import { useUser } from '@/context/UserContext'
-import { usePremium } from '@/context/PremiumContext'
+import { useSubscription } from '@/hooks/useSubscription'
 
 const tiers = [
   {
     name: 'Gratis',
     price: '0',
     period: '/siempre',
-    description: 'Para probar sin compromiso',
+    description: 'Entrada al método, sin tarjeta',
     icon: Brain,
     color: 'text-accent-blue',
     bgColor: 'bg-accent-blue/10',
     soon: false,
     features: [
-      { name: 'Ver con claridad cuánto ruido llevas encima', included: true },
-      { name: 'El método completo, contado en humano', included: true },
+      { name: 'Test de ruido mental: tu línea base en minutos', included: true },
+      { name: 'Método N.E.U.R.O. completo, en texto claro', included: true },
       { name: '10 meditaciones para cortar el piloto automático', included: true },
-      { name: 'Un temporizador que te devuelve al momento', included: true },
-      { name: 'SOS cuando la ansiedad aprieta', included: true },
-      { name: 'Lecturas cortas que ordenan la cabeza', included: true },
-      { name: 'Meditaciones profundas cuando quieras más', included: false },
-      { name: 'Un camino de 21 días que te sostiene', included: false },
-      { name: 'Retos que te recuerdan que sigues vivo al proceso', included: false },
-      { name: 'Clases en vídeo para ir un paso más allá', included: false },
-      { name: 'Audio para acompañarte en el coche o al caminar', included: false },
-      { name: 'Alguien que te hable cuando no sabes qué hacer', included: false },
-      { name: 'Grupo de personas que practican lo mismo', included: false },
-      { name: 'Encuentros en vivo con la comunidad', included: false },
+      { name: 'Temporizador y SOS respiración', included: true },
+      { name: 'Biblioteca de lecturas breves', included: true },
+      { name: 'NeuroScore y diario en versión base', included: true },
+      { name: 'Catálogo completo de meditaciones profundas', included: false },
+      { name: 'Programa 21 días guiado día a día', included: false },
+      { name: 'Retos semanales en la app', included: false },
+      { name: 'Masterclass en vídeo', included: false },
+      { name: 'NeuroPodcast y sonidos extra', included: false },
+      { name: 'IA Coach', included: false },
+      { name: 'Círculos y comunidad avanzada', included: false },
+      { name: 'Sesiones grupales en vivo', included: false },
     ],
   },
   {
     name: 'Premium',
     price: '4,99',
     period: '/mes',
-    description: 'Para no volver atrás',
+    description: 'Hábito sostenido, contenido completo',
     icon: Crown,
     color: 'text-[#0066FF]',
     bgColor: 'bg-[#0066FF]/10',
     popular: true,
     soon: false,
     features: [
-      { name: 'Todo lo que necesitas para empezar fuerte (Gratis)', included: true },
-      { name: 'Más meditaciones cuando ya quieres profundizar', included: true },
-      { name: '21 días con estructura: menos abandonar a la semana', included: true },
-      { name: 'Retos que te sacan del automático cada semana', included: true },
-      { name: 'Contenido en vídeo que cierra dudas de una vez', included: true },
-      { name: 'Podcast para acompañarte en los huecos del día', included: true },
-      { name: 'IA Coach cuando la cabeza va demasiado rápido', included: true },
-      { name: 'Círculos: compartir sin fingir que todo va bien', included: true },
-      { name: 'Ver tu constancia y celebrar lo que ya cambió', included: true },
-      { name: 'Diario con mirada honesta (IA) sobre tu semana', included: true },
-      { name: 'Sonidos para bajar el ritmo cuando no puedes más', included: true },
-      { name: 'Experiencia limpia, sin ruido de anuncios', included: true },
+      { name: 'Todo el plan Gratis', included: true },
+      { name: 'Meditaciones ampliadas para profundizar', included: true },
+      { name: 'Programa 21 días: un paso cada día, sin saltos', included: true },
+      { name: 'Retos semanales integrados', included: true },
+      { name: 'Masterclass en vídeo', included: true },
+      { name: 'NeuroPodcast', included: true },
+      { name: 'IA Coach', included: true },
+      { name: 'Círculos de práctica', included: true },
+      { name: 'NeuroScore y registro de constancia', included: true },
+      { name: 'Diario con resumen asistido (IA)', included: true },
+      { name: 'Sonidos y recursos extra', included: true },
+      { name: 'App sin anuncios', included: true },
       { name: 'Llamadas grupales en vivo', included: false },
-      { name: 'Una conversación al mes, solo contigo y Berzosa', included: false },
+      { name: 'Sesión individual mensual con Berzosa', included: false },
     ],
   },
   {
     name: 'Mentoría',
     price: '49,99',
     period: '/mes',
-    description: 'Berzosa cerca, de verdad',
+    description: 'Acompañamiento directo',
     icon: Star,
     color: 'text-rose-400',
     bgColor: 'bg-rose-500/10',
     soon: true,
     features: [
-      { name: 'Todo Premium, sin atajos', included: true },
-      { name: '21 días con alguien que mira cómo te va', included: true },
-      { name: 'Cuatro encuentros grupales al mes, en vivo', included: true },
+      { name: 'Todo Premium incluido', included: true },
+      { name: 'Seguimiento del programa 21 días', included: true },
+      { name: 'Cuatro encuentros grupales al mes en vivo', included: true },
       { name: 'Una sesión individual al mes con Berzosa', included: true },
-      { name: 'IA Coach que recuerda por dónde ibas', included: true },
-      { name: 'Grupo privado: preguntas y apoyo entre semana', included: true },
-      { name: 'Tu diario, leído con ojo de mentor', included: true },
-      { name: 'Prácticas ajustadas a tu vida real', included: true },
-      { name: 'Mitad de precio en certificación', included: true },
-      { name: 'Lo nuevo de la app, antes que nadie', included: true },
-      { name: 'Reconocimiento de estar en Mentoría', included: true },
-      { name: 'Contenido extra cada mes, solo para el grupo', included: true },
-      { name: 'Prioridad cuando hay hueco en Círculos', included: true },
-      { name: 'Respuesta prioritaria cuando lo necesitas', included: true },
+      { name: 'IA Coach con contexto de tu progreso', included: true },
+      { name: 'Grupo privado entre sesiones', included: true },
+      { name: 'Lectura de diario con mirada de mentor', included: true },
+      { name: 'Prácticas adaptadas a tu ritmo', included: true },
+      { name: 'Certificación a mitad de precio', included: true },
+      { name: 'Acceso anticipado a novedades de la app', included: true },
+      { name: 'Insignia Mentoría en la comunidad', included: true },
+      { name: 'Material extra mensual para el grupo', included: true },
+      { name: 'Prioridad en Círculos', included: true },
+      { name: 'Canal de respuesta prioritaria', included: true },
     ],
   },
 ]
@@ -95,7 +95,7 @@ export default function PlanesPage() {
   const [verifyingPayment, setVerifyingPayment] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
   const { user } = useUser()
-  const { isPremium, syncPremiumFromDb, syncing } = usePremium()
+  const { isPremium, refreshSubscription, syncing, subscriptionStatus } = useSubscription()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -103,14 +103,14 @@ export default function PlanesPage() {
     if (p.get('checkout') === 'success') {
       setVerifyingPayment(true)
       let cancelled = false
-      const retries = [0, 1200, 3000, 6000]
+      const retries = [0, 1000, 1000, 1000, 1000]
 
       const run = async () => {
         for (const waitMs of retries) {
           if (waitMs > 0) {
             await new Promise((resolve) => setTimeout(resolve, waitMs))
           }
-          const premium = await syncPremiumFromDb()
+          const premium = await refreshSubscription()
           if (cancelled) return
           if (premium) break
         }
@@ -125,7 +125,7 @@ export default function PlanesPage() {
         cancelled = true
       }
     }
-  }, [syncPremiumFromDb])
+  }, [refreshSubscription])
 
   const startPremiumCheckout = async () => {
     if (!user?.email?.trim()) {
@@ -177,13 +177,13 @@ export default function PlanesPage() {
         <div className="text-center mb-12 md:mb-16 relative">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-full mb-6">
             <Sparkles className="w-4 h-4 text-accent-blue" />
-            <span className="text-accent-blue text-sm font-medium">Elige cuánto te quieres acompañar</span>
+            <span className="text-accent-blue text-sm font-medium">Elige tu nivel de acompañamiento</span>
           </div>
           <h1 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
-            Deja de ir solo con el <span className="gradient-text">ruido</span>
+            Menos <span className="gradient-text">ruido</span>, más método
           </h1>
           <p className="text-text-secondary max-w-xl mx-auto text-lg">
-            Empieza gratis. Si quieres que el cambio se quede, Premium y Mentoría están para sostenerte.
+            Gratis para empezar. Premium para el hábito completo. Mentoría cuando quieres cercanía directa.
           </p>
 
           <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full text-sm font-medium" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)' }}>
@@ -251,13 +251,13 @@ export default function PlanesPage() {
                 ) : !tier.soon && tier.name === 'Premium' ? (
                   isPremium ? (
                     <div className="w-full py-3 rounded-xl bg-emerald-500/15 text-emerald-400 font-bold text-center text-sm border border-emerald-500/20">
-                      Eres Premium
+                      Ya eres Premium
                     </div>
                   ) : (
                     <button
                       type="button"
                       onClick={() => void startPremiumCheckout()}
-                      disabled={checkoutLoading}
+                      disabled={checkoutLoading || syncing || verifyingPayment}
                       className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform bg-[#0066FF] text-white disabled:opacity-60"
                     >
                       {checkoutLoading ? (
@@ -265,7 +265,7 @@ export default function PlanesPage() {
                       ) : (
                         <>
                           <Crown className="w-4 h-4" />
-                          Suscribirme a Premium
+                          Pasar a Premium
                         </>
                       )}
                     </button>
@@ -311,7 +311,7 @@ export default function PlanesPage() {
         )}
         {(verifyingPayment || syncing) && (
           <p className="text-center text-amber-300 text-xs mt-3">
-            Confirmando tu pago... si tarda unos segundos es normal.
+            Confirmando tu suscripción ({subscriptionStatus || 'pendiente'})... si tarda unos segundos es normal.
           </p>
         )}
       </Container>

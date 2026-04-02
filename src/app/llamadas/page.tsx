@@ -84,7 +84,7 @@ export default function LlamadasPage() {
 
   useEffect(() => {
     if (!isAdmin) {
-      router.replace('/admin/login')
+      router.replace('/acceder')
       return
     }
     fetchLlamadas()

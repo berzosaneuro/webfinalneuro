@@ -64,7 +64,7 @@ const days = [
   {
     day: 7, week: 1,
     title: 'Cierre semana 1: mide tu cambio',
-    desc: 'Fin de la primera semana. Hoy mides. Compara con el día 1 y decides si quieres continuar. Los datos no mienten.',
+    desc: 'Fin de la primera semana. Mides, comparas con el día 1 y decides el siguiente tramo. Los datos hablan.',
     exercise: '1) Cuenta pensamientos 3 minutos. Compara con el día 1. 2) Haz el Test de Ruido Mental en /test. Guarda tu puntuación. 3) Escribe en el diario: ¿qué momento de esta semana recuerdas más? ¿Cuándo notaste el mayor cambio? ¿Qué quieres seguir entrenando? 4) Meditación libre de 5 minutos: sin guía, solo tú y tu mente.',
     neuro: 'Una semana entera ya deja huella si fuiste constante. La segunda semana es llevar esto a lo incómodo: el trabajo, la familia, el tráfico.',
     category: 'Cierre semana', icon: Sparkles, exercise_link: 'test', duration: '15 min',
@@ -397,22 +397,22 @@ export default function ProgramaPage() {
               <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-accent-blue/20 to-violet-500/20 flex items-center justify-center mx-auto mb-6">
                 <Flame className="w-9 h-9 text-accent-blue" />
               </div>
-              <h1 className="font-heading text-3xl font-bold text-white mb-3">21 días para apagar el ruido</h1>
-              <p className="text-text-secondary text-base mb-2">Un ejercicio diario de observar la mente, entrenar la atención y estar presente.</p>
-              <p className="text-text-muted text-sm mb-8">Cada día desbloquea el siguiente. Sin atajos.</p>
+              <h1 className="font-heading text-3xl font-bold text-white mb-3">21 días, un paso al día</h1>
+              <p className="text-text-secondary text-base mb-2">Observación de la mente, atención y presencia. Cada día un bloque concreto.</p>
+              <p className="text-text-muted text-sm mb-8">Día siguiente al cerrar el actual. Ritmo fijo.</p>
               <button
                 onClick={startProgram}
                 className="w-full py-4 bg-accent-blue text-white rounded-2xl font-semibold text-lg active:scale-95 transition-transform mb-4"
                 style={{ boxShadow: '0 0 25px rgba(124,58,237,0.3)' }}
               >
-                Empezar el programa
+                Iniciar los 21 días
               </button>
 
               <EmailCapture
                 source="programa-21-dias"
-                title="Recibe recordatorios diarios"
-                subtitle="Te enviamos un recordatorio cada día para que no pierdas el ritmo."
-                buttonText="Activar"
+                title="Recordatorios por email"
+                subtitle="Opcional: un email al día para no saltarte el hábito."
+                buttonText="Suscribirme"
                 compact
               />
             </div>

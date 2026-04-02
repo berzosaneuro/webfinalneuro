@@ -4,7 +4,7 @@ import TestQuiz from './TestQuiz'
 
 export const metadata: Metadata = {
   title: 'Test de Ruido Mental — Berzosa Neuro',
-  description: 'Descubre en qué nivel está tu mente y qué necesitas entrenar. Test de 10 preguntas.',
+  description: 'Diez preguntas. Tu nivel de ruido mental y por dónde empezar.',
 }
 
 export default function TestPage() {
@@ -17,7 +17,7 @@ export default function TestPage() {
               TEST DE RUIDO MENTAL
             </h1>
             <p className="text-text-secondary text-lg md:text-xl animate-fade-in-up">
-              Descubre en qué nivel está tu mente y qué necesitas entrenar.
+              Diez preguntas. Sales con puntuación y siguiente paso claro.
             </p>
           </div>
         </Container>

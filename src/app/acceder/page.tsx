@@ -20,7 +20,7 @@ async function getApiError(response: Response): Promise<string> {
 
 export default function AccederPage() {
   const router = useRouter()
-  const { setUser } = useUser()
+  const { applyLoginUser } = useUser()
   const [form, setForm] = useState({ email: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -35,24 +35,54 @@ export default function AccederPage() {
       return
     }
 
+    const email = form.email.trim().toLowerCase()
+    const password = form.password.trim()
+
     setLoading(true)
     try {
-      const email = form.email.trim().toLowerCase()
       const nombre = email.split('@')[0] || 'Usuario'
       const userRes = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // Usuarios se guardan en la tabla `users` vía /api/users
         body: JSON.stringify({ email, nombre }),
       })
       if (!userRes.ok) {
-        throw new Error(await getApiError(userRes))
+        const msg = await getApiError(userRes)
+        console.error('[login] /api/users error', userRes.status)
+        setError(msg)
+        return
       }
-      const ok = await setUser({ email, nombre })
-      if (!ok) throw new Error('No se pudo iniciar sesión segura')
+
+      const res = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+        credentials: 'same-origin',
+      })
+
+      if (!res.ok) {
+        const msg = await getApiError(res)
+        console.error('[login] /api/auth/session error', res.status)
+        setError(msg)
+        return
+      }
+
+      const data = (await res.json()) as { user?: { email: string; nombre: string; role: 'user' | 'master' } }
+      if (data?.user?.email) {
+        applyLoginUser({
+          email: data.user.email,
+          nombre: data.user.nombre,
+          role: data.user.role,
+        })
+      }
       router.push('/')
     } catch (err) {
-      console.error('Error de acceso:', err)
+      console.error('[login] error', err)
       setError('Error al acceder. Inténtalo de nuevo.')
     } finally {
       setLoading(false)
@@ -74,7 +104,7 @@ export default function AccederPage() {
                 </div>
                 <h1 className="font-heading font-black text-white text-3xl mb-2">Acceder</h1>
                 <p className="text-text-secondary text-sm">
-                  Entra con tu cuenta
+                  Email y contraseña. Siguiente pantalla: tu espacio.
                 </p>
               </div>
 
@@ -135,16 +165,11 @@ export default function AccederPage() {
               <p className="text-center text-text-muted text-xs mt-6">
                 ¿No tienes cuenta?{' '}
                 <Link href="/registro" className="text-accent-blue hover:underline font-medium">
-                  Empezar gratis
+                  Crear cuenta
                 </Link>
-                {' '}— Regalo: Reto de 7 días
+                {' '}· Reto 7 días incluido
               </p>
 
-              <p className="text-center text-text-muted text-xs mt-4">
-                <Link href="/admin/login" className="text-accent-blue/80 hover:underline">
-                  Acceder al panel Admin
-                </Link>
-              </p>
             </FadeInSection>
           </div>
         </Container>

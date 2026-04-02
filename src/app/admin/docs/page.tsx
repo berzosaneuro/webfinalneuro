@@ -12,7 +12,7 @@ export default function AdminDocsPage() {
 
   useEffect(() => {
     if (!isAdmin) {
-      router.push('/admin/login')
+      router.push('/acceder')
     }
   }, [isAdmin, router])
 

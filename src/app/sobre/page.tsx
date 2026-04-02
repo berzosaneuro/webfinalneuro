@@ -7,7 +7,7 @@ import { Brain } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Sobre — Berzosa Neuro',
-  description: 'No soy un gurú ni un científico de laboratorio. Berzosa Neuro es lo que aprendí viviendo el ruido mental y saliendo al otro lado.',
+  description: 'Berzosa Neuro: método y herramientas para bajar el ruido mental. Lo construí desde la experiencia y lo uso cada día.',
 }
 
 export default function SobrePage() {
@@ -41,7 +41,7 @@ export default function SobrePage() {
                 </div>
                 <div>
                   <h1 className="font-heading text-4xl md:text-6xl font-bold tracking-tight text-white mb-4 animate-fade-in">
-                    NO SOY UN GURÚ.
+                    SOY BERZOSA NEURO.
                   </h1>
                   <div className="flex items-center gap-3">
                     <Brain className="w-6 h-6 text-accent-blue" />
@@ -54,27 +54,24 @@ export default function SobrePage() {
             <FadeInSection>
               <div className="space-y-6 text-text-secondary text-lg leading-relaxed">
                 <p>
-                  Soy Berzosa Neuro.
+                  Enseño lo que a mí me faltó: el ruido mental es un hábito y la atención se entrena.
                 </p>
                 <p>
-                  Berzosa Neuro nace para enseñar lo que casi nadie explica: el ruido mental es un patrón aprendido y la conciencia se puede entrenar.
+                  No hace falta huir de tu vida. Hace falta dejar de ir a remolque de la cabeza.
                 </p>
                 <p>
-                  No necesitas escapar de tu vida. Necesitas dejar de vivir secuestrado por tu mente.
+                  Lo que hay en la app lo he vivido, lo uso y lo he visto funcionar con miles de personas. Sin postureo.
                 </p>
                 <p>
-                  Todo lo que comparto sale de haberlo vivido y de haberlo probado con miles de personas. Sin misticismo de escaparate, sin promesas mágicas, sin venderte humo.
-                </p>
-                <p>
-                  La mente es una herramienta. Aprende a usarla en lugar de ser usado por ella.
+                  La mente es herramienta. El objetivo es que mandes tú.
                 </p>
               </div>
             </FadeInSection>
 
             <FadeInSection>
               <div className="mt-12 flex flex-col sm:flex-row gap-4">
-                <Button href="/metodo">Cómo nació el método</Button>
-                <Button href="/contacto" variant="secondary">Contactar</Button>
+                <Button href="/metodo">Ver el método</Button>
+                <Button href="/contacto" variant="secondary">Escribirme</Button>
               </div>
             </FadeInSection>
           </div>

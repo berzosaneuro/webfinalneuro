@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe'
 import { requireUserOr401 } from '@/lib/api-auth'
+import { getUserSubscriptionStatusByEmail } from '@/lib/subscription-status'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -39,6 +40,13 @@ export async function POST(request: Request) {
   }
 
   const emailNorm = auth.email
+  const subscription = await getUserSubscriptionStatusByEmail(emailNorm)
+  if (subscription?.isPremium) {
+    return NextResponse.json(
+      { error: 'Ya tienes una suscripción premium activa.' },
+      { status: 400 }
+    )
+  }
 
   const origin = resolvePublicOrigin(request)
 

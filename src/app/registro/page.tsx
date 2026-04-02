@@ -92,9 +92,9 @@ export default function RegistroPage() {
             <div className="w-20 h-20 rounded-full bg-green-500/15 flex items-center justify-center mx-auto mb-6">
               <Check className="w-10 h-10 text-green-400" />
             </div>
-            <h1 className="font-heading font-black text-white text-2xl mb-3">¡Bienvenido/a!</h1>
+            <h1 className="font-heading font-black text-white text-2xl mb-3">Listo</h1>
             <p className="text-text-secondary text-sm mb-4">
-              Tu cuenta ha sido creada. Te llevamos al Reto 7 Días — tu regalo de bienvenida.
+              Cuenta creada. Siguiente paso: Reto 7 Días, desbloqueado.
             </p>
             <div className="flex items-center justify-center gap-2 text-green-400 text-sm font-medium">
               <Gift className="w-4 h-4" />
@@ -122,7 +122,7 @@ export default function RegistroPage() {
                 </div>
                 <h1 className="font-heading font-black text-white text-3xl mb-2">Crear cuenta</h1>
                 <p className="text-text-secondary text-sm">
-                  Regístrate gratis y empieza hoy
+                  Un minuto. Sin tarjeta. Acceso inmediato.
                 </p>
               </div>
 
@@ -130,8 +130,8 @@ export default function RegistroPage() {
               <div className="flex items-center gap-3 p-3.5 rounded-2xl mb-6" style={{ background: 'linear-gradient(135deg, rgba(0,102,255,0.12), rgba(0,82,204,0.06))', border: '1px solid rgba(0,102,255,0.2)' }}>
                 <Gift className="w-5 h-5 text-[#0066FF] shrink-0" />
                 <div>
-                  <p className="text-white text-xs font-semibold">Regalo de bienvenida</p>
-                  <p className="text-text-secondary text-xs">Reto 7 Días completo, sin coste</p>
+                  <p className="text-white text-xs font-semibold">Bienvenida</p>
+                  <p className="text-text-secondary text-xs">Reto 7 Días incluido al crear cuenta</p>
                 </div>
               </div>
 
@@ -202,19 +202,12 @@ export default function RegistroPage() {
                     <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>
-                      Crear cuenta gratis
+                      Crear cuenta y entrar
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>
               </form>
-
-              <p className="text-center text-text-muted text-xs mt-6">
-                ¿Eres administrador?{' '}
-                <Link href="/admin/login" className="text-accent-blue hover:underline">
-                  Acceder al panel
-                </Link>
-              </p>
 
               <p className="text-center text-text-muted text-[11px] mt-4 leading-relaxed">
                 Al registrarte aceptas recibir contenido de Berzosa Neuro.<br />

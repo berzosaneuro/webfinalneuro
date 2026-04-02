@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   const { data, error } = await supabase
     .from('users')
     .update({ is_premium: false, subscription_status: 'manual' })
-    .ilike('email', email)
+    .eq('email', email)
     .select('id, email, is_premium, subscription_status')
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

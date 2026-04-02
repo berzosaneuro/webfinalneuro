@@ -457,3 +457,4 @@ Las siguientes páginas existen pero están incompletas o son placeholders:
 8. **Lucide React para iconos**: No introducir otras librerías de iconos.
 9. **Tailwind puro**: No añadir CSS-in-JS ni módulos CSS salvo en `globals.css` para utilidades globales.
 10. **Mobile-first**: La app está diseñada principalmente para móvil. Verificar siempre las vistas en móvil antes que en desktop.
+11. **Love Mode intocable en refactors de copy**: No modificar mensajes románticos/cute, `LoveModeLayer`, textos en `src/lib/personalized-ui.ts` destinados al tema love, ni el bloque `html[data-theme='love']` en `globals.css` salvo que el usuario pida **explícitamente** cambios en Love Mode. Los refactors de tono del producto principal no deben tocar esta experiencia (tono distinto: íntimo, personal).

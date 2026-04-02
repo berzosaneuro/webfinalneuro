@@ -7,7 +7,7 @@ import { Instagram, Phone, Mail, MessageCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Contacto — Berzosa Neuro',
-  description: 'Ponte en contacto con el Dr. Berzosa. Instagram, teléfono o formulario.',
+  description: 'Escribe por Instagram, WhatsApp, email o formulario. Respuesta directa.',
 }
 
 const contactInfo = [
@@ -57,7 +57,7 @@ export default function ContactoPage() {
                   Contacto
                 </h1>
                 <p className="text-text-secondary animate-fade-in-up">
-                  ¿Tienes alguna pregunta? Escríbeme por donde prefieras.
+                  Elige canal y escribe. Leo todo lo que entra por aquí.
                 </p>
               </div>
             </FadeInSection>

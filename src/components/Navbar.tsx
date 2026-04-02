@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { Menu, X, Crown, Shield, ChevronDown, Wind, BookOpen, Users, LayoutDashboard, Briefcase } from 'lucide-react'
 import { usePremium } from '@/context/PremiumContext'
 import { useAdmin } from '@/context/AdminContext'
+import { useUser } from '@/context/UserContext'
 
 const mainLinks = [
   { href: '/', label: 'Inicio' },
@@ -81,6 +82,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
   const { isPremium } = usePremium()
+  const { user } = useUser()
   const { isAdmin } = useAdmin()
   const pathname = usePathname()
 
@@ -159,27 +161,29 @@ export default function Navbar() {
               {isPremium ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent-blue/15 text-accent-blue text-xs font-semibold rounded-full border border-accent-blue/20">
                   <Crown className="w-3 h-3" />
-                  Premium
+                  {`👑 ${user?.nombre || 'Usuario'}, eres Premium`}
                 </span>
               ) : (
                 <Link
                   href="/registro"
                   className="px-4 py-1.5 bg-accent-blue text-white text-xs font-semibold rounded-full shadow-[0_0_16px_rgba(0,102,255,0.5)] hover:shadow-[0_0_24px_rgba(0,102,255,0.7)] hover:bg-accent-blue/90 transition-all active:scale-95"
                 >
-                  Empezar gratis
+                  Empieza ahora
                 </Link>
               )}
-              <Link
-                href={isAdmin ? '/admin' : '/admin/login'}
-                className={`p-1.5 rounded-lg transition-all ${
-                  pathname.startsWith('/admin')
-                    ? 'text-white bg-white/10'
-                    : 'text-text-muted hover:text-white hover:bg-white/5'
-                }`}
-                title="Panel Admin"
-              >
-                <Shield className="w-3.5 h-3.5" />
-              </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className={`p-1.5 rounded-lg transition-all ${
+                    pathname.startsWith('/admin')
+                      ? 'text-white bg-white/10'
+                      : 'text-text-muted hover:text-white hover:bg-white/5'
+                  }`}
+                  title="Panel Admin"
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -202,7 +206,10 @@ export default function Navbar() {
 
         {/* Mobile dropdown */}
         {open && (
-          <div className="absolute top-full left-0 right-0 z-40 animate-slide-up max-h-[85vh] overflow-y-auto overscroll-contain pb-8" style={{ scrollbarWidth: 'none', background: 'linear-gradient(180deg, #080B16 0%, #0a0e1a 100%)', borderBottom: '1px solid rgba(124,58,237,0.15)', boxShadow: '0 20px 60px -20px rgba(0,0,0,0.6)' }}>
+          <div
+            className="nav-mobile-sheet absolute top-full left-0 right-0 z-40 animate-slide-up max-h-[85vh] overflow-y-auto overscroll-contain pb-8"
+            style={{ scrollbarWidth: 'none', background: 'linear-gradient(180deg, #080B16 0%, #0a0e1a 100%)', borderBottom: '1px solid rgba(124,58,237,0.15)', boxShadow: '0 20px 60px -20px rgba(0,0,0,0.6)' }}
+          >
             <div className="p-4 space-y-5">
               {mobileLinks.map((group) => {
                 const CatIcon = mobileCategoryIcons[group.category]
@@ -252,16 +259,18 @@ export default function Navbar() {
                   onClick={() => setOpen(false)}
                   className="flex-1 py-3 bg-accent-blue text-white text-sm font-bold rounded-xl text-center active:scale-[0.98] shadow-[0_0_20px_rgba(124,58,237,0.3)]"
                 >
-                  Empezar gratis
+                  Empieza ahora
                 </Link>
-                <Link
-                  href={isAdmin ? '/admin' : '/admin/login'}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm text-text-secondary active:text-white glass"
-                >
-                  <Shield className="w-4 h-4" />
-                  Admin
-                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm text-text-secondary active:text-white glass"
+                  >
+                    <Shield className="w-4 h-4" />
+                    Admin
+                  </Link>
+                )}
               </div>
             </div>
           </div>

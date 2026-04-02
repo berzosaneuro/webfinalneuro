@@ -100,8 +100,8 @@ const days = [
     icon: Sparkles,
     color: 'text-violet-400',
     bg: 'bg-violet-500/10',
-    desc: 'Último día. Hoy no aprendes nada nuevo: mides lo que ha cambiado. Y decides si quieres ir más lejos.',
-    exercise: '1) Cuenta tus pensamientos 3 minutos. Compara el número con el día 1. 2) Haz el Test de Ruido Mental en /test. Compara tu puntuación. 3) Responde por escrito: ¿qué momento de esta semana recuerdas más? ¿Cuándo notaste el mayor cambio? ¿Qué quieres seguir entrenando? 4) Si quieres continuar: el Programa de 21 días te espera.',
+    desc: 'Último día: solo medición. Ves el cambio frente al día 1 y eliges el siguiente paso.',
+    exercise: '1) Cuenta pensamientos 3 minutos. Compara con el día 1. 2) Test de Ruido Mental en /test. Compara puntuación. 3) Por escrito: momento clave de la semana, mayor cambio notado, qué seguir entrenando. 4) Siguiente nivel: programa de 21 días en /programa.',
     neuro: 'Una semana con práctica real ya deja sensación distinta: menos piloto automático, más opciones. Lo que importa es que puedas repetirlo mañana.',
     link: '/test',
     duration: '15 min',
@@ -259,22 +259,22 @@ export default function Plan7DiasPage() {
                   Reto 7 Días
                 </h1>
                 <p className="text-text-secondary mb-2">
-                  Tu introducción al Método N.E.U.R.O. en una semana.
+                  Siete días. Cinco letras del método. Un ejercicio cada mañana.
                 </p>
                 <p className="text-text-muted text-sm mb-8">
-                  Un ejercicio diario claro y repetible. Cada día trabajas una letra del método. Gratis al suscribirte.
+                  Acceso gratis con tu email. Sin tarjeta. Desbloqueo día a día.
                 </p>
 
                 {/* Preview of what they get */}
                 <div className="glass rounded-2xl p-4 mb-6 text-left">
-                  <h3 className="text-white text-sm font-semibold mb-3">Lo que incluye:</h3>
+                  <h3 className="text-white text-sm font-semibold mb-3">Incluye</h3>
                   <div className="space-y-2">
                     {[
-                      '7 ejercicios prácticos guiados',
-                      'Nota breve: qué notarás al practicar',
-                      'Progreso desbloqueado día a día',
-                      'Acceso al Método N.E.U.R.O. completo',
-                      'Enlace directo al Programa de 21 días',
+                      '7 ejercicios, uno por día',
+                      'Texto corto: qué vigilar al practicar',
+                      'Siguiente día al completar el anterior',
+                      'Método N.E.U.R.O. en la app, en abierto',
+                      'Puente claro al programa de 21 días',
                     ].map((item) => (
                       <div key={item} className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-400 shrink-0" />
@@ -307,10 +307,10 @@ export default function Plan7DiasPage() {
                     ) : (
                       <Send className="w-4 h-4 inline mr-2" />
                     )}
-                    {sending ? 'Activando...' : 'Acceder gratis'}
+                    {sending ? 'Activando...' : 'Empezar ahora'}
                   </button>
                   <p className="text-text-muted text-[10px]">
-                    Sin spam. Solo práctica, claridad y método.
+                    Sin spam. Práctica y método en el buzón solo si lo pides.
                   </p>
                 </div>
               </div>

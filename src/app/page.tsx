@@ -24,10 +24,10 @@ const quickActions = [
 ]
 
 const moreActions = [
-  { href: '/programa', label: 'Curso 21 Días', icon: Calendar, desc: 'Programa completo', color: 'bg-orange-500/15 text-orange-400' },
-  { href: '/ejercicios', label: 'Ejercicios', icon: Dumbbell, desc: 'Pausas guiadas paso a paso', color: 'bg-emerald-500/15 text-emerald-400' },
-  { href: '/diario', label: 'Diario', icon: PenLine, desc: 'Registra tu presencia', color: 'bg-cyan-500/15 text-cyan-400' },
-  { href: '/test', label: 'Test Ruido Mental', icon: Brain, desc: 'Mide tu ruido mental', color: 'bg-sky-500/15 text-sky-400' },
+  { href: '/programa', label: 'Curso 21 Días', icon: Calendar, desc: '21 días, un paso cada día', color: 'bg-orange-500/15 text-orange-400' },
+  { href: '/ejercicios', label: 'Ejercicios', icon: Dumbbell, desc: 'Pausas guiadas, sin teoría', color: 'bg-emerald-500/15 text-emerald-400' },
+  { href: '/diario', label: 'Diario', icon: PenLine, desc: 'Tu registro de presencia', color: 'bg-cyan-500/15 text-cyan-400' },
+  { href: '/test', label: 'Test Ruido Mental', icon: Brain, desc: 'Tu nivel en 2 minutos', color: 'bg-sky-500/15 text-sky-400' },
 ]
 
 const meditations = [
@@ -61,26 +61,26 @@ export default function Home() {
             <div className="flex-1">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-blue/10 border border-accent-blue/20 mb-3 animate-fade-in">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse" />
-                <span className="text-accent-blue text-[11px] font-semibold tracking-wide uppercase">Claridad · Calma · Lo que a mí me funcionó</span>
+                <span className="text-accent-blue text-[11px] font-semibold tracking-wide uppercase">Claridad · Calma · Método N.E.U.R.O.</span>
               </div>
               <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-3 animate-fade-in">
-                Baja el volumen<br className="hidden sm:block" /> de tu cabeza
+                Tu cabeza,<br className="hidden sm:block" /> más silenciosa
               </h1>
               <p className="text-text-secondary text-sm md:text-base animate-fade-in-up max-w-sm mb-5 leading-relaxed">
-                No soy científico: soy alguien que vivió el agotamiento y la mente a mil. El Método N.E.U.R.O. es lo que me sacó del bucle—ahora en tu móvil, sin discursos vacíos.
+                Yo pasé por el agotamiento y la mente sin freno. El Método N.E.U.R.O. es lo que me devolvió el mando: pasos concretos, en el móvil, para usar hoy.
               </p>
               <div className="flex items-center gap-3 animate-fade-in-up">
                 <Link
                   href="/registro"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-blue text-white text-sm font-bold shadow-[0_0_24px_rgba(0,102,255,0.45)] hover:shadow-[0_0_32px_rgba(0,102,255,0.6)] hover:bg-accent-blue/90 active:scale-95 transition-all"
                 >
-                  Empezar gratis <ChevronRight className="w-4 h-4" />
+                  Empieza gratis hoy <ChevronRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/metodo"
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl glass-light text-text-secondary text-sm font-medium hover:text-white active:scale-95 transition-all"
                 >
-                  Cómo nació esto
+                  Ver el método
                 </Link>
               </div>
             </div>
@@ -103,10 +103,10 @@ export default function Home() {
         <Container>
           <div className="flex items-center gap-4 overflow-x-auto pb-1 animate-fade-in-up" style={{ scrollbarWidth: 'none' }}>
             {[
-              { value: '3.200+', label: 'usuarios activos' },
+              { value: '3.200+', label: 'personas practicando' },
               { value: '4.8★', label: 'valoración media' },
-              { value: '21 días', label: 'para transformarte' },
-              { value: '97%', label: 'lo recomiendan' },
+              { value: '21 días', label: 'programa estructurado' },
+              { value: '97%', label: 'recomiendan la app' },
             ].map((stat) => (
               <div key={stat.label} className="flex items-center gap-2.5 shrink-0 px-4 py-2.5 rounded-xl glass-light">
                 <span className="font-heading font-black text-white text-sm">{stat.value}</span>
@@ -131,12 +131,12 @@ export default function Home() {
                     <Gift className="w-5 h-5 text-accent-blue" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-white font-bold text-sm leading-tight">Regístrate gratis — sin tarjeta</p>
-                    <p className="text-emerald-400 text-xs font-semibold mt-0.5">🎁 Reto de 7 días de regalo al entrar</p>
-                    <p className="text-text-secondary text-xs mt-1">Para empezar a notar cambio sin complicarte la vida</p>
+                    <p className="text-white font-bold text-sm leading-tight">Cuenta gratis, sin tarjeta</p>
+                    <p className="text-emerald-400 text-xs font-semibold mt-0.5">🎁 Reto 7 días al registrarte</p>
+                    <p className="text-text-secondary text-xs mt-1">Siete días de práctica guiada desde el primer acceso</p>
                   </div>
                   <div className="shrink-0 px-3 py-1.5 rounded-xl bg-accent-blue text-white text-xs font-bold self-center">
-                    Entrar
+                    Crear cuenta
                   </div>
                 </div>
               </div>
@@ -186,7 +186,7 @@ export default function Home() {
                   <span className="text-xs font-semibold text-white uppercase tracking-wider">Dato del día</span>
                 </div>
                 <p className="text-white font-medium text-sm leading-relaxed">
-                  Hoy la cabeza va a mil sin permiso. Un minuto de pausa honesta ya cambia cómo vuelves al día.
+                  Un minuto de pausa consciente cambia cómo vuelves a lo que sea que tengas delante.
                 </p>
               </div>
             </div>
@@ -278,7 +278,7 @@ export default function Home() {
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <p className="text-white/40 text-[10px] uppercase tracking-widest font-semibold mb-1">La base de todo</p>
+                      <p className="text-white/40 text-[10px] uppercase tracking-widest font-semibold mb-1">Base del sistema</p>
                       <h2 className="font-heading font-black text-2xl tracking-tight" style={{ background: 'linear-gradient(90deg, #0066FF, #60a5fa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Método N.E.U.R.O.</h2>
                     </div>
                     <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
@@ -294,10 +294,10 @@ export default function Home() {
                     ))}
                   </div>
                   <p className="text-white/50 text-xs leading-relaxed mb-3">
-                    Cinco pasos que salieron de vivirlo, no de un manual. Para salir del piloto automático.
+                    Cinco pasos repetibles. Sales del piloto automático con práctica, no con discursos.
                   </p>
                   <div className="flex items-center gap-1 text-white text-xs font-semibold">
-                    Leer la historia del método <ChevronRight className="w-3.5 h-3.5" />
+                    Ver cómo funciona <ChevronRight className="w-3.5 h-3.5" />
                   </div>
                 </div>
               </div>
@@ -341,7 +341,7 @@ export default function Home() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-heading font-semibold text-white text-base mb-0.5">Test de ruido mental</h3>
-                    <p className="text-text-secondary text-xs">Descubre tu nivel en 2 minutos</p>
+                    <p className="text-text-secondary text-xs">Tu puntuación en un par de minutos</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-text-muted shrink-0" />
                 </div>
@@ -355,7 +355,7 @@ export default function Home() {
       <section className="relative pb-6">
         <Container>
           <FadeInSection>
-            <h2 className="font-heading font-semibold text-white text-lg mb-4">Explora</h2>
+            <h2 className="font-heading font-semibold text-white text-lg mb-4">Sigue explorando</h2>
             <div className="grid grid-cols-3 gap-3">
               {[
                 { href: '/retos', label: 'Retos', icon: Trophy, color: 'bg-emerald-500/15 text-emerald-400' },
@@ -416,8 +416,8 @@ export default function Home() {
                       <Crown className="w-6 h-6 text-[#0066FF]" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-heading font-semibold text-white text-base mb-0.5">Pásate a Premium</h3>
-                      <p className="text-text-secondary text-xs">Todo el acompañamiento para no volver atrás · desde 4,99 &euro;/mes</p>
+                      <h3 className="font-heading font-semibold text-white text-base mb-0.5">Premium</h3>
+                      <p className="text-text-secondary text-xs">Meditaciones profundas, 21 días, IA Coach y más · desde 4,99 &euro;/mes</p>
                     </div>
                     <ChevronRight className="w-5 h-5 text-text-muted shrink-0" />
                   </div>

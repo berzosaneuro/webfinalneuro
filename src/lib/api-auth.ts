@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { getUserSessionFromHeaders, isAdminSession } from '@/lib/server-auth'
+import { getUserSessionFromHeaders } from '@/lib/server-auth'
 
 export async function requireAdminOr401(request: Request): Promise<NextResponse | null> {
-  const ok = await isAdminSession(request.headers)
-  if (ok) return null
+  const user = await getUserSessionFromHeaders(request.headers)
+  if (user?.role === 'master') return null
   return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 }
 

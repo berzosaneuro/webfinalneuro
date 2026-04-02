@@ -10,12 +10,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "setup:elevenlabs": "node scripts/setup-elevenlabs.js",
     "url": "node -e \"console.log('\\n  Local:  http://localhost:3000\\n  Produccion: https://webfinalneuro.vercel.app\\n')\""
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.3.2",
     "@supabase/supabase-js": "^2.97.0",
+    "firebase": "^11.10.0",
     "lucide-react": "^0.574.0",
     "next": "^14.2.35",
     "nodemailer": "^8.0.1",

@@ -35,7 +35,7 @@ export default function IACoachPage() {
     {
       id: 'welcome',
       role: 'coach',
-      text: 'Hola. Soy tu Coach de Consciencia: IA con el tono del Método N.E.U.R.O.\n\nPuedo guiarte con respiración, meditación corta y pasos para cuando la cabeza no para. Sin tecnicismos.\n\n¿Cómo estás ahora mismo?',
+      text: 'Hola. Coach con el marco del Método N.E.U.R.O.\n\nRespiración, micro-pausas y siguientes pasos cuando la cabeza acelera. Lenguaje directo.\n\n¿Qué necesitas ahora?',
       timestamp: new Date(),
     },
   ])

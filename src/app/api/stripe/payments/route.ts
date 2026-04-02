@@ -9,10 +9,11 @@ export async function GET(request: Request) {
   const supabase = getSupabase()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
 
+  const emailNorm = auth.email.trim().toLowerCase()
   const { data, error } = await supabase
     .from('payments')
     .select('*')
-    .ilike('user_email', auth.email)
+    .eq('user_email', emailNorm)
     .order('paid_at', { ascending: false })
     .limit(50)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

@@ -6,7 +6,7 @@ import PresenceTimer from './PresenceTimer'
 
 export const metadata: Metadata = {
   title: 'Sala de Meditación — Berzosa Neuro',
-  description: 'Meditaciones guiadas con el Método N.E.U.R.O.: cortas, claras y pensadas para el día a día. 10 gratis · 15 premium.',
+  description: 'Meditaciones guiadas alineadas con N.E.U.R.O.: cortas, repetibles, para el día a día. 10 gratis · 15 en Premium.',
 }
 
 export default function MeditacionPage() {
@@ -21,7 +21,7 @@ export default function MeditacionPage() {
               Meditación
             </h1>
             <p className="text-text-secondary text-base animate-fade-in-up">
-              25 sesiones para bajar el ruido y volver a ti. Nada de postureo: práctica que puedes repetir. 10 gratis · 15 premium.
+              25 sesiones para bajar el ruido. Voces claras, sin relleno. 10 gratis · 15 en Premium.
             </p>
           </div>
         </Container>

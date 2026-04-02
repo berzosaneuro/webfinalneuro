@@ -32,7 +32,7 @@ export default function NeuroScoreWidget() {
                 <span className="text-orange-400 text-[10px] font-bold">{streak} días</span>
               </div>
             </div>
-            <p className="text-text-secondary text-xs">Completa tu entrenamiento diario</p>
+            <p className="text-text-secondary text-xs">Marca entrenamiento y hábitos del día</p>
           </div>
           <ChevronRight className="w-5 h-5 text-text-muted shrink-0" />
         </div>

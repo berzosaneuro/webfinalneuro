@@ -209,7 +209,7 @@ export default function AdminPage() {
   useEffect(() => {
     if (adminLoading) return
     if (!isAdmin) {
-      router.push('/admin/login')
+      router.push('/acceder')
       return
     }
     fetchAll()
@@ -220,7 +220,7 @@ export default function AdminPage() {
 
   const handleLogout = async () => {
     await adminLogout()
-    router.push('/admin/login')
+    router.push('/acceder')
   }
 
   const updatePost = async (id: string, data: { autor?: string; avatar?: string; nivel?: string; texto?: string; tag?: string }) => {

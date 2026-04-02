@@ -40,7 +40,7 @@ export default function BibliotecaPage() {
               BIBLIOTECA
             </h1>
             <p className="text-text-secondary text-lg md:text-xl animate-fade-in-up">
-              Conocimiento para entrenar tu mente. Sin misticismo, sin humo.
+              Textos cortos para ordenar la cabeza. Sin relleno.
             </p>
           </div>
         </Container>

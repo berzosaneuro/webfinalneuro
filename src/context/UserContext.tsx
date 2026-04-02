@@ -1,15 +1,19 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { clearLoveThemeHintAndDocument } from '@/lib/personalized-ui'
 
 type UserProfile = {
   email: string
   nombre: string
+  role: 'user' | 'master'
 }
 
 type UserContextType = {
   user: UserProfile | null
-  setUser: (profile: UserProfile) => Promise<boolean>
+  setUser: (profile: Omit<UserProfile, 'role'>, password?: string) => Promise<boolean>
+  /** Tras POST /api/auth/session: actualiza estado local sin nueva petición (evita segundo POST). */
+  applyLoginUser: (user: UserProfile) => void
   logout: () => Promise<void>
   loading: boolean
   isCertified: boolean
@@ -18,6 +22,7 @@ type UserContextType = {
 const UserContext = createContext<UserContextType>({
   user: null,
   setUser: async () => false,
+  applyLoginUser: () => {},
   logout: async () => {},
   loading: true,
   isCertified: false,
@@ -53,10 +58,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setIsCertified(loadIsCertified())
   }, [])
 
-  const setUser = async (profile: UserProfile) => {
+  const setUser = async (profile: Omit<UserProfile, 'role'>, password?: string) => {
     const payload = {
       email: profile.email.trim().toLowerCase(),
       nombre: (profile.nombre || profile.email.split('@')[0] || 'Usuario').trim(),
+      ...(password ? { password } : {}),
     }
     try {
       const res = await fetch('/api/auth/session', {
@@ -65,22 +71,31 @@ export function UserProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(payload),
       })
       if (!res.ok) return false
+      const data = await res.json() as { user?: UserProfile }
+      if (data?.user?.email) {
+        setUserState(data.user)
+        return true
+      }
     } catch {
       return false
     }
-    setUserState(profile)
-    return true
+    return false
+  }
+
+  const applyLoginUser = (u: UserProfile) => {
+    setUserState(u)
   }
 
   const logout = async () => {
     try {
       await fetch('/api/auth/session', { method: 'DELETE' })
     } catch {}
+    clearLoveThemeHintAndDocument()
     setUserState(null)
   }
 
   return (
-    <UserContext.Provider value={{ user, setUser, logout, loading, isCertified }}>
+    <UserContext.Provider value={{ user, setUser, applyLoginUser, logout, loading, isCertified }}>
       {children}
     </UserContext.Provider>
   )

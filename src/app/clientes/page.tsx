@@ -65,7 +65,7 @@ export default function ClientesPage() {
 
   useEffect(() => {
     if (!isAdmin) {
-      router.replace('/admin/login')
+      router.replace('/acceder')
       return
     }
     fetchClientes()

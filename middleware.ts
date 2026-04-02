@@ -2,11 +2,9 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 const USER_COOKIE_NAME = 'bn_user_session'
-const ADMIN_COOKIE_NAME = 'bn_admin_session'
 
 const PUBLIC_API_PREFIXES = [
   '/api/auth/session',
-  '/api/admin/session',
   '/api/contact',
   '/api/leads',
   '/api/subscribers',
@@ -26,15 +24,16 @@ const USER_PROTECTED_API_PREFIXES = [
   '/api/stripe/billing-portal',
   '/api/stripe/payments',
   '/api/users/premium-status',
+  '/api/elevenlabs',
 ]
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    const admin = request.cookies.get(ADMIN_COOKIE_NAME)?.value
-    if (!admin) {
+    const user = request.cookies.get(USER_COOKIE_NAME)?.value
+    if (!user) {
       const url = request.nextUrl.clone()
-      url.pathname = '/admin/login'
+      url.pathname = '/acceder'
       url.searchParams.set('next', pathname)
       return NextResponse.redirect(url)
     }
@@ -47,8 +46,8 @@ export function middleware(request: NextRequest) {
   if (pathname === '/api/users' && request.method === 'POST') return NextResponse.next()
 
   if (pathname.startsWith('/api/admin/')) {
-    const admin = request.cookies.get(ADMIN_COOKIE_NAME)?.value
-    if (!admin) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    const user = request.cookies.get(USER_COOKIE_NAME)?.value
+    if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
     return NextResponse.next()
   }
 

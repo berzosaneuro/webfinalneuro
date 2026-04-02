@@ -22,10 +22,11 @@ export async function POST(request: Request) {
   const supabase = getSupabase()
   if (!stripe || !supabase) return NextResponse.json({ error: 'Servicio no configurado' }, { status: 503 })
 
+  const emailNorm = auth.email.trim().toLowerCase()
   const { data, error } = await supabase
     .from('users')
     .select('stripe_customer_id')
-    .ilike('email', auth.email)
+    .eq('email', emailNorm)
     .maybeSingle()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!data?.stripe_customer_id) return NextResponse.json({ error: 'No hay cliente Stripe asociado' }, { status: 400 })

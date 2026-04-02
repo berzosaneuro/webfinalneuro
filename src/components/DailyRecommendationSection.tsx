@@ -40,7 +40,7 @@ export default function DailyRecommendationSection() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-text-muted text-[10px] uppercase tracking-wider font-semibold mb-0.5">
-                  Recomendación de Elías para hoy
+                  Prioridad de hoy
                 </p>
                 <h3 className="font-heading font-semibold text-white text-base mb-0.5">{rec.title}</h3>
                 <p className="text-text-secondary text-xs">{rec.description}</p>

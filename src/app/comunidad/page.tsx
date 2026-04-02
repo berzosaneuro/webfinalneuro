@@ -169,6 +169,7 @@ export default function ComunidadPage() {
       await fetch('/api/community', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ id, likes: newLikes }),
       })
     } catch {
@@ -184,6 +185,7 @@ export default function ComunidadPage() {
       const res = await fetch('/api/community', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({
           autor: 'Tú',
           avatar: '🌟',
@@ -257,7 +259,7 @@ export default function ComunidadPage() {
             </div>
           </div>
           <p className="text-text-secondary text-sm animate-fade-in-up">
-            Crece junto a otros que están despertando.
+            Foro y salas: misma práctica, distintos ritmos.
           </p>
         </Container>
       </section>

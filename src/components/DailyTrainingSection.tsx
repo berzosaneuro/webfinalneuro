@@ -121,7 +121,7 @@ export default function DailyTrainingSection() {
               onClick={handleComplete}
               className="w-full py-3 rounded-xl bg-accent-blue text-white font-medium text-sm hover:bg-accent-blue-hover active:scale-[0.98] transition-all"
             >
-              Completar entrenamiento
+              Hecho hoy
             </button>
           )}
         </div>
