@@ -1,0 +1,204 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Usuario de la plataforma ─────────────────────────────────────────────────
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String?   // null si usa OAuth
+  plan          String    @default("free")  // free | pro | agency
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      InstagramAccount[]
+  flows         Flow[]
+  contacts      Contact[]
+  automations   Automation[]
+}
+
+// ─── Cuenta de Instagram conectada ────────────────────────────────────────────
+model InstagramAccount {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  igUserId        String   @unique   // ID de Instagram
+  username        String
+  name            String?
+  profilePicUrl   String?
+  accessToken     String             // Token de larga duración
+  tokenExpiresAt  DateTime?
+
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  contacts        Contact[]
+  conversations   Conversation[]
+  flows           Flow[]
+}
+
+// ─── Contacto (seguidor / persona que interactúa) ────────────────────────────
+model Contact {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId       String
+  account         InstagramAccount @relation(fields: [accountId], references: [id])
+
+  igUserId        String
+  username        String?
+  name            String?
+  profilePicUrl   String?
+
+  // Campos personalizados (capturados en flujos)
+  email           String?
+  phone           String?
+  tags            String[]  @default([])
+  customFields    Json?
+
+  subscribedAt    DateTime  @default(now())
+  lastContactAt   DateTime?
+  isSubscribed    Boolean   @default(true)
+
+  conversations   Conversation[]
+  sequenceEnrollments SequenceEnrollment[]
+
+  @@unique([accountId, igUserId])
+}
+
+// ─── Conversación / hilo de mensajes ─────────────────────────────────────────
+model Conversation {
+  id          String   @id @default(cuid())
+  accountId   String
+  account     InstagramAccount @relation(fields: [accountId], references: [id])
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id])
+  igThreadId  String?
+
+  status      String   @default("open")  // open | closed | bot | human
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  messages    Message[]
+}
+
+// ─── Mensaje individual ───────────────────────────────────────────────────────
+model Message {
+  id              String       @id @default(cuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id])
+
+  igMessageId     String?      @unique
+  role            String       // user | bot | human_agent
+  type            String       @default("text")  // text | image | story_mention
+  content         String
+  metadata        Json?
+
+  sentAt          DateTime     @default(now())
+}
+
+// ─── Flujo de automatización (el "flow" visual) ───────────────────────────────
+model Flow {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId   String?
+  account     InstagramAccount? @relation(fields: [accountId], references: [id])
+
+  name        String
+  description String?
+  isActive    Boolean  @default(false)
+
+  // Trigger: dm_keyword | comment_keyword | story_mention | first_dm
+  triggerType   String
+  triggerConfig Json    // { keywords: [...], postId: "...", ... }
+
+  // Nodos y conexiones del flow builder (guardados como JSON)
+  nodes       Json     @default("[]")
+  edges       Json     @default("[]")
+
+  stats       FlowStats?
+  automations Automation[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── Stats del flujo ─────────────────────────────────────────────────────────
+model FlowStats {
+  id          String   @id @default(cuid())
+  flowId      String   @unique
+  flow        Flow     @relation(fields: [flowId], references: [id], onDelete: Cascade)
+
+  triggered   Int      @default(0)
+  completed   Int      @default(0)
+  replied     Int      @default(0)
+  converted   Int      @default(0)
+
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── Automatización ejecutada ─────────────────────────────────────────────────
+model Automation {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  flowId      String
+  flow        Flow     @relation(fields: [flowId], references: [id])
+
+  contactIgId String
+  status      String   @default("running")  // running | completed | failed
+  currentStep Int      @default(0)
+  context     Json?    // datos acumulados del contacto en el flujo
+
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+}
+
+// ─── Secuencia (mensajes programados en el tiempo) ────────────────────────────
+model Sequence {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  isActive    Boolean  @default(false)
+
+  steps       SequenceStep[]
+  enrollments SequenceEnrollment[]
+
+  createdAt   DateTime @default(now())
+}
+
+model SequenceStep {
+  id          String   @id @default(cuid())
+  sequenceId  String
+  sequence    Sequence @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+
+  order       Int
+  delayHours  Int      @default(0)
+  message     String
+  messageType String   @default("text")
+
+  createdAt   DateTime @default(now())
+}
+
+model SequenceEnrollment {
+  id          String   @id @default(cuid())
+  sequenceId  String
+  sequence    Sequence @relation(fields: [sequenceId], references: [id])
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id])
+
+  currentStep Int      @default(0)
+  status      String   @default("active")  // active | completed | cancelled
+  nextSendAt  DateTime?
+
+  enrolledAt  DateTime @default(now())
+}
