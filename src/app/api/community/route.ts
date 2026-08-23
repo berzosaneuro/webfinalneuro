@@ -1,9 +1,31 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
+import { z } from 'zod'
+import { getSupabaseServiceRole } from '@/lib/supabase'
 import { requireUserOr401 } from '@/lib/api-auth'
 
+const ALLOWED_TAGS = ['experiencia', 'pregunta', 'enseñanza', 'progreso', 'recurso'] as const
+const ALLOWED_NIVELES = ['Dormido', 'Inquieto', 'Curioso', 'Buscador', 'Aprendiz', 'Practicante', 'Observador', 'Consciente', 'Despiert@', 'Maestr@'] as const
+
+const postSchema = z.object({
+  autor: z.string().max(100).optional(),
+  avatar: z.string().max(10).optional(),
+  nivel: z.string().max(30).optional(),
+  texto: z.string().min(1).max(5000),
+  tag: z.enum(ALLOWED_TAGS).optional(),
+})
+
+const patchSchema = z.object({
+  id: z.string().uuid(),
+  likes: z.number().int().min(0).optional(),
+  autor: z.string().max(100).optional(),
+  avatar: z.string().max(10).optional(),
+  nivel: z.enum(ALLOWED_NIVELES).optional(),
+  texto: z.string().min(1).max(5000).optional(),
+  tag: z.enum(ALLOWED_TAGS).optional(),
+})
+
 export async function GET() {
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { data, error } = await supabase
     .from('community_posts')
@@ -18,25 +40,27 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireUserOr401(request)
+  const auth = await requireUserOr401()
   if (auth.error) return auth.error
-  let body: { autor?: string; avatar?: string; nivel?: string; texto?: string; tag?: string }
-  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
-  const { autor, avatar, nivel, texto, tag } = body
 
-  if (!texto) {
-    return NextResponse.json({ error: 'El texto es obligatorio' }, { status: 400 })
+  let raw: unknown
+  try { raw = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
+
+  const parsed = postSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.flatten().fieldErrors }, { status: 400 })
   }
 
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
-  const displayAutor = (autor && String(autor).trim()) || auth.nombre || 'Usuario'
+
+  const displayAutor = (parsed.data.autor?.trim()) || auth.nombre || 'Usuario'
   const { data, error } = await supabase.from('community_posts').insert({
     autor: displayAutor,
-    avatar: avatar || '🌟',
-    nivel: nivel || 'Observador',
-    texto,
-    tag: tag || 'experiencia',
+    avatar: parsed.data.avatar || '🌟',
+    nivel: parsed.data.nivel || 'Observador',
+    texto: parsed.data.texto,
+    tag: parsed.data.tag || 'experiencia',
   }).select().single()
 
   if (error) {
@@ -47,23 +71,28 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const auth = await requireUserOr401(request)
+  const auth = await requireUserOr401()
   if (auth.error) return auth.error
-  let body: { id?: string; likes?: number; autor?: string; avatar?: string; nivel?: string; texto?: string; tag?: string }
-  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
-  const supabase = getSupabase()
+
+  let raw: unknown
+  try { raw = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
+
+  const parsed = patchSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+  }
+
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
-  const { id, likes, autor, avatar, nivel, texto, tag } = body
 
-  if (!id) return NextResponse.json({ error: 'ID es obligatorio' }, { status: 400 })
-
+  const { id, ...fields } = parsed.data
   const updates: Record<string, unknown> = {}
-  if (typeof likes === 'number') updates.likes = likes
-  if (autor != null) updates.autor = String(autor)
-  if (avatar != null) updates.avatar = String(avatar)
-  if (nivel != null) updates.nivel = String(nivel)
-  if (texto != null) updates.texto = String(texto)
-  if (tag != null) updates.tag = String(tag)
+  if (fields.likes !== undefined) updates.likes = fields.likes
+  if (fields.autor !== undefined) updates.autor = fields.autor
+  if (fields.avatar !== undefined) updates.avatar = fields.avatar
+  if (fields.nivel !== undefined) updates.nivel = fields.nivel
+  if (fields.texto !== undefined) updates.texto = fields.texto
+  if (fields.tag !== undefined) updates.tag = fields.tag
 
   if (Object.keys(updates).length === 0) return NextResponse.json({ error: 'Sin campos a actualizar' }, { status: 400 })
 

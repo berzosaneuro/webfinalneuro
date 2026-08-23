@@ -136,6 +136,10 @@ function getSmartResponse(input: string, progressSummary: string): string {
 }
 
 export async function POST(request: Request) {
+  const { requireUserOr401 } = await import('@/lib/api-auth')
+  const auth = await requireUserOr401()
+  if (auth.error) return auth.error
+
   let messages: { role: string; text: string }[] = []
   let progressContext = ''
   try {

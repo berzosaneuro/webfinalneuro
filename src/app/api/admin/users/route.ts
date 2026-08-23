@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
+import { z } from 'zod'
+import { getSupabaseServiceRole } from '@/lib/supabase'
 import { requireAdminOr401 } from '@/lib/api-auth'
 
-export async function GET(request: Request) {
-  const authError = await requireAdminOr401(request)
+const patchUserSchema = z.object({
+  id: z.string().uuid(),
+  is_premium: z.boolean().optional(),
+  subscription_status: z.string().max(50).optional(),
+}).strict()
+
+export async function GET() {
+  const authError = await requireAdminOr401()
   if (authError) return authError
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   try {
     const { data, error } = await supabase
@@ -19,27 +26,30 @@ export async function GET(request: Request) {
   }
 }
 
+/**
+ * PATCH /api/admin/users — update premium fields only.
+ * Role changes go through /api/admin/manage-role (master-only).
+ */
 export async function PATCH(request: Request) {
-  const authError = await requireAdminOr401(request)
+  const authError = await requireAdminOr401()
   if (authError) return authError
-  const supabase = getSupabase()
+
+  let raw: unknown
+  try { raw = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
+
+  const parsed = patchUserSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+  }
+
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
 
-  let body: { id?: string; is_premium?: boolean; subscription_status?: string }
-  try {
-    body = await request.json()
-  } catch {
-    return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 })
-  }
-
-  const id = typeof body.id === 'string' ? body.id.trim() : ''
-  if (!id) return NextResponse.json({ error: 'id es obligatorio' }, { status: 400 })
-
+  const { id, ...fields } = parsed.data
   const patch: Record<string, unknown> = {}
-  if (typeof body.is_premium === 'boolean') patch.is_premium = body.is_premium
-  if (typeof body.subscription_status === 'string' && body.subscription_status.trim()) {
-    patch.subscription_status = body.subscription_status.trim()
-  }
+  if (fields.is_premium !== undefined) patch.is_premium = fields.is_premium
+  if (fields.subscription_status !== undefined) patch.subscription_status = fields.subscription_status.trim()
+
   if (Object.keys(patch).length === 0) {
     return NextResponse.json({ error: 'No hay campos para actualizar' }, { status: 400 })
   }
@@ -48,9 +58,11 @@ export async function PATCH(request: Request) {
     .from('users')
     .update(patch)
     .eq('id', id)
-    .select('*')
+    .select('id, email, is_premium, subscription_status, role')
     .maybeSingle()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data)
+  if (!data) return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
+
+  return NextResponse.json({ success: true, message: 'Usuario actualizado', user: data })
 }

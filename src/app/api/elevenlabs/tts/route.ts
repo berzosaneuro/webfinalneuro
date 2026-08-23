@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { requireUserOr401 } from '@/lib/api-auth'
+
+const ttsSchema = z.object({
+  text: z.string().min(1).max(5000),
+})
 
 const ELEVENLABS_API = 'https://api.elevenlabs.io'
 const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n))
@@ -42,7 +47,7 @@ function setCachedAudio(key: string, bytes: ArrayBuffer): void {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireUserOr401(req)
+  const auth = await requireUserOr401()
   if (auth.error) return auth.error
   const apiKey = process.env.ELEVENLABS_API_KEY
   const voiceId = process.env.ELEVENLABS_VOICE_ID
@@ -54,18 +59,15 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  let body: { text?: string }
-  try {
-    body = await req.json()
-  } catch {
-    return NextResponse.json({ error: 'Body JSON inválido' }, { status: 400 })
+  let raw: unknown
+  try { raw = await req.json() } catch { return NextResponse.json({ error: 'Body JSON inválido' }, { status: 400 }) }
+
+  const parsed = ttsSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.flatten().fieldErrors }, { status: 400 })
   }
 
-  const text = (body.text || '').trim()
-  if (!text) {
-    return NextResponse.json({ error: 'text es obligatorio' }, { status: 400 })
-  }
-  const trimmedText = text.slice(0, 5000)
+  const trimmedText = parsed.data.text.trim()
   const cacheKey = getCacheKey(voiceId, trimmedText)
   const cached = getCachedAudio(cacheKey)
   if (cached) {

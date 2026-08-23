@@ -8,7 +8,7 @@ const schema = z.object({
 })
 
 export async function POST(request: Request) {
-  const authError = await requireAdminOr401(request)
+  const authError = await requireAdminOr401()
   if (authError) return authError
 
   let body: unknown
@@ -23,18 +23,48 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Email inválido' }, { status: 400 })
   }
 
-  const email = parsed.data.email.trim().toLowerCase()
+  const inputEmail = parsed.data.email.trim().toLowerCase()
+  console.info(`[grant-premium] Solicitud para email: ${inputEmail}`)
+
   const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+
+  const { data: userRow, error: findError } = await supabase
+    .from('users')
+    .select('id, email')
+    .ilike('email', inputEmail)
+    .maybeSingle()
+
+  if (findError) {
+    console.error(`[grant-premium] Error buscando usuario: ${findError.message}`)
+    return NextResponse.json({ error: findError.message }, { status: 500 })
+  }
+
+  if (!userRow) {
+    console.warn(`[grant-premium] Usuario no encontrado: ${inputEmail}`)
+    return NextResponse.json(
+      { success: false, message: `No se encontró usuario con email ${inputEmail}` },
+      { status: 404 },
+    )
+  }
 
   const { data, error } = await supabase
     .from('users')
     .update({ is_premium: true, subscription_status: 'manual' })
-    .eq('email', email)
+    .eq('id', userRow.id)
     .select('id, email, is_premium, subscription_status')
+    .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  if (!data || data.length === 0) return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 })
+  if (error) {
+    console.error(`[grant-premium] Error actualizando: ${error.message}`)
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+  }
 
-  return NextResponse.json({ ok: true, user: data[0] })
+  console.info(`[grant-premium] Premium concedido a ${data.email} (id: ${data.id})`)
+
+  return NextResponse.json({
+    success: true,
+    message: `Premium concedido a ${data.email}`,
+    user: data,
+  })
 }

@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabaseServiceRole } from '@/lib/supabase'
 import { posts as fallbackPosts } from '@/data/posts'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const slug = searchParams.get('slug')
 
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (supabase) {
     try {
       if (slug) {

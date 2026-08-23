@@ -45,7 +45,7 @@ export async function getUserSubscriptionStatusByEmail(email: string): Promise<U
   const { data, error } = await supabase
     .from('users')
     .select('id')
-    .eq('email', normalized)
+    .ilike('email', normalized)
     .maybeSingle()
 
   if (error || !data?.id) return null

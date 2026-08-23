@@ -1,46 +1,25 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { getSupabaseServiceRoleKeyOrThrow, SUPABASE_URL } from '@/lib/supabase/env'
 
-const supabaseUrl =
-  process.env.SUPABASE_URL ||
-  process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  ''
-
-const supabaseAnonKey =
-  process.env.SUPABASE_ANON_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  ''
-
-if (process.env.NODE_ENV !== 'production') {
-  console.log('[supabase:init]', {
-    hasUrl: !!supabaseUrl,
-    hasAnon: !!supabaseAnonKey,
-    hasService: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-  })
-}
-
-let _supabase: SupabaseClient | null = null
 let _supabaseService: SupabaseClient | null = null
+let _serviceEnvMissingLogged = false
 
-/** Devuelve el cliente Supabase o null si no está configurado (ej. en Vercel sin vars) */
-export function getSupabase(): SupabaseClient | null {
-  // En servidor priorizamos service role para no depender de políticas abiertas por accidente.
-  if (typeof window === 'undefined' && serviceRoleKey) {
-    return getSupabaseServiceRole()
-  }
-  if (!supabaseUrl || !supabaseAnonKey) return null
-  if (!_supabase) {
-    _supabase = createClient(supabaseUrl, supabaseAnonKey)
-  }
-  return _supabase
-}
-
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-
-/** Solo para webhooks Stripe u operaciones de servidor que requieren bypass RLS. */
+/**
+ * Service role — misma `SUPABASE_URL` que el resto; clave vía `SUPABASE_SERVICE_ROLE_KEY`.
+ */
 export function getSupabaseServiceRole(): SupabaseClient | null {
-  if (!supabaseUrl || !serviceRoleKey) return null
+  let key: string
+  try {
+    key = getSupabaseServiceRoleKeyOrThrow()
+  } catch {
+    if (!_serviceEnvMissingLogged) {
+      _serviceEnvMissingLogged = true
+      console.error('❌ Supabase: SUPABASE_SERVICE_ROLE_KEY faltante')
+    }
+    return null
+  }
   if (!_supabaseService) {
-    _supabaseService = createClient(supabaseUrl, serviceRoleKey, {
+    _supabaseService = createClient(SUPABASE_URL, key, {
       auth: { persistSession: false, autoRefreshToken: false },
     })
   }

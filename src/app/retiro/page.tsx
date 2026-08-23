@@ -105,14 +105,22 @@ export default function RetiroPage() {
 
   useEffect(() => {
     if (state.activo) {
+      const totalSec = state.duracionMinutos * 60
       timerRef.current = setInterval(() => {
         setElapsed((prev) => {
           const next = prev + 1
-          if (next >= state.duracionMinutos * 60) {
+          if (next >= totalSec) {
             if (timerRef.current) clearInterval(timerRef.current)
-            const updated = { ...state, activo: false, inicioTimestamp: null, completados: state.completados + 1 }
-            setState(updated)
-            saveState(updated)
+            setState((s) => {
+              const updated: RetiroState = {
+                ...s,
+                activo: false,
+                inicioTimestamp: null,
+                completados: s.completados + 1,
+              }
+              saveState(updated)
+              return updated
+            })
           }
           return next
         })

@@ -1,9 +1,22 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
+import { z } from 'zod'
+import { getSupabaseServiceRole } from '@/lib/supabase'
+import { requireAdminOr401 } from '@/lib/api-auth'
 import { isEmailNotificationConfigured, sendNotification } from '@/lib/mailer'
 
+const leadSchema = z.object({
+  email: z.string().email().max(320),
+  name: z.string().max(200).optional(),
+  nombre: z.string().max(200).optional(),
+  source: z.string().max(100).optional(),
+  fuente: z.string().max(100).optional(),
+})
+
 export async function GET() {
-  const supabase = getSupabase()
+  const authError = await requireAdminOr401()
+  if (authError) return authError
+
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { data, error } = await supabase
     .from('leads')
@@ -18,25 +31,26 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  let body: { email?: string; name?: string; nombre?: string; source?: string; fuente?: string }
-  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
-  const { email, name, nombre, source, fuente } = body
+  let raw: unknown
+  try { raw = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
 
-  if (!email) {
-    return NextResponse.json({ error: 'Email es obligatorio' }, { status: 400 })
+  const parsed = leadSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.flatten().fieldErrors }, { status: 400 })
   }
 
+  const { email, name, nombre, source, fuente } = parsed.data
   const origen = fuente || source || 'web'
   const nombreFinal = name ?? nombre ?? ''
 
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) {
     const emailBody = `<h2>Nuevo lead (modo respaldo email)</h2>
     <p><strong>Email:</strong> ${email}</p>
     ${nombreFinal ? `<p><strong>Nombre:</strong> ${nombreFinal}</p>` : ''}
     <p><strong>Origen:</strong> ${origen}</p>
     <p><strong>Almacenamiento:</strong> EMAIL_FALLBACK (sin Supabase)</p>`
-    const emailed = await sendNotification(`🔔 Nuevo lead — ${email}`, emailBody)
+    const emailed = await sendNotification(`Nuevo lead — ${email}`, emailBody)
     if (emailed) {
       return NextResponse.json({ success: true, fallback: 'email' })
     }
@@ -55,9 +69,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Error al guardar el lead' }, { status: 500 })
   }
 
-  // Email notification (only if SMTP configured)
   await sendNotification(
-    `🔔 Nuevo lead — ${email}`,
+    `Nuevo lead — ${email}`,
     `<h2>Nuevo lead en la web</h2>
     <p><strong>Email:</strong> ${email}</p>
     ${nombreFinal ? `<p><strong>Nombre:</strong> ${nombreFinal}</p>` : ''}

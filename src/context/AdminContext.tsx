@@ -6,31 +6,24 @@ import { useUser } from '@/context/UserContext'
 interface AdminContextType {
   isAdmin: boolean
   loading: boolean
-  adminLogin: (password: string) => Promise<boolean>
   adminLogout: () => Promise<void>
 }
 
 const AdminContext = createContext<AdminContextType>({
   isAdmin: false,
   loading: true,
-  adminLogin: async () => false,
   adminLogout: async () => {},
 })
 
 export function AdminProvider({ children }: { children: ReactNode }) {
-  const { user, logout } = useUser()
+  const { user, logout, loading: userLoading } = useUser()
   const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setIsAdmin(user?.role === 'master')
-    setLoading(false)
-  }, [user?.role])
-
-  const adminLogin = async (password: string): Promise<boolean> => {
-    void password
-    return false
-  }
+    setIsAdmin(user?.role === 'admin' || user?.role === 'master')
+    setLoading(userLoading)
+  }, [user?.role, userLoading])
 
   const adminLogout = async () => {
     await logout()
@@ -38,7 +31,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AdminContext.Provider value={{ isAdmin, loading, adminLogin, adminLogout }}>
+    <AdminContext.Provider value={{ isAdmin, loading, adminLogout }}>
       {children}
     </AdminContext.Provider>
   )

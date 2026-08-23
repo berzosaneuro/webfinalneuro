@@ -10,8 +10,8 @@ type Props = { params: Promise<{ slug: string }> }
 
 async function fetchPost(slug: string) {
   try {
-    const { getSupabase } = await import('@/lib/supabase')
-    const sb = getSupabase()
+    const { getSupabaseServiceRole } = await import('@/lib/supabase')
+    const sb = getSupabaseServiceRole()
     if (sb) {
       const { data } = await sb.from('biblioteca_posts').select('*').eq('slug', slug).single()
       if (data) return { slug: data.slug, title: data.title, date: data.date || '', summary: data.summary || '', content: data.content || '', exercise: data.exercise || '' }

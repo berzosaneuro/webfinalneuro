@@ -42,10 +42,9 @@ Si GitHub te pide usuario y contraseña, usa un **Personal Access Token** en lug
 
 3. Importa el repo `berzosaneuro` desde GitHub (selecciónalo en la lista).
 
-4. En **Environment Variables** añade:
-   - `NEXT_PUBLIC_SUPABASE_URL` = tu URL de Supabase
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = tu clave anónima de Supabase
-   - `NEXT_PUBLIC_ADMIN_PASSWORD` = (opcional) contraseña del panel admin
+4. En **Environment Variables** añade (la URL del proyecto va fija en `src/lib/supabase/env.ts`, no hace falta `NEXT_PUBLIC_SUPABASE_URL`):
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = clave anónima (Supabase → Settings → API)
+   - `SUPABASE_SERVICE_ROLE_KEY` = service role (mismo sitio; solo servidor)
 
 5. Clic en **Deploy**.
 

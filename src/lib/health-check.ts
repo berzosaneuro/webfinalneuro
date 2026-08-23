@@ -15,8 +15,6 @@ const REQUIRED_ENV = [
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
   'STRIPE_PRICE_ID',
-  'APP_SESSION_SECRET',
-  'ADMIN_PASSWORD',
 ] as const
 
 export async function runHealthCheck(): Promise<HealthReport> {

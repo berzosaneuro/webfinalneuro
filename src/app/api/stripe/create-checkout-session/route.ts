@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { getCanonicalAppBaseUrl } from '@/lib/app-url'
 import { getStripe } from '@/lib/stripe'
 import { requireUserOr401 } from '@/lib/api-auth'
 import { getUserSubscriptionStatusByEmail } from '@/lib/subscription-status'
@@ -6,31 +7,8 @@ import { getUserSubscriptionStatusByEmail } from '@/lib/subscription-status'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-/** URL pública para success/cancel Stripe (Vercel: prioriza dominio canónico). */
-function resolvePublicOrigin(request: Request): string {
-  const trimSlash = (s: string) => s.replace(/\/$/, '')
-
-  const fromEnv = process.env.NEXT_PUBLIC_APP_URL?.trim()
-  if (fromEnv) return trimSlash(fromEnv)
-
-  const fromOrigin = request.headers.get('origin')?.trim()
-  if (fromOrigin) return trimSlash(fromOrigin)
-
-  const fwdHost = request.headers.get('x-forwarded-host')?.trim()
-  const fwdProto = (request.headers.get('x-forwarded-proto') || 'https').split(',')[0]?.trim() || 'https'
-  if (fwdHost) return trimSlash(`${fwdProto}://${fwdHost}`)
-
-  const vercel = process.env.VERCEL_URL?.trim()
-  if (vercel) return trimSlash(`https://${vercel.replace(/^https?:\/\//, '')}`)
-
-  const host = request.headers.get('host')?.trim()
-  if (host) return trimSlash(`https://${host}`)
-
-  return ''
-}
-
 export async function POST(request: Request) {
-  const auth = await requireUserOr401(request)
+  const auth = await requireUserOr401()
   if (auth.error) return auth.error
 
   const stripe = getStripe()
@@ -48,7 +26,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const origin = resolvePublicOrigin(request)
+  const origin = getCanonicalAppBaseUrl() ?? ''
 
   if (!origin) {
     return NextResponse.json(

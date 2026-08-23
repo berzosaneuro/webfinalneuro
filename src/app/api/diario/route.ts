@@ -1,18 +1,25 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
+import { z } from 'zod'
+import { getSupabaseServiceRole } from '@/lib/supabase'
 import { requireUserOr401 } from '@/lib/api-auth'
 
-export async function GET(request: Request) {
-  const auth = await requireUserOr401(request)
+const diarioSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  presenceLevel: z.number().int().min(0).max(100).optional(),
+  mood: z.string().max(200).optional(),
+  insight: z.string().max(5000).optional(),
+})
+
+export async function GET() {
+  const auth = await requireUserOr401()
   if (auth.error) return auth.error
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
-  const email = auth.email
 
   const { data, error } = await supabase
     .from('diary_entries')
     .select('*')
-    .eq('user_email', email)
+    .eq('user_email', auth.email)
     .order('date', { ascending: true })
 
   if (error) {
@@ -23,23 +30,23 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireUserOr401(request)
+  const auth = await requireUserOr401()
   if (auth.error) return auth.error
-  let body: { email?: string; date?: string; presenceLevel?: number; mood?: string; insight?: string }
-  try {
-    body = await request.json()
-  } catch {
-    return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 })
-  }
-  const { date, presenceLevel, mood, insight } = body
 
-  if (!date) {
-    return NextResponse.json({ error: 'Fecha requerida' }, { status: 400 })
+  let raw: unknown
+  try { raw = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
+
+  const parsed = diarioSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.flatten().fieldErrors }, { status: 400 })
   }
+
+  const { date, presenceLevel, mood, insight } = parsed.data
   const email = auth.email
 
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+
   const { data: existing } = await supabase
     .from('diary_entries')
     .select('id')
@@ -50,16 +57,10 @@ export async function POST(request: Request) {
   if (existing) {
     const { error } = await supabase
       .from('diary_entries')
-      .update({
-        presence_level: presenceLevel,
-        mood,
-        insight,
-      })
+      .update({ presence_level: presenceLevel, mood, insight })
       .eq('id', existing.id)
 
-    if (error) {
-      return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
-    }
+    if (error) return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
     return NextResponse.json({ success: true, updated: true })
   }
 
@@ -71,9 +72,6 @@ export async function POST(request: Request) {
     insight,
   })
 
-  if (error) {
-    return NextResponse.json({ error: 'Error al guardar' }, { status: 500 })
-  }
-
+  if (error) return NextResponse.json({ error: 'Error al guardar' }, { status: 500 })
   return NextResponse.json({ success: true, created: true })
 }

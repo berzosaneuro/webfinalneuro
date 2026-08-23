@@ -1,30 +1,39 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import Container from '@/components/Container'
 import { useUser } from '@/context/UserContext'
 import FadeInSection from '@/components/FadeInSection'
-import { Brain, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
+import { Brain, Mail, Lock, Eye, EyeOff, ArrowRight, KeyRound } from 'lucide-react'
+import { getPublicSupportEmail } from '@/lib/support-contact'
 
-async function getApiError(response: Response): Promise<string> {
-  try {
-    const json = await response.json() as { error?: string }
-    if (json?.error) return json.error
-  } catch {
-    // ignore parse error
-  }
-  return `HTTP ${response.status}`
+const CALLBACK_ERRORS: Record<string, string> = {
+  missing_code: 'Enlace de recuperación inválido. Solicita uno nuevo.',
+  invalid_or_expired_link: 'El enlace ha expirado o ya fue usado. Solicita uno nuevo.',
+  config: 'Error de configuración del servidor (Supabase). Comprueba variables en Vercel y vuelve a intentarlo.',
 }
 
 export default function AccederPage() {
-  const router = useRouter()
-  const { applyLoginUser } = useUser()
+  const supportEmail = getPublicSupportEmail()
+  const { refreshUser } = useUser()
   const [form, setForm] = useState({ email: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [resetSent, setResetSent] = useState(false)
+  const [showResetForm, setShowResetForm] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
+  const [resetLoading, setResetLoading] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const callbackError = params.get('error')
+    if (callbackError && CALLBACK_ERRORS[callbackError]) {
+      setError(CALLBACK_ERRORS[callbackError])
+      setShowResetForm(true)
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,58 +44,124 @@ export default function AccederPage() {
       return
     }
 
-    const email = form.email.trim().toLowerCase()
-    const password = form.password.trim()
-
     setLoading(true)
     try {
-      const nombre = email.split('@')[0] || 'Usuario'
-      const userRes = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, nombre }),
-      })
-      if (!userRes.ok) {
-        const msg = await getApiError(userRes)
-        console.error('[login] /api/users error', userRes.status)
-        setError(msg)
-        return
-      }
-
       const res = await fetch('/api/auth/session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
+        body: JSON.stringify({
+          email: form.email.trim().toLowerCase(),
+          password: form.password,
+        }),
       })
-
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string
+        code?: string
+        ok?: boolean
+        supabaseError?: string | null
+        supabaseCode?: string | null
+      }
+      console.log('CLIENT LOGIN RESPONSE:', { status: res.status, ok: data.ok, ...data })
       if (!res.ok) {
-        const msg = await getApiError(res)
-        console.error('[login] /api/auth/session error', res.status)
-        setError(msg)
+        const code = data.code
+        const base =
+          data.error ||
+          data.supabaseError ||
+          (res.status >= 503
+            ? 'No se pudo conectar con el servicio de cuentas. Inténtalo en unos minutos.'
+            : undefined)
+        let message = base ?? 'No se pudo acceder. Revisa email y contraseña.'
+        if (code === 'EMAIL_NOT_CONFIRMED') {
+          message =
+            'Confirma tu email antes de acceder: abre el enlace que te enviamos al registrarte.'
+        } else if (code === 'PASSWORD_RESET_REQUIRED') {
+          message =
+            'La cuenta existe pero la contraseña no coincide. Prueba «¿Olvidaste tu contraseña?» o usa el enlace correcto.'
+        } else if (code === 'INVALID_PASSWORD') {
+          message = 'Contraseña incorrecta. Puedes usar «¿Olvidaste tu contraseña?» si no la recuerdas.'
+        } else if (code === 'USER_NOT_FOUND') {
+          message = 'No existe una cuenta con ese email. Comprueba que esté bien escrito o regístrate.'
+        } else if (code === 'SUPABASE_UNREACHABLE') {
+          message =
+            base ?? 'Servicio de autenticación no disponible. Inténtalo en unos minutos.'
+        }
+        setError(message)
         return
       }
 
-      const data = (await res.json()) as { user?: { email: string; nombre: string; role: 'user' | 'master' } }
-      if (data?.user?.email) {
-        applyLoginUser({
-          email: data.user.email,
-          nombre: data.user.nombre,
-          role: data.user.role,
-        })
-      }
-      router.push('/')
+      await refreshUser()
+      const params = new URLSearchParams(window.location.search)
+      const next = params.get('next')
+      window.location.href = next && next.startsWith('/') ? next : '/'
     } catch (err) {
-      console.error('[login] error', err)
-      setError('Error al acceder. Inténtalo de nuevo.')
+      console.error('[acceder] login', err)
+      if (err instanceof TypeError && /fetch|network|load failed|failed to fetch/i.test(String(err.message))) {
+        setError('No se pudo conectar. Comprueba tu conexión o inténtalo en unos minutos.')
+      } else {
+        setError('Error al acceder. Inténtalo de nuevo.')
+      }
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleResetPassword = async () => {
+    const email = (resetEmail || form.email).trim().toLowerCase()
+    if (!email) {
+      setError('Introduce tu email para recuperar la contraseña.')
+      return
+    }
+
+    setResetLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      if (res.ok) {
+        setResetSent(true)
+        setShowResetForm(false)
+      } else {
+        try {
+          const data = (await res.json()) as { error?: string }
+          setError(data.error || 'Error al enviar el enlace.')
+        } catch {
+          setError('Error al enviar el enlace.')
+        }
+      }
+    } catch {
+      setError('Error de conexión.')
+    } finally {
+      setResetLoading(false)
+    }
+  }
+
+  if (resetSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <FadeInSection>
+          <div className="text-center max-w-sm">
+            <div className="w-20 h-20 rounded-full bg-accent-blue/15 flex items-center justify-center mx-auto mb-6">
+              <Mail className="w-10 h-10 text-accent-blue" />
+            </div>
+            <h1 className="font-heading font-black text-white text-2xl mb-3">Revisa tu email</h1>
+            <p className="text-text-secondary text-sm mb-4">
+              Te hemos enviado un enlace para establecer tu contraseña. Haz click en él y podrás acceder.
+            </p>
+            <button
+              type="button"
+              onClick={() => { setResetSent(false); setShowResetForm(false) }}
+              className="text-accent-blue text-sm hover:underline"
+            >
+              Volver al login
+            </button>
+          </div>
+        </FadeInSection>
+      </div>
+    )
   }
 
   return (
@@ -162,12 +237,56 @@ export default function AccederPage() {
                 </button>
               </form>
 
+              <div className="mt-4 text-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResetForm(true)
+                    setResetEmail(form.email)
+                  }}
+                  className="text-accent-blue text-xs hover:underline inline-flex items-center gap-1"
+                >
+                  <KeyRound className="w-3 h-3" />
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </div>
+
+              {showResetForm && (
+                <div className="mt-4 p-4 rounded-2xl bg-dark-surface border border-dark-border">
+                  <p className="text-text-secondary text-xs mb-3">
+                    Introduce tu email y te enviaremos un enlace para establecer tu contraseña.
+                  </p>
+                  <input
+                    type="email"
+                    placeholder="Tu email"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-dark-primary border border-dark-border text-white placeholder:text-text-muted text-sm focus:outline-none focus:border-accent-blue transition-colors mb-3"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void handleResetPassword()}
+                    disabled={resetLoading}
+                    className="w-full py-3 rounded-xl bg-accent-purple text-white font-semibold text-sm disabled:opacity-60"
+                  >
+                    {resetLoading ? 'Enviando...' : 'Enviar enlace de recuperación'}
+                  </button>
+                </div>
+              )}
+
               <p className="text-center text-text-muted text-xs mt-6">
                 ¿No tienes cuenta?{' '}
                 <Link href="/registro" className="text-accent-blue hover:underline font-medium">
                   Crear cuenta
                 </Link>
                 {' '}· Reto 7 días incluido
+              </p>
+
+              <p className="text-center text-text-muted/90 text-[11px] mt-4 leading-relaxed max-w-sm mx-auto">
+                ¿Problema para entrar o acabas de pagar y no accedes? Es un fallo técnico, no intencionado.{' '}
+                <a href={`mailto:${supportEmail}?subject=Acceso%20web%20Berzosa%20Neuro`} className="text-accent-blue hover:underline">
+                  {supportEmail}
+                </a>
               </p>
 
             </FadeInSection>

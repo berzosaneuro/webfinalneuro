@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import { requireUserOr401 } from '@/lib/api-auth'
 import { getUserSubscriptionStatusByEmail } from '@/lib/subscription-status'
+export { dynamic } from '@/lib/api-route-dynamic'
 
 /** Lectura de premium desde BD vía getUserSubscriptionStatusByEmail (service role en servidor). */
 export async function GET(request: Request) {
-  const auth = await requireUserOr401(request)
+  const auth = await requireUserOr401()
   if (auth.error) return auth.error
   const status = await getUserSubscriptionStatusByEmail(auth.email)
   return NextResponse.json({

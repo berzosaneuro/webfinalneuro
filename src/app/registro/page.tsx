@@ -7,25 +7,18 @@ import Container from '@/components/Container'
 import { useUser } from '@/context/UserContext'
 import FadeInSection from '@/components/FadeInSection'
 import { Brain, Mail, User, Lock, Eye, EyeOff, ArrowRight, Gift, Check } from 'lucide-react'
-
-async function getApiError(response: Response): Promise<string> {
-  try {
-    const json = await response.json() as { error?: string }
-    if (json?.error) return json.error
-  } catch {
-    // ignore parse error
-  }
-  return `HTTP ${response.status}`
-}
+import { getPublicSupportEmail } from '@/lib/support-contact'
 
 export default function RegistroPage() {
+  const supportEmail = getPublicSupportEmail()
   const router = useRouter()
-  const { setUser } = useUser()
+  const { refreshUser } = useUser()
   const [form, setForm] = useState({ nombre: '', email: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [needsConfirmation, setNeedsConfirmation] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,41 +37,78 @@ export default function RegistroPage() {
     try {
       const nombre = form.nombre.trim()
       const email = form.email.trim().toLowerCase()
-      const [leadRes, subscriberRes, userRes] = await Promise.all([
+      const password = form.password
+
+      // Mismo origen que la web: el servidor habla con Supabase (evita "Failed to fetch" por
+      // bloqueo a *.supabase.co en el navegador, extensiones, etc.) y fija la sesión en cookies.
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ email, password, nombre }),
+      })
+      let payload: { error?: string; needsConfirmation?: boolean; ok?: boolean } = {}
+      try {
+        payload = (await res.json()) as typeof payload & {
+          ok?: boolean
+          code?: string
+          supabaseError?: string | null
+        }
+      } catch {
+        setError('Respuesta del servidor no válida. Inténtalo de nuevo.')
+        return
+      }
+      console.log('CLIENT SIGNUP RESPONSE:', { status: res.status, payload })
+      if (!res.ok) {
+        const code = (payload as { code?: string }).code
+        const errStr =
+          payload.error ??
+          ((payload as { supabaseError?: string | null }).supabaseError || undefined)
+        setError(
+          errStr ||
+            (code === 'EMAIL_ALREADY_REGISTERED'
+              ? 'Ese email ya está registrado. Prueba «Acceder» o recuperar contraseña.'
+              : res.status >= 500
+                ? 'El servicio de cuentas no está disponible. Inténtalo en unos minutos.'
+                : 'No se pudo crear la cuenta. Revisa los datos o prueba a acceder si ya estás registrado.'),
+        )
+        return
+      }
+
+      const needsConfirmation = Boolean(payload.needsConfirmation)
+
+      void Promise.all([
         fetch('/api/leads', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
           body: JSON.stringify({ nombre, email, fuente: 'registro' }),
         }),
         fetch('/api/subscribers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
           body: JSON.stringify({ nombre, email }),
-        }),
-        fetch('/api/users', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          // Usuarios se guardan en la tabla `users` vía /api/users
-          body: JSON.stringify({ email, nombre }),
         }),
       ])
 
-      const errors: string[] = []
-      if (!leadRes.ok) errors.push(`leads: ${await getApiError(leadRes)}`)
-      if (!subscriberRes.ok) errors.push(`subscribers: ${await getApiError(subscriberRes)}`)
-      if (!userRes.ok) errors.push(`users: ${await getApiError(userRes)}`)
-      if (errors.length > 0) {
-        throw new Error(errors.join(' | '))
+      if (needsConfirmation) {
+        setNeedsConfirmation(true)
+        setSuccess(true)
+        return
       }
 
-      const ok = await setUser({ nombre, email })
-      if (!ok) throw new Error('No se pudo iniciar sesión segura')
-
+      await refreshUser()
       setSuccess(true)
       setTimeout(() => router.push('/plan-7-dias'), 2000)
     } catch (err) {
       console.error('Error de registro:', err)
-      setError('Error al crear la cuenta. Inténtalo de nuevo.')
+      const msg = err instanceof Error ? err.message : ''
+      if (/failed to fetch|network|load failed/i.test(msg)) {
+        setError('No se pudo conectar. Revisa la red o vuelve a intentarlo en unos minutos.')
+      } else {
+        setError('Error al crear la cuenta. Inténtalo de nuevo.')
+      }
     } finally {
       setLoading(false)
     }
@@ -92,14 +122,20 @@ export default function RegistroPage() {
             <div className="w-20 h-20 rounded-full bg-green-500/15 flex items-center justify-center mx-auto mb-6">
               <Check className="w-10 h-10 text-green-400" />
             </div>
-            <h1 className="font-heading font-black text-white text-2xl mb-3">Listo</h1>
+            <h1 className="font-heading font-black text-white text-2xl mb-3">
+              {needsConfirmation ? 'Revisa tu email' : 'Listo'}
+            </h1>
             <p className="text-text-secondary text-sm mb-4">
-              Cuenta creada. Siguiente paso: Reto 7 Días, desbloqueado.
+              {needsConfirmation
+                ? 'Te hemos enviado un enlace de confirmación. Haz click en él para activar tu cuenta.'
+                : 'Cuenta creada. Siguiente paso: Reto 7 Días, desbloqueado.'}
             </p>
-            <div className="flex items-center justify-center gap-2 text-green-400 text-sm font-medium">
-              <Gift className="w-4 h-4" />
-              Reto 7 Días desbloqueado
-            </div>
+            {!needsConfirmation && (
+              <div className="flex items-center justify-center gap-2 text-green-400 text-sm font-medium">
+                <Gift className="w-4 h-4" />
+                Reto 7 Días desbloqueado
+              </div>
+            )}
           </div>
         </FadeInSection>
       </div>
@@ -115,7 +151,6 @@ export default function RegistroPage() {
         <Container>
           <div className="max-w-sm mx-auto">
             <FadeInSection>
-              {/* Header */}
               <div className="text-center mb-8">
                 <div className="w-16 h-16 rounded-2xl bg-accent-blue/15 flex items-center justify-center mx-auto mb-5">
                   <Brain className="w-8 h-8 text-accent-blue" />
@@ -126,7 +161,6 @@ export default function RegistroPage() {
                 </p>
               </div>
 
-              {/* Gift banner */}
               <div className="flex items-center gap-3 p-3.5 rounded-2xl mb-6" style={{ background: 'linear-gradient(135deg, rgba(0,102,255,0.12), rgba(0,82,204,0.06))', border: '1px solid rgba(0,102,255,0.2)' }}>
                 <Gift className="w-5 h-5 text-[#0066FF] shrink-0" />
                 <div>
@@ -135,9 +169,7 @@ export default function RegistroPage() {
                 </div>
               </div>
 
-              {/* Form */}
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                {/* Nombre */}
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
                     <User className="w-4 h-4 text-text-muted" />
@@ -152,7 +184,6 @@ export default function RegistroPage() {
                   />
                 </div>
 
-                {/* Email */}
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
                     <Mail className="w-4 h-4 text-text-muted" />
@@ -167,7 +198,6 @@ export default function RegistroPage() {
                   />
                 </div>
 
-                {/* Password */}
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
                     <Lock className="w-4 h-4 text-text-muted" />
@@ -212,6 +242,12 @@ export default function RegistroPage() {
               <p className="text-center text-text-muted text-[11px] mt-4 leading-relaxed">
                 Al registrarte aceptas recibir contenido de Berzosa Neuro.<br />
                 Puedes darte de baja en cualquier momento.
+              </p>
+              <p className="text-center text-text-muted/90 text-[11px] mt-3 leading-relaxed max-w-sm mx-auto">
+                ¿Error al registrarte? Escríbenos:{' '}
+                <a href={`mailto:${supportEmail}?subject=Registro%20web%20Berzosa%20Neuro`} className="text-accent-blue hover:underline">
+                  {supportEmail}
+                </a>
               </p>
             </FadeInSection>
           </div>

@@ -141,7 +141,13 @@ create table if not exists users (
 );
 create unique index if not exists users_email_unique on users (lower(email));
 
--- 11b. Stripe / Premium (idempotente; ejecutar también en BD ya existentes)
+-- Sincronización auth → public: ejecutar en Supabase SQL Editor
+-- el fichero supabase/migration-auth-users-sync-trigger.sql (trigger handle_new_user).
+
+-- 11b. Rol de usuario (idempotente)
+alter table users add column if not exists role text not null default 'user';
+
+-- 11c. Stripe / Premium (idempotente; ejecutar también en BD ya existentes)
 alter table users add column if not exists stripe_customer_id text;
 alter table users add column if not exists subscription_status text default 'none';
 alter table users add column if not exists is_premium boolean default false;

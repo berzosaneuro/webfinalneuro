@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAdmin } from '@/context/AdminContext'
 import Container from '@/components/Container'
+import AdminUsersPanel from '@/components/admin/AdminUsersPanel'
+import { ToastProvider } from '@/components/admin/Toast'
 import {
   Users, Mail, Phone, MessageSquare, BarChart3, LogOut,
   Loader2, Trash2, UserCheck, Crown, Download, RefreshCw,
@@ -160,10 +162,18 @@ export default function AdminPage() {
   const [manualPremiumLoading, setManualPremiumLoading] = useState(false)
   const [manualPremiumMsg, setManualPremiumMsg] = useState<{ type: 'ok' | 'error'; text: string } | null>(null)
 
-  const supabaseUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_SUPABASE_URL || '') : ''
-  const supabaseDashboardUrl = supabaseUrl
-    ? `https://supabase.com/dashboard/project/${supabaseUrl.replace(/^https?:\/\//, '').replace(/\.supabase\.co.*$/, '')}`
-    : ''
+  const supabaseDashboardUrl: string = (() => {
+    const raw = process.env.NEXT_PUBLIC_SUPABASE_URL
+    if (!raw) return 'https://supabase.com/dashboard'
+    try {
+      const ref = new URL(raw).hostname.split('.')[0]
+      return ref
+        ? `https://supabase.com/dashboard/project/${ref}`
+        : 'https://supabase.com/dashboard'
+    } catch {
+      return 'https://supabase.com/dashboard'
+    }
+  })()
 
   const fetchAll = useCallback(async () => {
     setLoading(true)
@@ -384,6 +394,7 @@ export default function AdminPage() {
   }
 
   return (
+    <ToastProvider>
     <div className="relative overflow-hidden">
       <div className="orb w-80 h-80 bg-accent-blue top-10 -right-24" />
       <div className="orb w-64 h-64 bg-purple-600 top-96 -left-32" />
@@ -460,89 +471,7 @@ export default function AdminPage() {
         <Container>
           {/* USUARIOS */}
           {tab === 'usuarios' && (
-            <div className="space-y-2 animate-fade-in">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-text-secondary text-sm">Usuarios registrados o que han accedido</p>
-                <div className="flex items-center gap-2">
-                  {usuarios.length > 0 && (
-                    <button onClick={() => downloadCSV(usuarios.map(u => ({ email: u.email, nombre: u.nombre, ultimo_acceso: u.last_login_at, creado: u.created_at })), 'usuarios')} className="flex items-center gap-1.5 px-3 py-1.5 bg-accent-blue/10 text-accent-blue rounded-lg text-[10px] font-medium">
-                      <Download className="w-3 h-3" /> CSV
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="glass rounded-2xl p-3 mb-3">
-                <p className="text-text-secondary text-xs mb-2">Control manual por email</p>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <input
-                    type="email"
-                    value={manualPremiumEmail}
-                    onChange={(e) => setManualPremiumEmail(e.target.value)}
-                    placeholder="usuario@email.com"
-                    className="flex-1 px-3 py-2 rounded-xl bg-dark-surface border border-dark-border text-white text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => void setPremiumByEmail('grant')}
-                    disabled={manualPremiumLoading}
-                    className="px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 disabled:opacity-60"
-                  >
-                    Dar premium
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => void setPremiumByEmail('revoke')}
-                    disabled={manualPremiumLoading}
-                    className="px-3 py-2 rounded-xl text-xs font-semibold bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 disabled:opacity-60"
-                  >
-                    Quitar premium
-                  </button>
-                </div>
-                {manualPremiumMsg && (
-                  <p className={`text-xs mt-2 ${manualPremiumMsg.type === 'ok' ? 'text-emerald-300' : 'text-rose-300'}`}>
-                    {manualPremiumMsg.text}
-                  </p>
-                )}
-              </div>
-              {usuarios.length === 0 ? (
-                <div className="glass rounded-2xl p-8 text-center">
-                  <Users className="w-10 h-10 text-text-muted mx-auto mb-3" />
-                  <p className="text-text-secondary text-sm">No hay usuarios registrados</p>
-                  <p className="text-text-muted text-xs mt-1">Se guardan al registrarse o acceder</p>
-                </div>
-              ) : (
-                usuarios.map((u) => (
-                  <div key={u.id} className="glass rounded-2xl p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center shrink-0">
-                      <Users className="w-5 h-5 text-accent-blue" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-medium truncate">{u.email}</p>
-                      <p className="text-text-muted text-xs">
-                        {u.nombre || '—'} · Último acceso: {u.last_login_at ? new Date(u.last_login_at).toLocaleDateString('es') : '—'}
-                      </p>
-                      <div className="mt-1 flex items-center gap-2">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full border ${u.is_premium ? 'text-emerald-300 border-emerald-500/30 bg-emerald-500/10' : 'text-text-muted border-white/10 bg-white/5'}`}>
-                          {u.is_premium ? 'Premium activo' : 'Free'}
-                        </span>
-                        <span className="text-[10px] text-text-muted">
-                          {u.subscription_status || 'none'}
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => updateUserPremium(u, !u.is_premium)}
-                      className={`px-2.5 py-2 rounded-lg text-[10px] font-semibold shrink-0 ${u.is_premium ? 'bg-amber-500/15 text-amber-300 hover:bg-amber-500/25' : 'bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25'}`}
-                    >
-                      {u.is_premium ? 'Quitar PRO' : 'Dar PRO'}
-                    </button>
-                    <button onClick={() => deleteItem('users', u.id)} className="p-2 rounded-lg hover:bg-red-500/10 text-text-muted hover:text-red-400 shrink-0">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
+            <AdminUsersPanel usuarios={usuarios} onRefetch={fetchAll} />
           )}
 
           {tab === 'payments' && (
@@ -1205,5 +1134,6 @@ export default function AdminPage() {
         </Container>
       </section>
     </div>
+    </ToastProvider>
   )
 }

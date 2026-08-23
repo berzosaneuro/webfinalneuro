@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabaseServiceRole } from '@/lib/supabase'
 import { requireUserOr401 } from '@/lib/api-auth'
+export { dynamic } from '@/lib/api-route-dynamic'
 
 export async function GET(request: Request) {
-  const auth = await requireUserOr401(request)
+  const auth = await requireUserOr401()
   if (auth.error) return auth.error
 
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
 
   const emailNorm = auth.email.trim().toLowerCase()

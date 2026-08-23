@@ -121,7 +121,7 @@ async function upsertUserByStripeIdentity(input: {
         subscription_status: input.subscriptionStatus,
         is_premium: input.isPremium,
       })
-      .eq('email', emailNorm)
+      .ilike('email', emailNorm)
       .select('id')
     if (upErrEmail) {
       console.error('[stripe webhook] update users por email falló', upErrEmail.message)
@@ -289,11 +289,10 @@ export async function POST(request: Request) {
     console.error('[stripe webhook] Falta STRIPE_WEBHOOK_SECRET')
   }
   if (!supabase) {
-    const urlOk = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL?.trim())
     const sr = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim())
     console.error(
-      '[stripe webhook] getSupabaseServiceRole() null — el webhook necesita SUPABASE_SERVICE_ROLE_KEY y NEXT_PUBLIC_SUPABASE_URL en Vercel (producción).',
-      { hasUrl: urlOk, hasServiceRoleKey: sr }
+      '[stripe webhook] getSupabaseServiceRole() null — el webhook necesita SUPABASE_SERVICE_ROLE_KEY en Vercel (producción).',
+      { hasServiceRoleKey: sr }
     )
   }
   if (!stripe || !secret || !supabase) {

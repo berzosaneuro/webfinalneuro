@@ -12,6 +12,9 @@ import { AdminProvider } from '@/context/AdminContext'
 import { UserProvider } from '@/context/UserContext'
 import { LoveModeProvider } from '@/context/LoveModeContext'
 import { LOVE_THEME_HINT_STORAGE_KEY, LOVE_THEME_HINT_VALUE } from '@/lib/personalized-ui'
+import { validateSupabaseEnv } from '@/lib/env-check'
+import CookieBanner from '@/components/CookieBanner'
+import AnalyticsLoader from '@/components/AnalyticsLoader'
 
 /** Ejecuta antes del paint para evitar flash de tema si hay sesión Love previa (hint en localStorage). */
 const loveThemeBootScript = `(function(){try{var k=localStorage.getItem(${JSON.stringify(LOVE_THEME_HINT_STORAGE_KEY)});if(k===${JSON.stringify(LOVE_THEME_HINT_VALUE)}){document.documentElement.setAttribute("data-theme","love");}}catch(e){}})();`
@@ -53,6 +56,7 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  validateSupabaseEnv()
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
@@ -73,6 +77,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Footer />
                 <BottomTabBar />
                 <EliasAssistant />
+                <CookieBanner />
+                <AnalyticsLoader />
               </PremiumProvider>
             </AdminProvider>
           </LoveModeProvider>

@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
+import { z } from 'zod'
+import { getSupabaseServiceRole } from '@/lib/supabase'
 import { requireAdminOr401 } from '@/lib/api-auth'
 import { isEmailNotificationConfigured, sendNotification } from '@/lib/mailer'
+
+const subscriberSchema = z.object({
+  email: z.string().email().max(320),
+  nombre: z.string().max(200).optional(),
+  source: z.string().max(100).optional(),
+  data: z.unknown().optional(),
+})
 
 function isMissingTableError(message: string): boolean {
   const lower = message.toLowerCase()
@@ -13,47 +21,44 @@ function isMissingColumnError(message: string): boolean {
   return lower.includes('does not exist') && lower.includes('column')
 }
 
-export async function GET(request: Request) {
-  const authError = await requireAdminOr401(request)
+export async function GET() {
+  const authError = await requireAdminOr401()
   if (authError) return authError
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
   const { data, error } = await supabase
     .from('subscribers')
     .select('*')
     .order('created_at', { ascending: false })
 
-  if (error) {
-    return NextResponse.json({ error: 'Error al cargar suscriptores' }, { status: 500 })
-  }
-
+  if (error) return NextResponse.json({ error: 'Error al cargar suscriptores' }, { status: 500 })
   return NextResponse.json(data)
 }
 
 export async function POST(request: Request) {
-  let body: { email?: string; nombre?: string; source?: string; data?: unknown }
-  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
-  const { email, nombre, source, data: extraData } = body
+  let raw: unknown
+  try { raw = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
+
+  const parsed = subscriberSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.flatten().fieldErrors }, { status: 400 })
+  }
+
+  const { email: rawEmail, nombre, source, data: extraData } = parsed.data
+  const emailNorm = rawEmail.trim().toLowerCase()
   const sourceFinal = source || 'registro'
 
-  if (!email || typeof email !== 'string' || !email.trim()) {
-    return NextResponse.json({ error: 'Email es obligatorio' }, { status: 400 })
-  }
-  const emailNorm = email.trim().toLowerCase()
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) {
     const emailed = await sendNotification(
-      `📬 Nuevo subscriber — ${emailNorm}`,
+      `Nuevo subscriber — ${emailNorm}`,
       `<h2>Nuevo suscriptor (modo respaldo email)</h2>
       <p><strong>Email:</strong> ${emailNorm}</p>
       ${nombre ? `<p><strong>Nombre:</strong> ${nombre}</p>` : ''}
       <p><strong>Origen:</strong> ${sourceFinal}</p>
-      <p><strong>Data:</strong> <code>${JSON.stringify(extraData || {})}</code></p>
       <p><strong>Almacenamiento:</strong> EMAIL_FALLBACK (sin Supabase)</p>`
     )
-    if (emailed) {
-      return NextResponse.json({ success: true, fallback: 'email' })
-    }
+    if (emailed) return NextResponse.json({ success: true, fallback: 'email' })
     const detail = isEmailNotificationConfigured()
       ? 'No se pudo enviar el respaldo por email'
       : 'Base de datos no configurada y SMTP no configurado'
@@ -62,45 +67,34 @@ export async function POST(request: Request) {
 
   const saveInLeadsFallback = async (sourceLabel: string): Promise<boolean> => {
     const { error } = await supabase.from('leads').insert({
-      email: emailNorm,
-      name: nombre || '',
-      source: `subscriber-${sourceLabel}`,
+      email: emailNorm, name: nombre || '', source: `subscriber-${sourceLabel}`,
     })
     return !error
   }
 
-  // Upsert: if email exists, update source and data
   const { data: existing, error: lookupError } = await supabase
     .from('subscribers')
     .select('id, sources')
-    .eq('email', emailNorm)
+    .ilike('email', emailNorm)
     .maybeSingle()
 
   if (lookupError) {
     if (isMissingTableError(lookupError.message)) {
-      if (await saveInLeadsFallback('missing-table')) {
-        return NextResponse.json({ success: true, fallback: 'leads' })
-      }
+      if (await saveInLeadsFallback('missing-table')) return NextResponse.json({ success: true, fallback: 'leads' })
     }
     return NextResponse.json({ error: lookupError.message }, { status: 500 })
   }
 
   if (existing) {
-    // Add new source to existing sources array
     const currentSources: string[] = existing.sources || []
-    const updatedSources = currentSources.includes(sourceFinal)
-      ? currentSources
-      : [...currentSources, sourceFinal]
+    const updatedSources = currentSources.includes(sourceFinal) ? currentSources : [...currentSources, sourceFinal]
 
-    const { error } = await supabase
-      .from('subscribers')
-      .update({
-        nombre: nombre || undefined,
-        sources: updatedSources,
-        extra_data: extraData || {},
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', existing.id)
+    const { error } = await supabase.from('subscribers').update({
+      nombre: nombre || undefined,
+      sources: updatedSources,
+      extra_data: extraData || {},
+      updated_at: new Date().toISOString(),
+    }).eq('id', existing.id)
 
     if (error) {
       if ((isMissingColumnError(error.message) || isMissingTableError(error.message)) && await saveInLeadsFallback('update-fallback')) {
@@ -108,16 +102,11 @@ export async function POST(request: Request) {
       }
       return NextResponse.json({ error: 'Error al actualizar suscriptor' }, { status: 500 })
     }
-
     return NextResponse.json({ success: true, updated: true })
   }
 
-  // New subscriber
   const { error } = await supabase.from('subscribers').insert({
-    email: emailNorm,
-    nombre: nombre || '',
-    sources: [sourceFinal],
-    extra_data: extraData || {},
+    email: emailNorm, nombre: nombre || '', sources: [sourceFinal], extra_data: extraData || {},
   })
 
   if (error) {

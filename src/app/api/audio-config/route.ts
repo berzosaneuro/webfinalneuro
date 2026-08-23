@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabaseServiceRole } from '@/lib/supabase'
 
 /** Solo tracks que existen en public/ — evita 404 y fallback a synth ruidoso */
 const KNOWN_VALID_TRACKS = [
@@ -36,7 +36,7 @@ function uniqueUrls(urls: Array<string | null | undefined>): string[] {
 }
 
 export async function GET() {
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json(DEFAULT_URLS)
   try {
     const { data } = await supabase.from('audio_config').select('slot, url').in('slot', SLOT_WHITELIST)

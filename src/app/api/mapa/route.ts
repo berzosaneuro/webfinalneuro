@@ -1,51 +1,62 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
+import { z } from 'zod'
+import { getSupabaseServiceRole } from '@/lib/supabase'
 import { requireUserOr401 } from '@/lib/api-auth'
 
-export async function GET(request: Request) {
-  const auth = await requireUserOr401(request)
+const dim = z.number().min(0).max(10)
+const mapaSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  dimensions: z.object({
+    presencia: dim.optional(),
+    calma: dim.optional(),
+    claridad: dim.optional(),
+    energia: dim.optional(),
+    conexion: dim.optional(),
+  }).optional(),
+  nota: z.string().max(2000).optional(),
+})
+
+export async function GET() {
+  const auth = await requireUserOr401()
   if (auth.error) return auth.error
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
-  const email = auth.email
 
   const { data, error } = await supabase
     .from('mapa_entries')
     .select('*')
-    .eq('user_email', email)
+    .eq('user_email', auth.email)
     .order('date', { ascending: true })
 
-  if (error) {
-    return NextResponse.json({ error: 'Error al cargar mapa' }, { status: 500 })
-  }
-
+  if (error) return NextResponse.json({ error: 'Error al cargar mapa' }, { status: 500 })
   return NextResponse.json(data)
 }
 
 export async function POST(request: Request) {
-  const auth = await requireUserOr401(request)
+  const auth = await requireUserOr401()
   if (auth.error) return auth.error
-  const supabase = getSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
-  let body: { email?: string; date?: string; dimensions?: Record<string, number>; nota?: string }
-  try { body = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
-  const { date, dimensions, nota } = body
 
-  if (!date) {
-    return NextResponse.json({ error: 'Fecha requerida' }, { status: 400 })
+  let raw: unknown
+  try { raw = await request.json() } catch { return NextResponse.json({ error: 'Cuerpo inválido' }, { status: 400 }) }
+
+  const parsed = mapaSchema.safeParse(raw)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.flatten().fieldErrors }, { status: 400 })
   }
-  const email = auth.email
 
-  const dims = dimensions && typeof dimensions === 'object'
-    ? {
-        presencia: Number(dimensions.presencia) || 5,
-        calma: Number(dimensions.calma) || 5,
-        claridad: Number(dimensions.claridad) || 5,
-        energia: Number(dimensions.energia) || 5,
-        conexion: Number(dimensions.conexion) || 5,
-      }
-    : { presencia: 5, calma: 5, claridad: 5, energia: 5, conexion: 5 }
-  const nivel = (dims.presencia + dims.calma + dims.claridad + dims.energia + dims.conexion) / 5
+  const { date, dimensions, nota } = parsed.data
+  const email = auth.email
+  const supabase = getSupabaseServiceRole()
+  if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
+
+  const dims = {
+    presencia: dimensions?.presencia ?? 5,
+    calma: dimensions?.calma ?? 5,
+    claridad: dimensions?.claridad ?? 5,
+    energia: dimensions?.energia ?? 5,
+    conexion: dimensions?.conexion ?? 5,
+  }
+  const nivel = Math.round(((dims.presencia + dims.calma + dims.claridad + dims.energia + dims.conexion) / 5) * 10) / 10
 
   const { data: existing } = await supabase
     .from('mapa_entries')
@@ -54,37 +65,15 @@ export async function POST(request: Request) {
     .eq('date', date)
     .single()
 
-  const entry = {
-    presencia: dims.presencia,
-    calma: dims.calma,
-    claridad: dims.claridad,
-    energia: dims.energia,
-    conexion: dims.conexion,
-    nivel: Math.round(nivel * 10) / 10,
-    nota: nota || '',
-  }
+  const entry = { ...dims, nivel, nota: nota || '' }
 
   if (existing) {
-    const { error } = await supabase
-      .from('mapa_entries')
-      .update(entry)
-      .eq('id', existing.id)
-
-    if (error) {
-      return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
-    }
+    const { error } = await supabase.from('mapa_entries').update(entry).eq('id', existing.id)
+    if (error) return NextResponse.json({ error: 'Error al actualizar' }, { status: 500 })
     return NextResponse.json({ success: true })
   }
 
-  const { error } = await supabase.from('mapa_entries').insert({
-    user_email: email,
-    date,
-    ...entry,
-  })
-
-  if (error) {
-    return NextResponse.json({ error: 'Error al guardar' }, { status: 500 })
-  }
-
+  const { error } = await supabase.from('mapa_entries').insert({ user_email: email, date, ...entry })
+  if (error) return NextResponse.json({ error: 'Error al guardar' }, { status: 500 })
   return NextResponse.json({ success: true })
 }

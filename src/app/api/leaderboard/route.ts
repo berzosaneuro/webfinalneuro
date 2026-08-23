@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getSupabase } from '@/lib/supabase'
+import { getSupabaseServiceRole } from '@/lib/supabase'
 
 const LEVELS = [
   'Dormido', 'Inquieto', 'Curioso', 'Buscador', 'Aprendiz',
@@ -36,7 +36,7 @@ function calcStreak(entries: { date: string; score: number }[]): number {
 }
 
 export async function GET(request: Request) {
-  const supabase = getSupabase()
+  const supabase = getSupabaseServiceRole()
   if (!supabase) return NextResponse.json({ error: 'Base de datos no configurada' }, { status: 503 })
 
   const { searchParams } = new URL(request.url)
