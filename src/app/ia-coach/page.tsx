@@ -83,7 +83,10 @@ export default function IACoachPage() {
       const coachMsg: Message = {
         id: `coach-${Date.now()}`,
         role: 'coach',
-        text: data.text || 'No he podido procesar tu mensaje. Inténtalo de nuevo.',
+        text:
+          res.status === 401
+            ? 'Para hablar conmigo necesitas una cuenta gratis — tarda menos de un minuto. Puedes crearla en /registro, o entrar en /acceder si ya la tienes.'
+            : data.text || 'No he podido procesar tu mensaje. Inténtalo de nuevo.',
         timestamp: new Date(),
       }
 

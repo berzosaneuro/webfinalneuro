@@ -72,7 +72,10 @@ export default function EliasChatPanel({ onClose, isMobile }: Props) {
       })
 
       const data = await res.json()
-      const reply = (data as { text?: string }).text || 'No he podido procesar tu mensaje. ¿Puedes reformularlo?'
+      const reply =
+        res.status === 401
+          ? 'Para hablar conmigo necesitas una cuenta gratis — tarda menos de un minuto. Puedes crearla en /registro, o entrar en /acceder si ya la tienes.'
+          : (data as { text?: string }).text || 'No he podido procesar tu mensaje. ¿Puedes reformularlo?'
 
       setMessages((prev) => [
         ...prev,
