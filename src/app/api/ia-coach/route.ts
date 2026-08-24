@@ -377,10 +377,10 @@ function getSmartResponse(input: string, progressSummary: string, history: { rol
 }
 
 export async function POST(request: Request) {
-  const { requireUserOr401 } = await import('@/lib/api-auth')
-  const auth = await requireUserOr401()
-  if (auth.error) return auth.error
-
+  // Abierto a cualquier visitante (con o sin cuenta) — es el gancho de marketing
+  // principal (enlaces de WhatsApp, etc.) y de momento no usa la API de pago por
+  // defecto, así que no hay coste real en dejarlo público. El rate limit de
+  // middleware.ts (SENSITIVE_PREFIXES) sigue aplicando para evitar abuso.
   let messages: { role: string; text: string }[] = []
   let progressContext = ''
   try {

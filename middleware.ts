@@ -33,6 +33,7 @@ const PUBLIC_API_PREFIXES = [
   '/api/audio-config',
   '/api/fcm-sw-config',
   '/api/debug/',
+  '/api/ia-coach',
 ]
 
 const PUBLIC_POST_ONLY = [
@@ -52,7 +53,6 @@ const USER_PROTECTED_API_PREFIXES = [
   '/api/stripe/payments',
   '/api/users/premium-status',
   '/api/elevenlabs',
-  '/api/ia-coach',
   '/api/community',
 ]
 
