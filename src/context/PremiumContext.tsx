@@ -10,9 +10,11 @@ interface PremiumContextType {
   isPremium: boolean
   isLoading: boolean
   subscriptionStatus: string | null
+  isMentoria: boolean
+  mentoriaStatus: string | null
   upgradeToPremium: () => void
   downgradeToFree: () => void
-  /** Sincroniza plan con la tabla `users` (fuente de verdad tras Stripe). */
+  /** Sincroniza plan con la tabla `users` (fuente de verdad tras Stripe). Premium + Mentoría, independientes. */
   syncPremiumFromDb: () => Promise<boolean>
   syncing: boolean
 }
@@ -22,6 +24,8 @@ const PremiumContext = createContext<PremiumContextType>({
   isPremium: false,
   isLoading: false,
   subscriptionStatus: null,
+  isMentoria: false,
+  mentoriaStatus: null,
   upgradeToPremium: () => {},
   downgradeToFree: () => {},
   syncPremiumFromDb: async () => false,
@@ -33,21 +37,31 @@ export function PremiumProvider({ children }: { children: ReactNode }) {
   const [plan, setPlan] = useState<Plan>('free')
   const [syncing, setSyncing] = useState(false)
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null)
+  const [isMentoria, setIsMentoria] = useState(false)
+  const [mentoriaStatus, setMentoriaStatus] = useState<string | null>(null)
 
   const syncPremiumFromDb = useCallback(async () => {
     const email = user?.email?.trim().toLowerCase()
     if (!email) {
       setPlan('free')
+      setIsMentoria(false)
       return false
     }
     setSyncing(true)
     try {
       const res = await fetch('/api/users/premium-status')
       if (!res.ok) return plan === 'premium'
-      const data = (await res.json()) as { is_premium?: boolean; subscription_status?: string | null }
+      const data = (await res.json()) as {
+        is_premium?: boolean
+        subscription_status?: string | null
+        is_mentoria?: boolean
+        mentoria_status?: string | null
+      }
       const premium = data?.is_premium === true
       setPlan(premium ? 'premium' : 'free')
       setSubscriptionStatus(data?.subscription_status ?? null)
+      setIsMentoria(data?.is_mentoria === true)
+      setMentoriaStatus(data?.mentoria_status ?? null)
       return premium
     } catch {
       // Mantener último estado conocido para evitar "falsos free" por red/webhook lento.
@@ -89,6 +103,8 @@ export function PremiumProvider({ children }: { children: ReactNode }) {
         isPremium: plan === 'premium',
         isLoading: syncing,
         subscriptionStatus,
+        isMentoria,
+        mentoriaStatus,
         upgradeToPremium,
         downgradeToFree,
         syncPremiumFromDb,

@@ -11,6 +11,8 @@ export async function GET(request: Request) {
   return NextResponse.json({
     is_premium: status?.isPremium === true,
     subscription_status: status?.subscriptionStatus ?? null,
+    is_mentoria: status?.isMentoria === true,
+    mentoria_status: status?.mentoriaStatus ?? null,
     user_id: status?.userId ?? null,
   })
 }

@@ -147,16 +147,19 @@ create unique index if not exists users_email_unique on users (lower(email));
 -- 11b. Rol de usuario (idempotente)
 alter table users add column if not exists role text not null default 'user';
 
--- 11c. Stripe / Premium (idempotente; ejecutar también en BD ya existentes)
+-- 11c. Stripe / Premium + Mentoría (productos independientes; idempotente)
 alter table users add column if not exists stripe_customer_id text;
-alter table users add column if not exists subscription_status text default 'none';
-alter table users add column if not exists is_premium boolean default false;
+alter table users add column if not exists subscription_status text not null default 'none'; -- estado Premium
+alter table users add column if not exists is_premium boolean not null default false;
+alter table users add column if not exists is_mentoria boolean not null default false;
+alter table users add column if not exists mentoria_status text not null default 'none';
 create index if not exists users_stripe_customer_id_idx on users (stripe_customer_id) where stripe_customer_id is not null;
 
--- 11c. Suscripciones / pagos Stripe (auditoría operacional)
+-- 11c. Suscripciones / pagos Stripe (auditoría operacional). `product` = 'premium' | 'mentoria'.
 create table if not exists subscriptions (
   id uuid default gen_random_uuid() primary key,
   user_email text not null,
+  product text not null default 'premium',
   stripe_customer_id text not null,
   stripe_subscription_id text not null unique,
   status text not null default 'incomplete',
@@ -168,10 +171,12 @@ create table if not exists subscriptions (
 );
 create index if not exists subscriptions_user_email_idx on subscriptions (lower(user_email));
 create index if not exists subscriptions_customer_idx on subscriptions (stripe_customer_id);
+create index if not exists subscriptions_product_idx on subscriptions (product);
 
 create table if not exists payments (
   id uuid default gen_random_uuid() primary key,
   user_email text not null,
+  product text not null default 'premium',
   stripe_customer_id text not null,
   stripe_subscription_id text default '',
   stripe_invoice_id text not null unique,

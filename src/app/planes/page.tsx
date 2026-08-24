@@ -70,7 +70,7 @@ const tiers = [
     icon: Star,
     color: 'text-rose-400',
     bgColor: 'bg-rose-500/10',
-    soon: true,
+    soon: false,
     features: [
       { name: 'Todo Premium incluido', included: true },
       { name: 'Seguimiento del programa 21 días', included: true },
@@ -90,12 +90,14 @@ const tiers = [
   },
 ]
 
+type CheckoutProduct = 'premium' | 'mentoria'
+
 export default function PlanesPage() {
-  const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState<CheckoutProduct | null>(null)
   const [verifyingPayment, setVerifyingPayment] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
   const { user } = useUser()
-  const { isPremium, refreshSubscription, syncing, subscriptionStatus } = useSubscription()
+  const { isPremium, isMentoria, refreshSubscription, syncing, subscriptionStatus } = useSubscription()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -127,17 +129,17 @@ export default function PlanesPage() {
     }
   }, [refreshSubscription])
 
-  const startPremiumCheckout = async () => {
+  const startCheckout = async (product: CheckoutProduct) => {
     if (!user?.email?.trim()) {
       window.location.href = '/acceder'
       return
     }
-    setCheckoutLoading(true)
+    setCheckoutLoading(product)
     try {
       const res = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email.trim() }),
+        body: JSON.stringify({ product }),
       })
       const data = (await res.json()) as { url?: string; error?: string }
       if (data.url) {
@@ -148,7 +150,7 @@ export default function PlanesPage() {
     } catch {
       window.alert('Error de conexión. Inténtalo de nuevo.')
     } finally {
-      setCheckoutLoading(false)
+      setCheckoutLoading(null)
     }
   }
 
@@ -186,9 +188,9 @@ export default function PlanesPage() {
             Gratis para empezar. Premium para el hábito completo. Mentoría cuando quieres cercanía directa.
           </p>
 
-          <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full text-sm font-medium" style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)' }}>
-            <Clock className="w-4 h-4 text-amber-400" />
-            <span className="text-amber-200/90">Mentoría: lista de espera — Premium disponible con suscripción mensual</span>
+          <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full text-sm font-medium" style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)' }}>
+            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <span className="text-emerald-200/90">Premium y Mentoría disponibles con suscripción mensual</span>
           </div>
         </div>
 
@@ -199,7 +201,7 @@ export default function PlanesPage() {
                 tier.popular
                   ? 'border-[#0066FF]/40 bg-dark-surface ring-1 ring-[#0066FF]/20'
                   : 'border-dark-border bg-dark-surface/50 hover:border-white/10'
-              } ${(tier.popular || tier.soon || (tier.name === 'Premium' && !tier.soon && !isPremium)) ? 'pt-12 md:pt-14' : ''}`}>
+              } ${(tier.popular || tier.soon || (tier.name === 'Premium' && !isPremium) || (tier.name === 'Mentoría' && !isMentoria)) ? 'pt-12 md:pt-14' : ''}`}>
                 {tier.popular && (
                   <div className="absolute top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#0066FF] text-white text-xs font-semibold rounded-full z-20 whitespace-nowrap">
                     Más popular
@@ -210,7 +212,12 @@ export default function PlanesPage() {
                     <Clock className="w-3 h-3" /> Próximamente
                   </div>
                 )}
-                {tier.name === 'Premium' && !tier.soon && !isPremium && (
+                {tier.name === 'Premium' && !isPremium && (
+                  <div className="absolute top-10 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 z-20 whitespace-nowrap max-w-[calc(100%-1.5rem)]">
+                    Suscripción mensual
+                  </div>
+                )}
+                {tier.name === 'Mentoría' && !isMentoria && (
                   <div className="absolute top-10 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 z-20 whitespace-nowrap max-w-[calc(100%-1.5rem)]">
                     Suscripción mensual
                   </div>
@@ -256,16 +263,38 @@ export default function PlanesPage() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => void startPremiumCheckout()}
-                      disabled={checkoutLoading || syncing || verifyingPayment}
+                      onClick={() => void startCheckout('premium')}
+                      disabled={checkoutLoading !== null || syncing || verifyingPayment}
                       className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform bg-[#0066FF] text-white disabled:opacity-60"
                     >
-                      {checkoutLoading ? (
+                      {checkoutLoading === 'premium' ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <>
                           <Crown className="w-4 h-4" />
                           Pasar a Premium
+                        </>
+                      )}
+                    </button>
+                  )
+                ) : !tier.soon && tier.name === 'Mentoría' ? (
+                  isMentoria ? (
+                    <div className="w-full py-3 rounded-xl bg-emerald-500/15 text-emerald-400 font-bold text-center text-sm border border-emerald-500/20">
+                      Ya eres Mentoría
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => void startCheckout('mentoria')}
+                      disabled={checkoutLoading !== null || syncing || verifyingPayment}
+                      className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-transform bg-rose-500 text-white disabled:opacity-60"
+                    >
+                      {checkoutLoading === 'mentoria' ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Star className="w-4 h-4" />
+                          Pasar a Mentoría
                         </>
                       )}
                     </button>
@@ -281,14 +310,16 @@ export default function PlanesPage() {
                     Próximamente
                   </button>
                 )}
-                {!tier.soon && tier.name === 'Premium' && !isPremium && !user?.email && (
-                  <p className="text-center text-text-muted text-xs mt-2">
-                    <Link href="/acceder" className="text-accent-blue hover:underline">
-                      Accede con tu email
-                    </Link>{' '}
-                    para suscribirte.
-                  </p>
-                )}
+                {!tier.soon && (tier.name === 'Premium' || tier.name === 'Mentoría') &&
+                  !(tier.name === 'Premium' ? isPremium : isMentoria) &&
+                  !user?.email && (
+                    <p className="text-center text-text-muted text-xs mt-2">
+                      <Link href="/acceder" className="text-accent-blue hover:underline">
+                        Accede con tu email
+                      </Link>{' '}
+                      para suscribirte.
+                    </p>
+                  )}
               </div>
             </FadeInSection>
           ))}

@@ -4,10 +4,12 @@ export type UserSubscriptionStatus = {
   userId: string
   isPremium: boolean
   subscriptionStatus: string | null
+  isMentoria: boolean
+  mentoriaStatus: string | null
 }
 
 /**
- * Single source of truth de suscripción premium.
+ * Single source of truth de suscripción (Premium + Mentoría, independientes).
  * Solo servidor: lee estado real desde users por userId.
  */
 export async function getUserSubscriptionStatus(userId: string): Promise<UserSubscriptionStatus | null> {
@@ -19,7 +21,7 @@ export async function getUserSubscriptionStatus(userId: string): Promise<UserSub
 
   const { data, error } = await supabase
     .from('users')
-    .select('id, is_premium, subscription_status')
+    .select('id, is_premium, subscription_status, is_mentoria, mentoria_status')
     .eq('id', id)
     .maybeSingle()
 
@@ -29,6 +31,8 @@ export async function getUserSubscriptionStatus(userId: string): Promise<UserSub
     userId: data.id as string,
     isPremium: Boolean(data.is_premium),
     subscriptionStatus: (data.subscription_status as string | null) ?? null,
+    isMentoria: Boolean(data.is_mentoria),
+    mentoriaStatus: (data.mentoria_status as string | null) ?? null,
   }
 }
 
