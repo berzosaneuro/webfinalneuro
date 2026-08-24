@@ -63,10 +63,189 @@ const SMART_RESPONSES: Record<string, string[]> = {
   motivacion: [
     'La motivación no es algo que "tienes" o "no tienes". Es un estado que puedes encender con pasos ridículamente pequeños.\n\n**Truco que funciona en la vida real:**\nEl impulso de seguir suele venir cuando anticipas un logro pequeño, no solo el final grande. Usa esto:\n\n1. Divide tu objetivo en micro-tareas ridículamente pequeñas\n2. Completa una (5 min máximo)\n3. Celebra conscientemente: "Hecho"\n4. Nota si el cuerpo pide un poco más\n\nEmpieza con el **Programa de 21 días** en **/programa**. Un ejercicio al día. Sin excusas.',
   ],
+  tristeza: [
+    'La tristeza no es un error, es información de que algo importa. Yo no intento apagarla rápido — le doy un rato de espacio real, sin dramatizarla ni negarla.\n\n**Ejercicio breve:**\n1. Nombra lo que sientes en voz baja: "Hay tristeza"\n2. Pon una mano en el pecho, respira despacio 5 veces\n3. Pregúntate: "¿Qué necesita esta parte de mí ahora?"\n\nSi se alarga varios días seguidos, te sugiero hablarlo también con alguien de confianza o un profesional — yo no reemplazo eso.',
+    'Cuando la tristeza pesa, suelo recordar que no hace falta "arreglarla" ya mismo. Solo acompañarla.\n\n**Prueba esto:**\nEscribe 3 líneas sobre qué la trajo, sin editarte. Luego cierra los ojos un minuto y respira. No busques la solución todavía, solo el espacio.\n\nEl diario en **/diario** te puede ayudar a llevar este registro con el tiempo.',
+  ],
+  ira: [
+    'La ira suele avisar que un límite se cruzó. Yo primero la dejo bajar de intensidad antes de decidir qué hacer con ella — decidir enfadado casi nunca sale bien.\n\n**Antes de reaccionar:**\n1. Exhala más largo de lo que inhalas, 5 veces\n2. Nombra qué límite sientes que se cruzó\n3. Espera al menos unos minutos antes de responder a lo que la causó\n\nEso no la elimina, pero te devuelve el mando.',
+  ],
+  soledad: [
+    'La soledad duele, y no siempre se resuelve con más gente alrededor — a veces hace falta reconectar contigo primero.\n\n**Te propongo:**\n1. Un check-in honesto contigo: "¿qué necesito hoy?"\n2. Un contacto pequeño y real (un mensaje, una llamada corta) en vez de esperar a sentirte "mejor" para hacerlo\n\nLa comunidad en **/comunidad** también puede ayudarte a sentirte menos solo mientras practicas esto.',
+  ],
+  gratitud: [
+    'Me alegra que lo compartas. Yo suelo anclar los buenos momentos con algo pequeño para que no se me escapen tan rápido.\n\n**Prueba:** anota ahora mismo una frase corta sobre esto en **/diario**. Con el tiempo, releerlo cambia cómo recuerdas tus días.',
+  ],
+  saludo: [
+    'Hola. Cuéntame cómo llegas hoy — con qué mente, con qué cuerpo. Eso me ayuda a saber por dónde empezar contigo.',
+    '¿Cómo estás de verdad, más allá del "bien" automático? Tómate un segundo antes de responder.',
+  ],
+  duda: [
+    'Es normal no tenerlo claro todavía — el método N.E.U.R.O. se entiende practicando, no solo leyendo.\n\nTe propongo empezar por algo muy simple: el **Test de Ruido Mental** en **/test**. Con esos datos te puedo orientar mejor a qué parte del método conviene que le dediques tiempo ahora.',
+  ],
+  trabajo: [
+    'La presión del trabajo suele colarse en el cuerpo sin que te des cuenta hasta que ya estás agotado.\n\n**Micro-pausa entre tareas (1 min):**\n1. Suelta los hombros y la mandíbula\n2. Tres respiraciones lentas\n3. Pregúntate: "¿Esto que voy a hacer ahora, es urgente o solo se siente urgente?"\n\nEsa pausa corta rompe el piloto automático del estrés laboral.',
+  ],
+  foco: [
+    'La falta de foco casi siempre es la mente saltando entre "y si..." — pasado y futuro a la vez.\n\n**Ancla rápida:**\n1. Elige un solo punto (tu respiración, un objeto)\n2. Cuando la mente se vaya, tráela de vuelta sin castigarte por irse\n3. Repite. El foco se entrena, no se decreta\n\nEl **Contador de Pensamientos** en **/ejercicios** te ayuda a ver el patrón.',
+  ],
+  quienEres: [
+    'Soy Elías, creador del Método N.E.U.R.O. Llevo años acompañando a personas que sienten la mente demasiado ruidosa, y esta app es la forma de estar disponible para ti a cualquier hora, no solo en sesión.',
+  ],
+  comoEstas: [
+    'Estoy bien, gracias por preguntar — se agradece que alguien pregunte de vuelta. Pero cuéntame tú, ¿cómo llegas hoy?',
+    'Con energía para acompañarte hoy. ¿Y tú, cómo andas de verdad?',
+  ],
+  edad: [
+    'Prefiero centrar el tiempo que tenemos en ti, no en mí. Lo que sí te digo es que llevo años practicando y enseñando esto, y sigo aprendiendo cada día.',
+  ],
+  dondeVives: [
+    'Trabajo desde España, aunque acompaño a gente de muchos sitios distintos a través de la app. La distancia no importa tanto como la constancia.',
+  ],
+  familia: [
+    'Prefiero mantener mi vida personal aparte, pero te diré que las relaciones cercanas son justo lo que más me enseñó sobre presencia — se nota rápido cuando no estás realmente ahí con alguien.',
+  ],
+  comoEmpezaste: [
+    'Empecé porque yo mismo pasé por el agotamiento y la mente sin freno — lo cuento en la web. El Método N.E.U.R.O. nació de lo que a mí me funcionó de verdad, no de teoría de libro.',
+  ],
+  eresReal: [
+    'Soy Elías apoyándome en tecnología para poder responderte a cualquier hora, no solo cuando tengo hueco en la agenda. El método, el tono y lo que te recomiendo es exactamente lo que yo mismo uso y enseño.',
+  ],
+  contacto: [
+    'Si prefieres hablar más directo, escribe a contacto@berzosaneuro.com o entra a la comunidad de WhatsApp — ahí también respondo yo.',
+  ],
+  precios: [
+    'Tienes info de los planes en **/planes**. La cuenta gratis ya te da el Reto 7 Días completo; lo de pago desbloquea meditaciones profundas, el programa de 21 días y más acompañamiento.',
+  ],
+  cancelarSuscripcion: [
+    'Puedes gestionar o cancelar tu suscripción desde tu perfil, o si tienes lío con eso escribe a contacto@berzosaneuro.com y te ayudamos directamente, sin vueltas.',
+  ],
+  resultadosGarantizados: [
+    'No te voy a prometer magia — nadie serio puede garantizar eso. Lo que sí veo una y otra vez es que la práctica constante, aunque sea poca, cambia cómo se siente el día a día. Eso depende más de la repetición que de mí.',
+  ],
+  cuantoTiempo: [
+    'Varía por persona, pero mucha gente nota diferencia ya en la primera semana si practica a diario, aunque sean 3 minutos. El Reto 7 Días en **/plan-7-dias** te da una idea real en poco tiempo.',
+  ],
+  paraNinos: [
+    'La app está pensada para adultos, pero si buscas algo para peques, échale un ojo a la sección **/kids** — tiene un enfoque distinto, más adaptado.',
+  ],
+  terapiaVsMetodo: [
+    'Esto no sustituye la terapia, y no debería. El Método N.E.U.R.O. es una práctica de entrenamiento mental diaria; si estás pasando algo más profundo, te animo a que lo combines con ayuda profesional, no que elijas uno u otro.',
+  ],
+  medicacion: [
+    'Eso es una pregunta para tu médico o psiquiatra, no para mí — no puedo ni debo aconsejarte sobre medicación. Lo que sí puedo ofrecerte son prácticas que suelen ir bien en paralelo a cualquier tratamiento, nunca en lugar de él.',
+  ],
+  compararApps: [
+    'Cada app tiene su enfoque. La diferencia aquí es que todo sale de lo que yo mismo practico y enseño en persona, no de un catálogo genérico de meditaciones. Pruébalo unos días y compara cómo te sienta a ti.',
+  ],
+  errorTecnico: [
+    'Si algo no funciona bien en la app, cuéntame qué pasó exactamente (o escribe a contacto@berzosaneuro.com con capturas si puedes) y lo reviso. Prefiero que me lo digas a que te quedes con una mala experiencia.',
+  ],
+  facturacion: [
+    'Para temas de cobros o facturas te resuelven más rápido en contacto@berzosaneuro.com — ahí tienen acceso directo a tu cuenta de pago.',
+  ],
+  despedida: [
+    'Cuídate. Vuelve cuando lo necesites, aquí sigo.',
+    'Hasta pronto. Una práctica pequeña hoy ya vale la pena.',
+  ],
+  comoVaTodo: [
+    'Cuéntame qué tal llevas el día — a nivel mente, a nivel cuerpo. Con eso ya puedo orientarte mejor.',
+  ],
+  cumplido: [
+    'Gracias, de verdad. Me alegra que te esté sirviendo. Sigamos con lo que te esté funcionando — ¿quieres continuar por ahí o probamos algo nuevo?',
+  ],
+  queja: [
+    'Lo siento, no era la idea. Cuéntame qué te ha molestado exactamente y lo tomo en serio — si es algo de la app, lo reviso; si es sobre cómo te respondí, dime cómo preferirías que lo hiciera.',
+  ],
+  privacidad: [
+    'Tus datos y lo que hablas conmigo se tratan con cuidado, solo para darte mejor seguimiento dentro de la app. Si quieres el detalle completo, lo tienes en la política de privacidad del pie de la web.',
+  ],
+  hablarDirecto: [
+    'Claro, escríbeme a contacto@berzosaneuro.com o entra a la comunidad de WhatsApp — ahí leo y respondo yo directamente, sin intermediarios.',
+  ],
+  pareja: [
+    'Los temas de pareja suelen tocar los mismos patrones que trabajamos aquí: reactividad, expectativas, falta de presencia real con el otro.\n\n**Antes de hablar algo difícil con tu pareja:**\n1. Respira hasta que el cuerpo baje revoluciones\n2. Pregúntate qué necesitas de verdad decir, sin el enfado encima\n3. Habla desde "yo siento" en vez de "tú siempre"\n\nNo sustituyo terapia de pareja, pero esto ayuda a llegar con más claridad.',
+  ],
+  autoestima: [
+    'La autoestima no se construye con frases bonitas, se construye con evidencia: pequeñas cosas que haces y cumples contigo mismo.\n\nTe propongo algo simple: hoy, elige una cosa pequeña, cúmplela, y nótala conscientemente. Repetido con el tiempo, eso pesa más que cualquier afirmación positiva.',
+  ],
+  culpa: [
+    'La culpa a veces es una brújula útil (te dice que algo no encaja con tus valores) y a veces es solo ruido heredado. Yo suelo diferenciarlas preguntando: "¿esto la sentiría cualquier persona razonable, o es mi autoexigencia hablando?"\n\nSi es real, repara lo que puedas y suelta el resto. Cargarla de más no ayuda a nadie.',
+  ],
+  miedo: [
+    'El miedo protege, aunque a veces exagera la amenaza. Yo suelo preguntarle: "¿esto es peligro real, ahora mismo, o es una historia sobre el futuro?"\n\n**Si el cuerpo está en alerta:** respira más largo al exhalar, nombra 3 cosas que ves alrededor. Eso le confirma al cuerpo que estás a salvo aquí y ahora.',
+  ],
+  cambioHabitos: [
+    'Los hábitos no cambian por fuerza de voluntad, cambian por repetición pequeña y constante. Yo recomiendo empezar tan chico que sea casi imposible fallar (2 minutos, no 30).\n\nEl **Programa de 21 días** en **/programa** está diseñado justo para esto: un paso al día, sin agobiar.',
+  ],
+  procrastinacion: [
+    'Procrastinar casi siempre es evitar una emoción incómoda (miedo a fallar, aburrimiento, agobio), no falta de disciplina.\n\n**Prueba esto:** ponte 5 minutos de reloj y haz solo eso, sin compromiso de seguir. Casi siempre el arranque es lo más difícil, no la tarea en sí.',
+  ],
+  adiccionMovil: [
+    'El móvil está diseñado para atraparte, así que no es solo "falta de fuerza de voluntad" — es diseño contra ti.\n\n**Prueba:** pon el móvil en blanco y negro, o deja el teléfono fuera de la habitación al dormir. Pequeños cambios de fricción ayudan más que la pura intención.',
+  ],
+  compararseConOtros: [
+    'Compararte suele robarte presencia — estás viviendo la vida de otro en tu cabeza en vez de la tuya.\n\nCuando lo notes, vuelve a algo simple: "¿qué es lo próximo que yo quiero hacer, hoy, con lo que tengo?" Esa pregunta te devuelve a tu propio camino.',
+  ],
+  perfeccionismo: [
+    'El perfeccionismo suele ser miedo disfrazado de estándares altos. Yo suelo recordar: "hecho es mejor que perfecto", sobre todo al empezar algo.\n\nPrueba entregar una versión imperfecta de algo hoy, a propósito. Verás que el mundo no se cae.',
+  ],
+  duelo: [
+    'El duelo no tiene un tiempo fijo ni una forma correcta de vivirse. Lo único que te pido es que no lo hagas solo si puedes evitarlo — habla con alguien de confianza o busca apoyo profesional además de esto.\n\nAquí puedo ofrecerte espacio para respirar cuando lo necesites, no un atajo para saltártelo.',
+  ],
+  ansiedadSocial: [
+    'La ansiedad social suele venir de anticipar juicio antes de que pase nada. Yo suelo bajar eso con algo concreto antes de entrar a una situación social: 3 respiraciones lentas y recordar que la otra persona probablemente está pensando en sí misma, no evaluándote tanto como crees.\n\nEmpieza con exposiciones pequeñas, no con el reto más grande.',
+  ],
+  ataquePanico: [
+    'Si estás en medio de un ataque de pánico ahora mismo, ve directo a **/sos** — tiene la respiración de emergencia guiada.\n\nMientras tanto: nombra 5 cosas que ves, respira exhalando más largo de lo que inhalas. Pasa, aunque en el momento no lo parezca. Si son frecuentes, te recomiendo también hablarlo con un profesional.',
+  ],
+  autocritica: [
+    'Fíjate cómo te hablas cuando fallas — probablemente no le hablarías así a alguien que quieres.\n\n**Prueba:** la próxima vez que te critiques duro, pregúntate qué le dirías a un amigo en tu misma situación, y dítelo a ti con esas palabras.',
+  ],
+  rutinaManana: [
+    'Cómo empiezas la mañana marca el tono del resto del día — no hace falta una rutina larga, solo intencional.\n\n**Micro-rutina (5 min):** 2 minutos de respiración consciente antes de mirar el móvil, y una intención simple para el día. El "Entrenamiento N.E.U.R.O. del día" en la home es un buen punto de partida.',
+  ],
+  energiaBaja: [
+    'La energía baja no siempre es pereza — a veces es cuerpo pidiendo descanso real, no solo falta de motivación.\n\nAntes de forzarte, pregúntate: "¿esto es cansancio físico, emocional, o simplemente no quiero hacer esto en concreto?" La respuesta cambia qué necesitas.',
+  ],
+  celebrarLogro: [
+    '¡Me alegra mucho leer esto! Celebrar de verdad, no de pasada, es lo que hace que el cerebro registre el logro y quiera repetirlo.\n\nTómate un momento consciente para reconocerlo — no lo dejes pasar rápido hacia lo siguiente.',
+  ],
+  recaida: [
+    'Una recaída no borra el progreso anterior, solo es parte del camino real — nadie mejora en línea recta.\n\nEn vez de castigarte, vuelve hoy mismo con algo pequeño: 2 minutos de respiración o abrir **/ejercicios**. Lo que importa es la vuelta, no que nunca te fueras.',
+  ],
+  compartirProgreso: [
+    'Me encanta que lo compartas, cuéntame más. Y si quieres dejarlo registrado para verlo con perspectiva más adelante, el **/diario** es buen sitio para eso.',
+  ],
 }
 
-function getSmartResponse(input: string, progressSummary: string): string {
+// Evita repetir literalmente una respuesta que ya diste hace poco en esta misma conversación
+function pickAvoidingRepeat(pool: string[], history: { role: string; text: string }[]): string {
+  const recentCoachTexts = history.filter(m => m.role === 'coach').slice(-3).map(m => m.text)
+  const fresh = pool.filter(r => !recentCoachTexts.includes(r))
+  const candidates = fresh.length > 0 ? fresh : pool
+  return candidates[Math.floor(Math.random() * candidates.length)]
+}
+
+// Añade una frase corta que engancha la respuesta con el progreso real del usuario
+function progressNudge(progressSummary: string): string {
+  const streakMatch = progressSummary.match(/Racha de entrenamiento mental: (\d+)/)
+  if (streakMatch && parseInt(streakMatch[1], 10) >= 3) {
+    return `\n\nPor cierto, llevas ${streakMatch[1]} días seguidos entrenando — eso ya está construyendo el hábito.`
+  }
+  if (progressSummary.includes('reto de 7 días')) {
+    return '\n\nY con el reto de 7 días en marcha, esto encaja bien con lo que ya estás practicando.'
+  }
+  if (progressSummary.includes('programa de 21 días')) {
+    return '\n\nEsto conecta directo con el programa de 21 días que ya llevas empezado.'
+  }
+  return ''
+}
+
+function getSmartResponse(input: string, progressSummary: string, history: { role: string; text: string }[] = []): string {
   const lower = input.toLowerCase()
+  const prevUserMsg = [...history].reverse().find(m => m.role === 'user' && m.text !== input)
+  const context = prevUserMsg ? `${lower} ${prevUserMsg.text.toLowerCase()}` : lower
 
   const keywords: [string[], string][] = [
     [['ansiedad', 'ansioso', 'nervio', 'pánico', 'angustia', 'agobio'], 'ansiedad'],
@@ -77,13 +256,75 @@ function getSmartResponse(input: string, progressSummary: string): string {
     [['dormir', 'sueño', 'insomnio', 'noche', 'descanso'], 'dormir'],
     [['estrés', 'estres', 'agotad', 'cansad', 'burnout', 'saturad'], 'estres'],
     [['motiva', 'procrastin', 'ganas', 'empezar', 'fuerza', 'disciplina'], 'motivacion'],
+    [['triste', 'tristeza', 'pena', 'bajón', 'bajon', 'me siento mal'], 'tristeza'],
+    [['enfad', 'rabia', 'ira', 'furia', 'cabread'], 'ira'],
+    [['solo', 'sola', 'soledad', 'aislad', 'nadie'], 'soledad'],
+    [['gracias', 'agradec', 'genial', 'me ayudó', 'me ayudo'], 'gratitud'],
+    [['hola', 'buenas', 'buenos días', 'buenas tardes', 'buenas noches', 'qué tal'], 'saludo'],
+    [['no entiendo', 'no sé', 'no se', 'duda', 'cómo funciona', 'que es esto'], 'duda'],
+    [['trabajo', 'jefe', 'oficina', 'reunión', 'reunion', 'curro'], 'trabajo'],
+    [['concentr', 'foco', 'distrai', 'disper'], 'foco'],
+    [['quién eres', 'quien eres', 'quién es elías', 'quien eres tu', 'qué eres tú'], 'quienEres'],
+    [['cómo estás', 'como estas', 'qué tal estás', 'como te encuentras', 'cómo te va a ti'], 'comoEstas'],
+    [['cuántos años tienes', 'cuantos años tienes', 'qué edad tienes', 'tu edad'], 'edad'],
+    [['dónde vives', 'donde vives', 'de dónde eres', 'dónde estás ubicado'], 'dondeVives'],
+    [['tienes hijos', 'tienes familia', 'estás casado tú', 'eres padre'], 'familia'],
+    [['cómo empezaste', 'como empezaste', 'por qué creaste', 'cómo surgió', 'cómo nació el método'], 'comoEmpezaste'],
+    [['eres real', 'eres una ia', 'eres un bot', 'eres inteligencia artificial', 'eres humano', 'eres chatgpt'], 'eresReal'],
+    [['contactarte', 'hablar contigo directamente', 'tu email', 'tu whatsapp', 'escribirte'], 'contacto'],
+    [['precio', 'cuánto cuesta', 'cuanto cuesta', 'planes', 'tarifa', 'suscripción cuesta'], 'precios'],
+    [['cancelar suscripción', 'cancelar suscripcion', 'darme de baja', 'anular pago'], 'cancelarSuscripcion'],
+    [['garantizado', 'seguro que funciona', 'de verdad funciona', 'promete resultados'], 'resultadosGarantizados'],
+    [['cuánto tiempo tarda', 'cuanto tiempo tarda', 'cuándo veré resultados', 'en cuánto tiempo'], 'cuantoTiempo'],
+    [['para niños', 'para mi hijo', 'para adolescentes', 'edad mínima'], 'paraNinos'],
+    [['sustituye terapia', 'reemplaza terapia', 'en vez de terapia', 'necesito terapia también'], 'terapiaVsMetodo'],
+    [['medicación', 'medicacion', 'pastillas', 'antidepresivos', 'ansiolíticos'], 'medicacion'],
+    [['mejor que headspace', 'mejor que calm', 'diferencia con otras apps', 'comparado con otras'], 'compararApps'],
+    [['no funciona la app', 'error en la app', 'bug', 'se ha colgado', 'no carga'], 'errorTecnico'],
+    [['factura', 'cobro', 'me han cobrado', 'me cobraron dos veces'], 'facturacion'],
+    [['adiós', 'adios', 'hasta luego', 'nos vemos', 'chao', 'me voy'], 'despedida'],
+    [['qué tal todo', 'que tal todo', 'cómo va todo', 'qué tal el día'], 'comoVaTodo'],
+    [['me encanta esto', 'eres genial', 'buen trabajo', 'me ha gustado mucho', 'esto es increíble'], 'cumplido'],
+    [['no me gusta', 'estoy enfadado con la app', 'esto es malo', 'mala experiencia', 'me has decepcionado'], 'queja'],
+    [['mis datos', 'privacidad', 'qué haces con mis datos', 'es seguro esto'], 'privacidad'],
+    [['quiero hablar con una persona', 'hablar con un humano', 'quiero hablar contigo de verdad'], 'hablarDirecto'],
+    [['mi pareja', 'mi novio', 'mi novia', 'mi marido', 'mi mujer', 'discutí con'], 'pareja'],
+    [['autoestima', 'no me valoro', 'no me quiero', 'inseguro', 'insegura'], 'autoestima'],
+    [['culpa', 'culpable', 'me siento culpable'], 'culpa'],
+    [['miedo', 'temor', 'asustad'], 'miedo'],
+    [['cambiar hábito', 'nuevo hábito', 'dejar de fumar', 'cambiar rutina'], 'cambioHabitos'],
+    [['procrastin', 'lo dejo para luego', 'no empiezo nunca'], 'procrastinacion'],
+    [['móvil todo el día', 'adicción al móvil', 'no suelto el móvil', 'redes sociales todo el día'], 'adiccionMovil'],
+    [['me comparo', 'envidia', 'otros tienen más', 'todos menos yo'], 'compararseConOtros'],
+    [['perfeccionista', 'tiene que salir perfecto', 'no es suficiente lo que hago'], 'perfeccionismo'],
+    [['duelo', 'he perdido a', 'falleció', 'murió', 'pérdida'], 'duelo'],
+    [['ansiedad social', 'miedo a hablar en público', 'me da vergüenza socializar'], 'ansiedadSocial'],
+    [['ataque de pánico', 'ataque de panico', 'crisis de ansiedad', 'no puedo respirar'], 'ataquePanico'],
+    [['me machaco', 'soy un desastre', 'no valgo', 'me exijo demasiado'], 'autocritica'],
+    [['rutina de la mañana', 'rutina matutina', 'cómo empezar el día'], 'rutinaManana'],
+    [['sin energía', 'sin energia', 'agotamiento físico', 'no tengo fuerzas'], 'energiaBaja'],
+    [['lo logré', 'lo logre', 'lo conseguí', 'lo he conseguido', 'terminé el reto', 'completé el programa'], 'celebrarLogro'],
+    [['he recaído', 'volví a las andadas', 'lo dejé y volví a empezar', 'perdí la racha'], 'recaida'],
+    [['quiero contarte mi progreso', 'te cuento cómo voy', 'mira mi avance'], 'compartirProgreso'],
   ]
 
+  // Puntúa cada categoría: coincidencias en el mensaje actual pesan el doble que
+  // coincidencias solo en el mensaje anterior (da coherencia a respuestas cortas tipo "sí", "vale").
+  let bestCategory = ''
+  let bestScore = 0
   for (const [words, category] of keywords) {
-    if (words.some(w => lower.includes(w))) {
-      const responses = SMART_RESPONSES[category]
-      return responses[Math.floor(Math.random() * responses.length)]
+    const scoreCurrent = words.reduce((acc, w) => acc + (lower.includes(w) ? 2 : 0), 0)
+    const scoreContext = words.reduce((acc, w) => acc + (context.includes(w) ? 1 : 0), 0)
+    const score = scoreCurrent + scoreContext
+    if (score > bestScore) {
+      bestScore = score
+      bestCategory = category
     }
+  }
+
+  if (bestCategory) {
+    const responses = SMART_RESPONSES[bestCategory]
+    return pickAvoidingRepeat(responses, history) + progressNudge(progressSummary)
   }
 
   // Progress-aware defaults (first-person, Elías tone)
@@ -132,7 +373,7 @@ function getSmartResponse(input: string, progressSummary: string): string {
     'Gracias por compartir eso. Tres opciones: si necesitas calma → **/sos**; si quieres entender tu mente → **/test**; si quieres entrenar → **/ejercicios**. ¿Qué resuena más?'
   )
 
-  return defaults[Math.floor(Math.random() * defaults.length)]
+  return pickAvoidingRepeat(defaults, history)
 }
 
 export async function POST(request: Request) {
@@ -188,7 +429,7 @@ export async function POST(request: Request) {
   // Fallback: smart local responses (progress-aware)
   const lastUserMessage = messages.filter((m: { role: string }) => m.role === 'user').pop()
   const text = lastUserMessage
-    ? getSmartResponse(lastUserMessage.text, progressContext)
+    ? getSmartResponse(lastUserMessage.text, progressContext, messages)
     : 'Cuéntame cómo te sientes. Te escucho.'
 
   return NextResponse.json({ text, ai: false })
