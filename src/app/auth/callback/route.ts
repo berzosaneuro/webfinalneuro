@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import type { EmailOtpType } from '@supabase/supabase-js'
 import { getCanonicalAppBaseUrl } from '@/lib/app-url'
 import { createServerSupabase } from '@/lib/supabase-server'
 import { logAuthError } from '@/lib/auth-logging'
@@ -30,10 +31,11 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl
     const code = searchParams.get('code')
+    const tokenHash = searchParams.get('token_hash')
     const type = searchParams.get('type')
 
-    if (!code) {
-      console.warn('[auth/callback] missing code param')
+    if (!code && !tokenHash) {
+      console.warn('[auth/callback] missing code/token_hash param')
       return safeRedirect(origin, '/acceder?error=missing_code')
     }
 
@@ -44,11 +46,21 @@ export async function GET(request: NextRequest) {
       logAuthError('callback createServerSupabase', e)
       return safeRedirect(origin, '/acceder?error=config')
     }
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+    // Confirmacion de email / magic link / recovery pueden llegar de dos formas
+    // segun el flujo: como `code` (PKCE, exchangeCodeForSession) o como
+    // `token_hash` + `type` (OTP, verifyOtp). El signUp() de esta app se hace
+    // desde un cliente servidor sin persistSession, asi que no hay code_verifier
+    // guardado en ningun sitio recuperable para el intercambio PKCE: por eso
+    // probamos primero token_hash (no depende de nada guardado localmente) y
+    // caemos a exchangeCodeForSession solo si no hay token_hash.
+    const { error } = tokenHash
+      ? await supabase.auth.verifyOtp({ token_hash: tokenHash, type: (type as EmailOtpType) || 'email' })
+      : await supabase.auth.exchangeCodeForSession(code as string)
 
     if (error) {
-      logAuthError('callback exchangeCodeForSession', error)
-      console.error('[auth/callback] exchangeCodeForSession:', error.message, (error as { code?: string }).code)
+      logAuthError('callback verifyOtp/exchangeCodeForSession', error)
+      console.error('[auth/callback] verify failed:', error.message, (error as { code?: string }).code, { hadTokenHash: Boolean(tokenHash), hadCode: Boolean(code) })
       return safeRedirect(origin, '/acceder?error=invalid_or_expired_link')
     }
 
