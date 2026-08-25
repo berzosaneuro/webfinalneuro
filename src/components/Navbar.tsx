@@ -81,7 +81,7 @@ const mobileLinks = [
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
-  const { isPremium } = usePremium()
+  const { isPremium, isMentoria } = usePremium()
   const { user } = useUser()
   const { isAdmin } = useAdmin()
   const pathname = usePathname()
@@ -152,24 +152,37 @@ export default function Navbar() {
 
             {/* Right side */}
             <div className="flex items-center gap-2 shrink-0">
-              <Link
-                href="/acceder"
-                className="px-3 py-1.5 text-text-secondary hover:text-white text-xs font-medium transition-all active:scale-95"
-              >
-                Acceder
-              </Link>
-              {isPremium ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent-blue/15 text-accent-blue text-xs font-semibold rounded-full border border-accent-blue/20">
-                  <Crown className="w-3 h-3" />
-                  {`👑 ${user?.nombre || 'Usuario'}, eres Premium`}
-                </span>
+              {user ? (
+                isPremium ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent-blue/15 text-accent-blue text-xs font-semibold rounded-full border border-accent-blue/20">
+                    <Crown className="w-3 h-3" />
+                    {`👑 ${user.nombre || 'Usuario'}, eres Premium`}
+                  </span>
+                ) : isMentoria ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent-blue/15 text-accent-blue text-xs font-semibold rounded-full border border-accent-blue/20">
+                    <Crown className="w-3 h-3" />
+                    {`✨ ${user.nombre || 'Usuario'}, Mentoría`}
+                  </span>
+                ) : (
+                  <span className="px-3 py-1.5 text-text-secondary text-xs font-medium">
+                    {`Hola, ${user.nombre || 'Usuario'}`}
+                  </span>
+                )
               ) : (
-                <Link
-                  href="/registro"
-                  className="px-4 py-1.5 bg-accent-blue text-white text-xs font-semibold rounded-full shadow-[0_0_16px_rgba(0,102,255,0.5)] hover:shadow-[0_0_24px_rgba(0,102,255,0.7)] hover:bg-accent-blue/90 transition-all active:scale-95"
-                >
-                  Empieza ahora
-                </Link>
+                <>
+                  <Link
+                    href="/acceder"
+                    className="px-3 py-1.5 text-text-secondary hover:text-white text-xs font-medium transition-all active:scale-95"
+                  >
+                    Acceder
+                  </Link>
+                  <Link
+                    href="/registro"
+                    className="px-4 py-1.5 bg-accent-blue text-white text-xs font-semibold rounded-full shadow-[0_0_16px_rgba(0,102,255,0.5)] hover:shadow-[0_0_24px_rgba(0,102,255,0.7)] hover:bg-accent-blue/90 transition-all active:scale-95"
+                  >
+                    Empieza ahora
+                  </Link>
+                </>
               )}
               {isAdmin && (
                 <Link
@@ -247,20 +260,32 @@ export default function Navbar() {
                 )
               })}
               <div className="flex gap-3 pt-1">
-                <Link
-                  href="/acceder"
-                  onClick={() => setOpen(false)}
-                  className="py-3 px-5 rounded-xl text-sm font-medium text-text-secondary active:text-white glass"
-                >
-                  Acceder
-                </Link>
-                <Link
-                  href="/registro"
-                  onClick={() => setOpen(false)}
-                  className="flex-1 py-3 bg-accent-blue text-white text-sm font-bold rounded-xl text-center active:scale-[0.98] shadow-[0_0_20px_rgba(124,58,237,0.3)]"
-                >
-                  Empieza ahora
-                </Link>
+                {user ? (
+                  <div className="flex-1 py-3 px-5 rounded-xl text-sm font-medium text-center glass text-text-secondary">
+                    {isPremium
+                      ? `👑 ${user.nombre || 'Usuario'}, Premium`
+                      : isMentoria
+                        ? `✨ ${user.nombre || 'Usuario'}, Mentoría`
+                        : `Hola, ${user.nombre || 'Usuario'}`}
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      href="/acceder"
+                      onClick={() => setOpen(false)}
+                      className="py-3 px-5 rounded-xl text-sm font-medium text-text-secondary active:text-white glass"
+                    >
+                      Acceder
+                    </Link>
+                    <Link
+                      href="/registro"
+                      onClick={() => setOpen(false)}
+                      className="flex-1 py-3 bg-accent-blue text-white text-sm font-bold rounded-xl text-center active:scale-[0.98] shadow-[0_0_20px_rgba(124,58,237,0.3)]"
+                    >
+                      Empieza ahora
+                    </Link>
+                  </>
+                )}
                 {isAdmin && (
                   <Link
                     href="/admin"
