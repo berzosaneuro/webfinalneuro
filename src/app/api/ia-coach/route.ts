@@ -428,6 +428,10 @@ export async function POST(request: Request) {
 
   // Fallback: smart local responses (progress-aware)
   const lastUserMessage = messages.filter((m: { role: string }) => m.role === 'user').pop()
+  // DEBUG TEMPORAL: para diagnosticar por que algunos dispositivos reciben
+  // siempre la respuesta de "lastUserMessage no encontrado". Se quita en cuanto
+  // identifiquemos la causa.
+  console.log('[ia-coach debug]', JSON.stringify({ rawMessages: messages, lastUserMessage, apiKeySet: Boolean(apiKey) }))
   const text = lastUserMessage
     ? getSmartResponse(lastUserMessage.text, progressContext, messages)
     : 'Cuéntame cómo te sientes. Te escucho.'
