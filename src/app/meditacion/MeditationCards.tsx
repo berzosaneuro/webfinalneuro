@@ -162,7 +162,7 @@ function MeditationCard({ m, playing, isPaused, loadingAudio, onPlay, onPause, o
         </button>
         {isActive && (
           <button
-            onClick={onStop}
+            onClick={() => onStop()}
             aria-label={`Detener meditación ${m.title}`}
             className="py-2 px-3 rounded-xl text-xs font-medium bg-red-500/15 text-red-400 hover:bg-red-500/25 active:scale-95 transition-all"
             title="Detener"
@@ -239,7 +239,15 @@ function startAmbientMusic(
     audio.onerror = () => { if (!isCancelled()) tryTrack(idx + 1) }
     audio.play()
       .then(() => {
-        if (isCancelled()) return
+        if (isCancelled()) {
+          // Se paro/cambio de meditacion mientras esta pista cargaba: esta instancia de audio
+          // ya arranco a sonar en el navegador y nadie mas la referencia, hay que silenciarla ya
+          // o se queda sonando de fondo indefinidamente (solo se cortaba saliendo de la pagina).
+          audio.pause()
+          audio.currentTime = 0
+          audio.src = ''
+          return
+        }
         fadeInAmbientMusic(audio, 2500)
         onSuccess({ type: 'file', audio })
       })
@@ -424,6 +432,9 @@ export default function MeditationCards() {
         }
         const voiceRefs = await playAudioWithFadeIn(audio)
         if (playIdRef.current !== thisPlayId || signal.aborted) {
+          // Igual que con la pista ambiente: el audio.play() ya resolvio y el elemento
+          // esta sonando, cerrar el AudioContext no basta en todos los navegadores.
+          try { audio.pause(); audio.currentTime = 0 } catch {}
           if (audioSourceUrl) URL.revokeObjectURL(audioSourceUrl)
           try { voiceRefs.ctx.close() } catch {}
           return

@@ -94,10 +94,12 @@ export default function SOSPage() {
   const [affirmation, setAffirmation] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const ambientRef = useRef<AmbientRef>(null)
+  const sessionIdRef = useRef(0)
 
   const currentPhase = PATTERN[phase]
 
   const stopSOS = useCallback(() => {
+    sessionIdRef.current++
     const current = ambientRef.current
     if (!current) return
     if (current.type === 'file') {
@@ -144,10 +146,18 @@ export default function SOSPage() {
   const start = () => {
     stopSOS()
     claimAndPlay('sos', stopSOS)
+    // Id de sesion: si se pulsa Volver/Reiniciar mientras una pista aun esta cargando,
+    // esta comprobacion evita que esa pista "resucite" el audio despues de haberlo parado.
+    const thisSession = ++sessionIdRef.current
     const shuffled = [...SOS_TRACKS].sort(() => Math.random() - 0.5)
     const startSynthFallback = () => {
+      if (thisSession !== sessionIdRef.current) return
       try {
         const pad = createAmbientPad()
+        if (thisSession !== sessionIdRef.current) {
+          try { pad.stop() } catch {}
+          return
+        }
         if (pad.ctx.state === 'suspended') pad.ctx.resume().catch(() => {})
         if (muted) {
           pad.gain.gain.setTargetAtTime(0, pad.ctx.currentTime, 0.08)
@@ -158,6 +168,7 @@ export default function SOSPage() {
       }
     }
     const tryTrack = (idx: number) => {
+      if (thisSession !== sessionIdRef.current) return
       if (idx >= shuffled.length) {
         startSynthFallback()
         return
@@ -166,13 +177,19 @@ export default function SOSPage() {
       const audio = new Audio(src)
       audio.loop = true
       audio.volume = 0
-      audio.onerror = () => tryTrack(idx + 1)
+      audio.onerror = () => { if (thisSession === sessionIdRef.current) tryTrack(idx + 1) }
       audio.play()
         .then(() => {
+          if (thisSession !== sessionIdRef.current) {
+            audio.pause()
+            audio.currentTime = 0
+            audio.src = ''
+            return
+          }
           ambientRef.current = { type: 'file', audio }
           if (!muted) fadeInAmbientMusic(audio)
         })
-        .catch(() => tryTrack(idx + 1))
+        .catch(() => { if (thisSession === sessionIdRef.current) tryTrack(idx + 1) })
     }
     tryTrack(0)
     setStarted(true)

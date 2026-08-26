@@ -265,6 +265,7 @@ export default function MasterclassPage() {
       if (CtxClass) {
         const voiceRefs = await playAudioWithFadeIn(audio)
         if (genRef.current !== thisGen || signal.aborted) {
+          try { audio.pause(); audio.currentTime = 0 } catch {}
           if (audioSourceUrl) URL.revokeObjectURL(audioSourceUrl)
           try { voiceRefs.ctx.close() } catch {}
           return
