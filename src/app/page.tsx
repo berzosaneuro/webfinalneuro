@@ -6,6 +6,7 @@ import Container from '@/components/Container'
 import Card from '@/components/Card'
 import FadeInSection from '@/components/FadeInSection'
 import { usePremium } from '@/context/PremiumContext'
+import { useUser } from '@/context/UserContext'
 import { Brain, Headphones, BookOpen, ClipboardCheck, Crosshair, Timer, Moon, Zap, ChevronRight, Crown, Sparkles, Activity, AlertCircle, Flame, Calendar, Dumbbell, PenLine, Trophy, Podcast, GraduationCap, Users, Video, Gift, Bot, ClipboardList } from 'lucide-react'
 import DailyTrainingSection from '@/components/DailyTrainingSection'
 import DailyRecommendationSection from '@/components/DailyRecommendationSection'
@@ -47,6 +48,7 @@ const neuroSteps = [
 
 export default function Home() {
   const { isPremium } = usePremium()
+  const { user } = useUser()
 
   return (
     <div className="relative overflow-hidden">
@@ -70,12 +72,14 @@ export default function Home() {
                 Yo pasé por el agotamiento y la mente sin freno. El Método N.E.U.R.O. es lo que me devolvió el mando: pasos concretos, en el móvil, para usar hoy.
               </p>
               <div className="flex items-center gap-3 animate-fade-in-up">
-                <Link
-                  href="/registro"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-blue text-white text-sm font-bold shadow-[0_0_24px_rgba(0,102,255,0.45)] hover:shadow-[0_0_32px_rgba(0,102,255,0.6)] hover:bg-accent-blue/90 active:scale-95 transition-all"
-                >
-                  Empieza gratis hoy <ChevronRight className="w-4 h-4" />
-                </Link>
+                {!user && (
+                  <Link
+                    href="/registro"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-blue text-white text-sm font-bold shadow-[0_0_24px_rgba(0,102,255,0.45)] hover:shadow-[0_0_32px_rgba(0,102,255,0.6)] hover:bg-accent-blue/90 active:scale-95 transition-all"
+                  >
+                    Empieza gratis hoy <ChevronRight className="w-4 h-4" />
+                  </Link>
+                )}
                 <Link
                   href="/metodo"
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl glass-light text-text-secondary text-sm font-medium hover:text-white active:scale-95 transition-all"
@@ -118,6 +122,7 @@ export default function Home() {
       </section>
 
       {/* Banner de registro + regalo reto 7 días */}
+      {!user && (
       <section className="relative pb-4">
         <Container>
           <Link href="/registro" className="block animate-fade-in-up">
@@ -144,6 +149,7 @@ export default function Home() {
           </Link>
         </Container>
       </section>
+      )}
 
       {/* Quick actions grid */}
       <section className="relative pb-6">
