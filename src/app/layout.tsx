@@ -61,8 +61,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: loveThemeBootScript }} />
-        <link rel="icon" href="/icons/logo.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/icons/logo.png" />
+        <link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32" />
+        <link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
       </head>
       <body className="overflow-x-hidden min-h-screen">
         <UserProvider>
