@@ -761,7 +761,7 @@ export default function AdminPage() {
                   <div className="glass rounded-2xl p-5 flex flex-col items-center justify-center text-center">
                     <Users className="w-6 h-6 text-text-muted mb-2" />
                     <p className="text-text-muted text-xs">
-                      El CRM manual de "Clientes" está vacío. Los datos reales de cuentas y pagos ya se ven arriba;
+                      El CRM manual de &ldquo;Clientes&rdquo; está vacío. Los datos reales de cuentas y pagos ya se ven arriba;
                       usa esa pestaña solo si quieres llevar notas manuales de seguimiento.
                     </p>
                   </div>
