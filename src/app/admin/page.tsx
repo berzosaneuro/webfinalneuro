@@ -9,7 +9,8 @@ import { ToastProvider } from '@/components/admin/Toast'
 import {
   Users, Mail, Phone, MessageSquare, BarChart3, LogOut,
   Loader2, Trash2, UserCheck, Crown, Download, RefreshCw,
-  PhoneCall, PhoneMissed, Star, BookOpen, Map as MapIcon, Activity, Calendar, ClipboardList, ExternalLink, Pencil, X, Music
+  PhoneCall, PhoneMissed, Star, BookOpen, Map as MapIcon, Activity, Calendar, ClipboardList, ExternalLink, Pencil, X, Music,
+  TrendingUp, Wallet, UserPlus
 } from 'lucide-react'
 
 type Tab = 'resumen' | 'usuarios' | 'payments' | 'audios' | 'biblioteca' | 'suscriptores' | 'clientes' | 'leads' | 'contactos' | 'llamadas' | 'comunidad'
@@ -366,24 +367,63 @@ export default function AdminPage() {
     downloadCSV(data, 'neuroconciencia-emails')
   }
 
-  const tabs: { id: Tab; label: string; icon: typeof Users; count: number }[] = [
-    { id: 'resumen', label: 'Resumen', icon: BarChart3, count: 0 },
-    { id: 'usuarios', label: 'Usuarios', icon: Users, count: usuarios.length },
-    { id: 'payments', label: 'Pagos', icon: Crown, count: payments.length },
-    { id: 'audios', label: 'Audios', icon: Music, count: 0 },
-    { id: 'biblioteca', label: 'Biblioteca', icon: BookOpen, count: biblioteca.length },
-    { id: 'suscriptores', label: 'Emails', icon: Star, count: totalEmails },
-    { id: 'clientes', label: 'Clientes', icon: Users, count: clientes.length },
-    { id: 'leads', label: 'Leads', icon: Mail, count: leads.length },
-    { id: 'contactos', label: 'Mensajes', icon: MessageSquare, count: contactos.length },
-    { id: 'llamadas', label: 'Llamadas', icon: Phone, count: llamadas.length },
-    { id: 'comunidad', label: 'Comunidad', icon: Users, count: posts.length },
-    { id: 'diario', label: 'Diario', icon: BookOpen, count: diario.length },
-    { id: 'mapa', label: 'Mapa', icon: MapIcon, count: mapa.length },
-    { id: 'neuroscore', label: 'NeuroScore', icon: Activity, count: neuroscore.length },
-    { id: 'programa', label: 'Programa 21', icon: Calendar, count: programa.length },
-    { id: 'test', label: 'Test', icon: ClipboardList, count: testResults.length },
+  // --- Metricas de negocio (a partir de lo ya cargado, sin llamadas extra) ---
+  const successStatuses = ['paid', 'succeeded', 'complete', 'completed']
+  const paymentsOk = payments.filter((p) => successStatuses.includes((p.status || '').toLowerCase()))
+  const totalRevenueCents = paymentsOk.reduce((sum, p) => sum + (p.amount_paid || 0), 0)
+  const now = Date.now()
+  const DAY = 24 * 60 * 60 * 1000
+  const revenue30dCents = paymentsOk
+    .filter((p) => p.paid_at && now - new Date(p.paid_at).getTime() <= 30 * DAY)
+    .reduce((sum, p) => sum + (p.amount_paid || 0), 0)
+  const premiumActivos = usuarios.filter((u) => u.is_premium).length
+  const nuevosUsuarios7d = usuarios.filter((u) => u.created_at && now - new Date(u.created_at).getTime() <= 7 * DAY).length
+  const nuevosUsuarios30d = usuarios.filter((u) => u.created_at && now - new Date(u.created_at).getTime() <= 30 * DAY).length
+  const formatEUR = (cents: number) => (cents / 100).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' })
+  const pctCuentas = totalEmails > 0 ? Math.round((usuarios.length / totalEmails) * 100) : 0
+  const pctPremium = usuarios.length > 0 ? Math.round((premiumActivos / usuarios.length) * 100) : 0
+
+  type NavItem = { id: Tab; label: string; icon: typeof Users; count: number }
+  const groups: { label: string; items: NavItem[] }[] = [
+    {
+      label: 'Negocio',
+      items: [
+        { id: 'resumen', label: 'Resumen', icon: BarChart3, count: 0 },
+        { id: 'payments', label: 'Pagos', icon: Crown, count: payments.length },
+        { id: 'usuarios', label: 'Usuarios', icon: Users, count: usuarios.length },
+      ],
+    },
+    {
+      label: 'CRM y contacto',
+      items: [
+        { id: 'leads', label: 'Leads', icon: Mail, count: leads.length },
+        { id: 'contactos', label: 'Mensajes', icon: MessageSquare, count: contactos.length },
+        { id: 'suscriptores', label: 'Emails', icon: Star, count: totalEmails },
+        { id: 'clientes', label: 'Clientes (CRM manual)', icon: Users, count: clientes.length },
+        { id: 'llamadas', label: 'Llamadas', icon: Phone, count: llamadas.length },
+      ],
+    },
+    {
+      label: 'Contenido',
+      items: [
+        { id: 'biblioteca', label: 'Biblioteca', icon: BookOpen, count: biblioteca.length },
+        { id: 'comunidad', label: 'Comunidad', icon: Users, count: posts.length },
+        { id: 'audios', label: 'Audios', icon: Music, count: 0 },
+      ],
+    },
+    {
+      label: 'Actividad de usuarios',
+      items: [
+        { id: 'diario', label: 'Diario', icon: BookOpen, count: diario.length },
+        { id: 'mapa', label: 'Mapa', icon: MapIcon, count: mapa.length },
+        { id: 'neuroscore', label: 'NeuroScore', icon: Activity, count: neuroscore.length },
+        { id: 'programa', label: 'Programa 21', icon: Calendar, count: programa.length },
+        { id: 'test', label: 'Test', icon: ClipboardList, count: testResults.length },
+      ],
+    },
   ]
+  const allNavItems = groups.flatMap((g) => g.items)
+  const activeNavItem = allNavItems.find((t) => t.id === tab)
 
   if (loading) {
     return (
@@ -451,35 +491,69 @@ export default function AdminPage() {
         </Container>
       </section>
 
-      {/* Tabs */}
-      <section className="pb-4">
-        <Container>
-          <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1">
-            {tabs.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
-                  tab === t.id
-                    ? 'bg-accent-blue/10 text-accent-blue'
-                    : 'glass text-text-muted hover:text-white'
-                }`}
-              >
-                <t.icon className="w-3.5 h-3.5" />
-                {t.label}
-                {t.count > 0 && (
-                  <span className="px-1.5 py-0.5 bg-white/10 rounded-full text-[10px]">{t.count}</span>
-                )}
-              </button>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* Content */}
+      {/* Navegacion + contenido */}
       <section className="pb-16">
         <Container>
-          {/* USUARIOS */}
+          <div className="lg:grid lg:grid-cols-[240px_1fr] lg:gap-6 lg:items-start">
+            {/* Nav movil: selector agrupado */}
+            <div className="lg:hidden mb-4">
+              <select
+                value={tab}
+                onChange={(e) => setTab(e.target.value as Tab)}
+                className="w-full px-4 py-3 rounded-xl bg-dark-surface border border-dark-border text-white text-sm font-medium"
+              >
+                {groups.map((g) => (
+                  <optgroup key={g.label} label={g.label}>
+                    {g.items.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.label}{t.count > 0 ? ` (${t.count})` : ''}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+
+            {/* Nav escritorio: barra lateral agrupada */}
+            <aside className="hidden lg:block lg:sticky lg:top-4">
+              <nav className="glass rounded-2xl p-3 space-y-4">
+                {groups.map((g) => (
+                  <div key={g.label}>
+                    <p className="px-2.5 text-[10px] font-semibold uppercase tracking-wider text-text-muted mb-1.5">
+                      {g.label}
+                    </p>
+                    <div className="space-y-0.5">
+                      {g.items.map((t) => (
+                        <button
+                          key={t.id}
+                          onClick={() => setTab(t.id)}
+                          className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-medium transition-all ${
+                            tab === t.id
+                              ? 'bg-accent-blue/15 text-accent-blue'
+                              : 'text-text-muted hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          <t.icon className="w-3.5 h-3.5 shrink-0" />
+                          <span className="flex-1 text-left truncate">{t.label}</span>
+                          {t.count > 0 && (
+                            <span className="px-1.5 py-0.5 bg-white/10 rounded-full text-[10px] shrink-0">{t.count}</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </nav>
+            </aside>
+
+            <div className="min-w-0">
+              {activeNavItem && (
+                <div className="flex items-center gap-2 mb-3 text-text-muted text-xs">
+                  <activeNavItem.icon className="w-3.5 h-3.5" />
+                  <span className="font-medium text-white text-sm">{activeNavItem.label}</span>
+                </div>
+              )}
+              {/* USUARIOS */}
           {tab === 'usuarios' && (
             <AdminUsersPanel usuarios={usuarios} onRefetch={fetchAll} />
           )}
@@ -532,27 +606,85 @@ export default function AdminPage() {
           {/* RESUMEN */}
           {tab === 'resumen' && (
             <div className="space-y-4 animate-fade-in">
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                {[
-                  { label: 'Emails', value: totalEmails, icon: Star, color: 'text-violet-400', bg: 'bg-violet-500/10' },
-                  { label: 'Clientes', value: clientes.length, icon: Users, color: 'text-accent-blue', bg: 'bg-accent-blue/10' },
-                  { label: 'Leads', value: leads.length, icon: Mail, color: 'text-green-400', bg: 'bg-green-500/10' },
-                  { label: 'Mensajes', value: contactos.length, icon: MessageSquare, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-                  { label: 'Llamadas', value: llamadas.length, icon: Phone, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
-                  { label: 'Diario', value: diario.length, icon: BookOpen, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-                  { label: 'Mapa', value: mapa.length, icon: MapIcon, color: 'text-teal-400', bg: 'bg-teal-500/10' },
-                  { label: 'NeuroScore', value: neuroscore.length, icon: Activity, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-                  { label: 'Programa 21', value: programa.length, icon: Calendar, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-                  { label: 'Tests', value: testResults.length, icon: ClipboardList, color: 'text-violet-400', bg: 'bg-violet-500/10' },
-                ].map((s) => (
-                  <div key={s.label} className="glass rounded-2xl p-4">
-                    <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center mb-3`}>
-                      <s.icon className={`w-5 h-5 ${s.color}`} />
-                    </div>
-                    <p className="font-heading text-2xl font-bold text-white">{s.value}</p>
-                    <p className="text-text-muted text-xs">{s.label}</p>
+              {/* Cabecera de negocio: cifras reales, no recuentos de tablas */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="glass rounded-2xl p-4 border border-emerald-500/10">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3">
+                    <Wallet className="w-5 h-5 text-emerald-400" />
                   </div>
-                ))}
+                  <p className="font-heading text-2xl font-bold text-white">{formatEUR(totalRevenueCents)}</p>
+                  <p className="text-text-muted text-xs">Ingresos totales (Stripe)</p>
+                </div>
+                <div className="glass rounded-2xl p-4 border border-accent-blue/10">
+                  <div className="w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center mb-3">
+                    <TrendingUp className="w-5 h-5 text-accent-blue" />
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-white">{formatEUR(revenue30dCents)}</p>
+                  <p className="text-text-muted text-xs">Ingresos últimos 30 días</p>
+                </div>
+                <div className="glass rounded-2xl p-4 border border-violet-500/10">
+                  <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center mb-3">
+                    <Crown className="w-5 h-5 text-violet-400" />
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-white">{premiumActivos}</p>
+                  <p className="text-text-muted text-xs">Suscripciones activas</p>
+                </div>
+                <div className="glass rounded-2xl p-4 border border-cyan-500/10">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-3">
+                    <UserPlus className="w-5 h-5 text-cyan-400" />
+                  </div>
+                  <p className="font-heading text-2xl font-bold text-white">{nuevosUsuarios7d}</p>
+                  <p className="text-text-muted text-xs">Cuentas nuevas (7 días)</p>
+                </div>
+              </div>
+
+              {payments.length === 0 && (
+                <div className="glass rounded-2xl p-4 border border-amber-500/15 flex items-start gap-3">
+                  <Crown className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <p className="text-text-secondary text-xs leading-relaxed">
+                    Todavía no hay pagos registrados en la tabla <span className="text-amber-300 font-medium">payments</span>.
+                    Los importes de arriba se calculan a partir de ahí en cuanto entre el primer cobro de Stripe.
+                  </p>
+                </div>
+              )}
+
+              {/* Embudo: leads -> cuentas -> premium */}
+              <div className="glass rounded-2xl p-5">
+                <h3 className="text-white font-semibold text-sm mb-4 flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-accent-blue" /> Embudo de conversión
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-text-secondary">Emails captados</span>
+                      <span className="text-white font-medium">{totalEmails}</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-full bg-accent-blue rounded-full" style={{ width: '100%' }} />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-text-secondary">Cuentas creadas</span>
+                      <span className="text-white font-medium">{usuarios.length} <span className="text-text-muted">({pctCuentas}%)</span></span>
+                    </div>
+                    <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-full bg-cyan-400 rounded-full" style={{ width: `${Math.min(100, pctCuentas)}%` }} />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-text-secondary">Premium activo</span>
+                      <span className="text-white font-medium">{premiumActivos} <span className="text-text-muted">({pctPremium}%)</span></span>
+                    </div>
+                    <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-full bg-violet-400 rounded-full" style={{ width: `${Math.min(100, pctPremium)}%` }} />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-text-muted text-[10px] mt-3">
+                  {nuevosUsuarios30d} cuentas nuevas en los últimos 30 días · {usuarios.length} cuentas en total
+                </p>
               </div>
 
               {/* Quick export */}
@@ -577,48 +709,63 @@ export default function AdminPage() {
               </div>
 
               <div className="grid md:grid-cols-2 gap-3">
+                {/* Ultimos usuarios registrados: dato real, de la tabla de usuarios */}
                 <div className="glass rounded-2xl p-5">
                   <h3 className="text-white font-semibold text-sm mb-3 flex items-center gap-2">
-                    <UserCheck className="w-4 h-4 text-green-400" /> Clientes por estado
+                    <UserPlus className="w-4 h-4 text-cyan-400" /> Últimos registros
                   </h3>
-                  <div className="space-y-2">
-                    {['activo', 'nuevo', 'potencial', 'inactivo'].map((estado) => {
-                      const count = clientes.filter((c) => c.estado === estado).length
-                      const colors: Record<string, string> = {
-                        activo: 'bg-green-400', nuevo: 'bg-blue-400',
-                        potencial: 'bg-violet-400', inactivo: 'bg-red-400',
-                      }
-                      return (
-                        <div key={estado} className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${colors[estado]}`} />
-                          <span className="text-text-secondary text-sm capitalize flex-1">{estado}</span>
-                          <span className="text-white font-medium text-sm">{count}</span>
-                        </div>
-                      )
-                    })}
-                  </div>
+                  {usuarios.length === 0 ? (
+                    <p className="text-text-muted text-xs">Todavía no hay usuarios registrados.</p>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {[...usuarios]
+                        .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
+                        .slice(0, 5)
+                        .map((u) => (
+                          <div key={u.id} className="flex items-center gap-2">
+                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${u.is_premium ? 'bg-violet-400' : 'bg-white/20'}`} />
+                            <span className="text-text-secondary text-xs flex-1 truncate">{u.email}</span>
+                            <span className="text-text-muted text-[10px] shrink-0">
+                              {u.created_at ? new Date(u.created_at).toLocaleDateString('es') : '—'}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  )}
                 </div>
 
-                <div className="glass rounded-2xl p-5">
-                  <h3 className="text-white font-semibold text-sm mb-3 flex items-center gap-2">
-                    <Crown className="w-4 h-4 text-violet-400" /> Planes
-                  </h3>
-                  <div className="space-y-2">
-                    {['premium', 'free', 'ninguno'].map((plan) => {
-                      const count = clientes.filter((c) => c.plan === plan).length
-                      const colors: Record<string, string> = {
-                        premium: 'bg-violet-400', free: 'bg-blue-400', ninguno: 'bg-gray-400',
-                      }
-                      return (
-                        <div key={plan} className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${colors[plan]}`} />
-                          <span className="text-text-secondary text-sm capitalize flex-1">{plan}</span>
-                          <span className="text-white font-medium text-sm">{count}</span>
-                        </div>
-                      )
-                    })}
+                {/* CRM manual: solo se muestra si hay algo cargado ahi, para no ensuciar el resumen */}
+                {clientes.length > 0 ? (
+                  <div className="glass rounded-2xl p-5">
+                    <h3 className="text-white font-semibold text-sm mb-3 flex items-center gap-2">
+                      <UserCheck className="w-4 h-4 text-green-400" /> Clientes (CRM manual) por estado
+                    </h3>
+                    <div className="space-y-2">
+                      {['activo', 'nuevo', 'potencial', 'inactivo'].map((estado) => {
+                        const count = clientes.filter((c) => c.estado === estado).length
+                        const colors: Record<string, string> = {
+                          activo: 'bg-green-400', nuevo: 'bg-blue-400',
+                          potencial: 'bg-violet-400', inactivo: 'bg-red-400',
+                        }
+                        return (
+                          <div key={estado} className="flex items-center gap-3">
+                            <div className={`w-2 h-2 rounded-full ${colors[estado]}`} />
+                            <span className="text-text-secondary text-sm capitalize flex-1">{estado}</span>
+                            <span className="text-white font-medium text-sm">{count}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="glass rounded-2xl p-5 flex flex-col items-center justify-center text-center">
+                    <Users className="w-6 h-6 text-text-muted mb-2" />
+                    <p className="text-text-muted text-xs">
+                      El CRM manual de "Clientes" está vacío. Los datos reales de cuentas y pagos ya se ven arriba;
+                      usa esa pestaña solo si quieres llevar notas manuales de seguimiento.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Email sources breakdown */}
@@ -1141,6 +1288,8 @@ export default function AdminPage() {
               )}
             </div>
           )}
+            </div>
+          </div>
         </Container>
       </section>
     </div>
