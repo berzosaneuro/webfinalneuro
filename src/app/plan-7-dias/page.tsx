@@ -10,6 +10,7 @@ import {
   Loader2, Send, Mail, Flame, Star
 } from 'lucide-react'
 import { recordActivity } from '@/lib/streak'
+import { useUser } from '@/context/UserContext'
 
 const STORAGE_KEY = 'plan7_data'
 const SUB_KEY = 'plan7_subscribed'
@@ -117,6 +118,7 @@ type PlanData = {
 const HOURS_BETWEEN_DAYS = 24
 
 export default function Plan7DiasPage() {
+  const { user } = useUser()
   const [subscribed, setSubscribed] = useState(false)
   const [email, setEmail] = useState('')
   const [sending, setSending] = useState(false)
@@ -127,7 +129,8 @@ export default function Plan7DiasPage() {
   useEffect(() => {
     setMounted(true)
     if (typeof window !== 'undefined') {
-      const sub = localStorage.getItem(SUB_KEY) === 'true'
+      // Si ya tiene cuenta en la web, no le pedimos email de nuevo: acceso directo
+      const sub = localStorage.getItem(SUB_KEY) === 'true' || !!user
       setSubscribed(sub)
       try {
         const raw = localStorage.getItem(STORAGE_KEY)
@@ -143,10 +146,18 @@ export default function Plan7DiasPage() {
           } else {
             setData({ ...parsed, completedDays, completedAtMap } as PlanData)
           }
+        } else if (sub) {
+          const today = new Date().toISOString().split('T')[0]
+          const fresh = { completedDays: [], completedAtMap: {}, startDate: today }
+          setData(fresh)
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh))
         }
       } catch {}
+      if (user) {
+        localStorage.setItem(SUB_KEY, 'true')
+      }
     }
-  }, [])
+  }, [user])
 
   const save = (newData: PlanData) => {
     setData(newData)
