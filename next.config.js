@@ -9,6 +9,8 @@ const nextConfig = {
       { source: '/companero', destination: '/', permanent: true },
       { source: '/onboarding', destination: '/', permanent: true },
       { source: '/kids', destination: '/', permanent: true },
+      // Favicon: los navegadores piden /favicon.ico por convencion aunque el <link> use /icons/*
+      { source: '/favicon.ico', destination: '/icons/favicon-32.png', permanent: true },
       // Biblioteca: slugs alineados con tono experiencial (301 permanentes)
       {
         source: '/biblioteca/neuroplasticidad-aplicada-al-ahora',
