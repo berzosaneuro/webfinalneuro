@@ -8,6 +8,7 @@ const nextConfig = {
       { source: '/biofeedback', destination: '/', permanent: true },
       { source: '/companero', destination: '/', permanent: true },
       { source: '/onboarding', destination: '/', permanent: true },
+      { source: '/kids', destination: '/', permanent: true },
       // Biblioteca: slugs alineados con tono experiencial (301 permanentes)
       {
         source: '/biblioteca/neuroplasticidad-aplicada-al-ahora',

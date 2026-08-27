@@ -12,6 +12,12 @@ interface PremiumContextType {
   subscriptionStatus: string | null
   isMentoria: boolean
   mentoriaStatus: string | null
+  /**
+   * Acceso a contenido Premium — Mentoría incluye "todo Premium" (así se vende en /planes),
+   * así que cualquier gate de contenido debe usar ESTO, no `isPremium` a secas. Los flags de
+   * BD (`is_premium` / `is_mentoria`) siguen 100% independientes; esto es solo la OR a nivel UI.
+   */
+  hasPremiumAccess: boolean
   upgradeToPremium: () => void
   downgradeToFree: () => void
   /** Sincroniza plan con la tabla `users` (fuente de verdad tras Stripe). Premium + Mentoría, independientes. */
@@ -26,6 +32,7 @@ const PremiumContext = createContext<PremiumContextType>({
   subscriptionStatus: null,
   isMentoria: false,
   mentoriaStatus: null,
+  hasPremiumAccess: false,
   upgradeToPremium: () => {},
   downgradeToFree: () => {},
   syncPremiumFromDb: async () => false,
@@ -105,6 +112,7 @@ export function PremiumProvider({ children }: { children: ReactNode }) {
         subscriptionStatus,
         isMentoria,
         mentoriaStatus,
+        hasPremiumAccess: plan === 'premium' || isMentoria,
         upgradeToPremium,
         downgradeToFree,
         syncPremiumFromDb,

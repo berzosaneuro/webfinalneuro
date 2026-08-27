@@ -360,6 +360,10 @@ export async function POST(request: Request) {
         return await deactivateSubscription(event.data.object as Stripe.Subscription)
       case 'invoice.paid':
       case 'invoice.payment_succeeded':
+      case 'invoice.payment_failed':
+        // Registra también los intentos fallidos (status/amount_paid reales de Stripe:
+        // 'open'/0 en un fallo) para tener visibilidad en `payments` sin bloquear nada más
+        // — la baja de acceso ya la gestiona customer.subscription.updated (past_due/unpaid).
         await insertPaymentFromInvoice(event.data.object as Stripe.Invoice)
         return NextResponse.json({ received: true })
       default:

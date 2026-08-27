@@ -47,7 +47,7 @@ const neuroSteps = [
 ]
 
 export default function Home() {
-  const { isPremium } = usePremium()
+  const { hasPremiumAccess } = usePremium()
   const { user } = useUser()
 
   return (
@@ -409,7 +409,7 @@ export default function Home() {
       </section>
 
       {/* Premium banner */}
-      {!isPremium && (
+      {!hasPremiumAccess && (
         <section className="relative pb-8">
           <Container>
             <FadeInSection>

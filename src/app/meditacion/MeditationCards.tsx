@@ -300,6 +300,13 @@ export default function MeditationCards() {
   const playStartTimeRef = useRef<number>(0)
   const playingTitleRef = useRef<string | null>(null)
   const ttsAudioRef = useRef<{ audio: HTMLAudioElement; url?: string; voiceRefs?: import('@/lib/audio-utils').VoiceRefs } | null>(null)
+  // Cola de "ambiente" tras acabar la narración: la voz suele durar mucho menos que los
+  // minutos anunciados, así que dejamos la música de fondo sonando sola hasta completar
+  // el tiempo total en vez de cortar toda la sesión en cuanto termina de hablar.
+  const tailTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const tailRemainingMsRef = useRef<number>(0)
+  const tailActiveRef = useRef<boolean>(false)
+  const tailStartedAtRef = useRef<number>(0)
 
   useEffect(() => {
     getAmbientTracks().then(setAmbientTracks)
@@ -320,6 +327,9 @@ export default function MeditationCards() {
     abortControllerRef.current = null
     setLoadingAudio(null)
     playIdRef.current = 0
+    if (tailTimeoutRef.current) { clearTimeout(tailTimeoutRef.current); tailTimeoutRef.current = null }
+    tailActiveRef.current = false
+    tailRemainingMsRef.current = 0
     const ref = ttsAudioRef.current
     ttsAudioRef.current = null
     stopAmbient(ambientRef.current)
@@ -417,12 +427,31 @@ export default function MeditationCards() {
         }
 
         audio.volume = 1
-        audio.playbackRate = 0.88
+        // El ritmo ya viene calibrado en el audio (voz generada a ritmo lento
+        // de meditación), así que se reproduce a velocidad normal.
+        audio.playbackRate = 1
         audio.onended = () => {
           const dur = playStartTimeRef.current > 0 ? Math.floor((Date.now() - playStartTimeRef.current) / 1000) : 0
           trackSessionComplete('meditation', m.title, dur)
           recordActivity()
-          stopMeditation()
+          if (playIdRef.current !== thisPlayId) return
+          ttsAudioRef.current = null
+          // La narración casi siempre dura mucho menos que los minutos anunciados.
+          // En vez de cortar toda la sesión aquí, dejamos la música de fondo sonando
+          // sola hasta completar el tiempo total de la meditación.
+          const totalTargetMs = m.minutes * 60 * 1000
+          const elapsedMs = playStartTimeRef.current > 0 ? Date.now() - playStartTimeRef.current : totalTargetMs
+          const remainingMs = totalTargetMs - elapsedMs
+          if (remainingMs > 1000) {
+            tailActiveRef.current = true
+            tailRemainingMsRef.current = remainingMs
+            tailStartedAtRef.current = Date.now()
+            tailTimeoutRef.current = setTimeout(() => {
+              if (playIdRef.current === thisPlayId) stopMeditation()
+            }, remainingMs)
+          } else {
+            stopMeditation()
+          }
         }
         audio.onerror = () => stopMeditation()
         setLoadingAudio(null)
@@ -453,14 +482,25 @@ export default function MeditationCards() {
   const handlePause = useCallback(() => {
     if (ttsAudioRef.current) ttsAudioRef.current.audio.pause()
     pauseAmbient(ambientRef.current)
+    if (tailActiveRef.current && tailTimeoutRef.current) {
+      clearTimeout(tailTimeoutRef.current)
+      tailTimeoutRef.current = null
+      tailRemainingMsRef.current = Math.max(0, tailRemainingMsRef.current - (Date.now() - tailStartedAtRef.current))
+    }
     setIsPaused(true)
   }, [])
 
   const handleResume = useCallback(() => {
     if (ttsAudioRef.current) ttsAudioRef.current.audio.play().catch(() => {})
     resumeAmbient(ambientRef.current)
+    if (tailActiveRef.current) {
+      tailStartedAtRef.current = Date.now()
+      tailTimeoutRef.current = setTimeout(() => {
+        stopMeditation()
+      }, tailRemainingMsRef.current)
+    }
     setIsPaused(false)
-  }, [])
+  }, [stopMeditation])
 
   const [minDur, maxDur] = getDurationRange(durationFilter)
 

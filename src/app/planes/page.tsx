@@ -328,7 +328,7 @@ export default function PlanesPage() {
         <p className="text-center text-text-muted text-xs mt-8 max-w-lg mx-auto">
           Pago seguro con Stripe. La suscripción se renueva cada mes hasta que la canceles en Stripe.
         </p>
-        {isPremium && (
+        {(isPremium || isMentoria) && (
           <div className="mt-4 flex justify-center">
             <button
               type="button"

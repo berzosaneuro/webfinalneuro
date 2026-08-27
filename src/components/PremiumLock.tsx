@@ -10,9 +10,10 @@ interface PremiumLockProps {
 }
 
 export default function PremiumLock({ children, label = 'Contenido Premium' }: PremiumLockProps) {
-  const { isPremium } = usePremium()
+  // Mentoría incluye "todo Premium" (así se vende en /planes) — el gate debe reflejarlo.
+  const { hasPremiumAccess } = usePremium()
 
-  if (isPremium) return <>{children}</>
+  if (hasPremiumAccess) return <>{children}</>
 
   return (
     <div className="relative rounded-2xl overflow-hidden">

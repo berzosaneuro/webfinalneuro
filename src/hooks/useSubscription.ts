@@ -3,7 +3,8 @@
 import { usePremium } from '@/context/PremiumContext'
 
 export function useSubscription() {
-  const { isPremium, syncing, syncPremiumFromDb, subscriptionStatus, isMentoria, mentoriaStatus } = usePremium()
+  const { isPremium, syncing, syncPremiumFromDb, subscriptionStatus, isMentoria, mentoriaStatus, hasPremiumAccess } =
+    usePremium()
 
   return {
     isPremium,
@@ -12,6 +13,7 @@ export function useSubscription() {
     subscriptionStatus,
     isMentoria,
     mentoriaStatus,
+    hasPremiumAccess,
     refreshSubscription: syncPremiumFromDb,
   }
 }

@@ -217,6 +217,156 @@ const SMART_RESPONSES: Record<string, string[]> = {
   compartirProgreso: [
     'Me encanta que lo compartas, cuéntame más. Y si quieres dejarlo registrado para verlo con perspectiva más adelante, el **/diario** es buen sitio para eso.',
   ],
+  relacionesSociales: [
+    'Hacer conexiones nuevas de adulto cuesta más que de niño, es normal. Yo suelo recomendar empezar poco: un solo espacio (un curso, un grupo, un hobby) y volver varias veces seguidas, en vez de saltar de sitio en sitio buscando "el grupo perfecto". La confianza se construye con repetición, no con la primera vez.',
+  ],
+  ansiedadDecisiones: [
+    'Cuando una decisión te bloquea, casi siempre es porque le estás pidiendo perfección, no claridad.\n\n**Prueba esto:** escribe las dos opciones. Para cada una, responde solo: "¿con esta puedo vivir si sale mal?" Si la respuesta es sí en ambas, cualquiera vale — elige la que te dé menos ansiedad al imaginarla, no la "correcta".',
+  ],
+  cambioVida: [
+    'Los cambios grandes de vida remueven identidad, no solo circunstancias — por eso pesan tanto aunque sean "buenos" cambios.\n\nTe sugiero no exigirte tener todo resuelto ya. Un cambio se digiere en etapas: primero sobrevivirlo, luego adaptarte, luego (con tiempo) encontrarle sentido. Estás en la primera o segunda, y está bien.',
+  ],
+  mudanza: [
+    'Cambiar de ciudad remueve las rutinas invisibles que te sostenían sin que lo notaras — por eso cuesta más de lo que uno espera.\n\nTe recomiendo reconstruir 2 o 3 anclas cuanto antes: un sitio donde tomar algo, una ruta que ya conozcas bien, una pequeña rutina diaria. Eso baja la sensación de estar a la deriva.',
+  ],
+  finanzas: [
+    'La ansiedad por dinero activa el mismo sistema de alarma que un peligro físico, así que pensar con calma cuesta el doble en ese estado.\n\n**Antes de decidir algo importante de dinero:** respira 5 veces despacio, y sepáralo en dos preguntas: "¿qué es urgente hoy?" y "¿qué puede esperar a que esté más tranquilo?". No mezcles las dos.',
+  ],
+  deudas: [
+    'Una deuda pesa más en la cabeza cuando está sin mirar que cuando ya la tienes puesta en un papel con números reales.\n\nTe sugiero escribir hoy mismo, sin editarte, cuánto debes y a quién. Da miedo al principio, pero un problema con forma concreta se puede planear; uno difuso solo se puede temer.',
+  ],
+  trabajoNuevo: [
+    'Empezar algo nuevo activa el mismo miedo que cualquier territorio desconocido — es normal sentirte torpe las primeras semanas.\n\nTe recomiendo no juzgar tu desempeño hasta pasado al menos un mes. La curva de aprendizaje inicial no predice cómo te irá después.',
+  ],
+  desempleo: [
+    'Quedarte sin trabajo golpea identidad, no solo ingresos — mucha gente se sorprende de lo fuerte que pega, aunque "solo sea un trabajo".\n\nTe propongo separar las dos tareas: buscar empleo es una acción concreta (currículum, contactos, candidaturas), y cuidar tu ánimo mientras tanto es otra distinta. No dejes que la segunda dependa de que la primera avance rápido.',
+  ],
+  sindromeImpostor: [
+    'Sentir que no mereces estar donde estás no significa que sea verdad — suele aparecer justo cuando más estás creciendo, no cuando fallas.\n\nTe propongo un ejercicio simple: anota 3 cosas concretas que hiciste bien esta semana, con hechos, no con opiniones. La evidencia pesa más que la sensación.',
+  ],
+  bloqueoCreativo: [
+    'El bloqueo casi nunca es falta de ideas, es exceso de autocrítica llegando antes de tiempo — juzgas la idea antes de que exista.\n\nTe sugiero separar en dos fases: primero generar sin filtro (aunque sea malo), después editar. Mezclar ambas fases es lo que más bloquea.',
+  ],
+  examenes: [
+    'La ansiedad antes de un examen suele venir de repasar el miedo en vez de repasar la materia.\n\n**Antes de estudiar hoy:** 3 respiraciones lentas para bajar activación, luego bloques de 25 minutos con descansos reales de 5. La mente retiene mejor con pausas que sin ellas.',
+  ],
+  crianza: [
+    'Ser padre o madre expone tu propia falta de paciencia y de calma de una forma que casi nada más lo hace — no es que lo hagas mal, es que es de lo más exigente que existe.\n\nUn recurso rápido para ti (no solo para tu hijo): antes de reaccionar a algo que te saca de quicio, respira una vez completa. Ese segundo cambia la respuesta.',
+  ],
+  hijosAdolescentes: [
+    'Con un adolescente, casi siempre hay más detrás del silencio o el enfado de lo que se ve — están gestionando identidad, no solo "siendo difíciles".\n\nTe sugiero priorizar estar disponible sobre insistir. Un "aquí estoy cuando quieras hablar" sin presión suele abrir más puertas que preguntar directamente.',
+  ],
+  divorcio: [
+    'Una separación remueve la vida entera, no solo la relación — rutinas, casa, a veces amistades compartidas. Es normal que pese más de lo que esperabas.\n\nNo tienes que tenerlo resuelto ya. Date permiso para ir despacio, y si hay hijos de por medio, prioriza que ellos noten estabilidad aunque tú por dentro estés reordenándote.',
+  ],
+  ruptura: [
+    'El final de una relación duele físicamente, literalmente — el cerebro procesa el rechazo social parecido al dolor físico.\n\nTe recomiendo no forzarte a "estar bien" rápido. Date el tiempo real que necesites, y evita decisiones grandes las primeras semanas mientras la cabeza aún está removida.',
+  ],
+  rechazo: [
+    'El rechazo duele porque el cerebro lo interpreta como amenaza a la pertenencia, algo muy antiguo en nosotros — no es debilidad sentirlo fuerte.\n\nTe propongo separar el hecho ("no encajé en esto") de la historia que le añades ("no valgo"). Lo primero es dato. Lo segundo es interpretación, y casi siempre es exagerada.',
+  ],
+  fracaso: [
+    'Un fracaso real dice algo sobre un intento concreto, no sobre quién eres. Confundir las dos cosas es lo que más pesa después de fallar.\n\nTe sugiero preguntarte: "¿qué aprendí de esto que puedo usar la próxima vez?" Esa pregunta convierte el fracaso en información, no en sentencia.',
+  ],
+  ambicion: [
+    'Tener éxito trae su propia presión — mantenerlo, merecerlo, que no se note el esfuerzo detrás. Nadie te avisa de eso antes de conseguirlo.\n\nTe recomiendo celebrarlo de verdad, sin restarle importancia, y luego preguntarte qué es lo próximo que TÚ quieres, no lo que se espera de ti ahora.',
+  ],
+  proposito: [
+    'Buscar sentido no se resuelve pensando más, se resuelve probando cosas y notando qué te hace sentir vivo de verdad.\n\nTe propongo esta pregunta: "¿en qué momento de esta semana me sentí más yo mismo?" La respuesta suele apuntar hacia algo real, más que cualquier reflexión abstracta.',
+  ],
+  vacioExistencial: [
+    'Sentir que nada tiene sentido a veces es señal de agotamiento disfrazado de filosofía — antes de buscar respuestas grandes, revisa si estás durmiendo, comiendo y descansando bien.\n\nSi el vacío es persistente y no mejora con descanso, te recomiendo también hablarlo con un profesional, no solo intentar pensarlo hasta resolverlo.',
+  ],
+  aburrimiento: [
+    'El aburrimiento incomoda porque nos obliga a estar con nosotros mismos sin distracción — por eso huimos de él tan rápido hacia el móvil.\n\nTe propongo, la próxima vez que aparezca, quedarte 2 minutos sin llenarlo con nada. A veces detrás del aburrimiento hay una necesidad real que no habías escuchado.',
+  ],
+  rutinaMonotona: [
+    'Cuando los días se sienten todos iguales, suele ser que el piloto automático se ha comido la atención, no que la vida en sí sea plana.\n\nTe sugiero un cambio pequeño deliberado esta semana: una ruta distinta, una comida nueva, algo mínimo. El cerebro nota más variación de la que crees.',
+  ],
+  limites: [
+    'No saber decir que no casi siempre viene de miedo a decepcionar, no de falta de carácter.\n\n**Frase que puedes usar:** "Ahora mismo no puedo, pero gracias por pensar en mí." No necesitas justificarte más que eso.',
+  ],
+  sobrecarga: [
+    'Cuando todo se siente urgente a la vez, la mente pierde la capacidad de priorizar de verdad.\n\nTe propongo escribir todo lo pendiente en una lista, y luego marcar solo 3 cosas para hoy. Todo lo demás espera, aunque duela dejarlo ahí un rato.',
+  ],
+  nostalgia: [
+    'Añorar una época pasada no significa que tu presente esté mal, a veces solo significa que hubo algo bueno ahí que vale la pena reconocer.\n\nTe propongo preguntarte: "¿qué de eso puedo llevar a mi vida ahora, aunque sea distinto?" Eso convierte la nostalgia en dirección, no solo en melancolía.',
+  ],
+  arrepentimiento: [
+    'El arrepentimiento pesa más cuando lo revives sin sacar nada de él — dale una función: "¿qué haría distinto si se repitiera algo parecido?"\n\nUna vez tengas esa respuesta, suéltalo activamente. No puedes cambiar lo que pasó, sí puedes usarlo.',
+  ],
+  cambioCarrera: [
+    'Reinventarte profesionalmente da vértigo porque toca identidad, no solo currículum — "quién soy si no soy esto que ya sé hacer".\n\nTe sugiero no esperar tener la certeza total antes de moverte. Prueba algo pequeño en la nueva dirección (un curso corto, un proyecto de fin de semana) antes de decidir el salto grande.',
+  ],
+  emprender: [
+    'Montar algo propio mezcla ilusión real con miedo real, casi al mismo tiempo — es agotador si no lo esperas.\n\nTe recomiendo separar la incertidumbre del negocio (normal, no se puede eliminar) de tu estado interno (eso sí lo puedes cuidar con descanso y prácticas como las de aquí).',
+  ],
+  saludFisica: [
+    'El cuerpo y la mente no son cosas separadas — el malestar físico casi siempre se lleva la calma mental por delante también.\n\nSi hay algo médico de fondo, eso lo tiene que ver un profesional, no yo. Lo que sí puedo ofrecerte es que cuides el estrés que rodea al malestar: eso a veces amplifica el dolor sin que lo notes.',
+  ],
+  ejercicioFisico: [
+    'Mover el cuerpo es una de las formas más directas de bajar rumiación mental — a veces más rápido que cualquier técnica de respiración.\n\nNo hace falta gimnasio: 10 minutos caminando rápido ya cambian el estado de ánimo de forma medible. Empieza por ahí si te cuesta arrancar algo más grande.',
+  ],
+  alimentacion: [
+    'Cómo comes y cómo te sientes están más conectados de lo que parece, pero yo no soy quién para darte pautas de dieta — eso lo lleva mejor un profesional de nutrición.\n\nLo que sí te digo: comer con prisa y con culpa a la vez casi nunca sienta bien, ni física ni mentalmente. Si notas ese patrón, vale la pena mirarlo con calma.',
+  ],
+  imagenCorporal: [
+    'La relación con el propio cuerpo se construye con años de mensajes externos, así que no es raro que cueste hacer las paces con él.\n\nSi esto te pesa de forma constante o afecta cómo comes, te recomiendo también apoyo profesional especializado, no solo trabajarlo aquí — es un tema que merece ese acompañamiento.',
+  ],
+  envejecer: [
+    'Hacerse mayor incomoda en una cultura que casi solo celebra lo joven — pero también trae algo que a los 20 no se tiene: perspectiva.\n\nTe propongo notar qué has ganado con los años, no solo qué sientes que se va. Casi siempre hay más de lo primero de lo que parece a simple vista.',
+  ],
+  estigmaSaludMental: [
+    'Pedir ayuda psicológica no es debilidad, es lo mismo que ir al médico cuando algo del cuerpo no anda bien — la mente también se cuida así.\n\nSi te frena la vergüenza, empieza poco: hablarlo con alguien de confianza ya es un primer paso válido antes de dar el siguiente.',
+  ],
+  conflictoFamiliar: [
+    'Los conflictos familiares pesan distinto que otros porque tocan vínculos muy antiguos, con historia acumulada detrás.\n\nAntes de responder en caliente, te sugiero la misma regla: respira, espera, y pregúntate qué necesitas decir de verdad, sin el reproche encima. No siempre hay que resolverlo hoy mismo.',
+  ],
+  celosPareja: [
+    'Los celos suelen avisar de una inseguridad propia más que de una amenaza real — aunque en el momento no lo parezca.\n\nTe propongo, antes de actuar por celos, preguntarte: "¿esto es algo que vi, o algo que temo?" Esa distinción cambia mucho cómo conviene actuar.',
+  ],
+  infidelidad: [
+    'Descubrir una infidelidad remueve confianza en un nivel muy profundo — es normal que el shock tarde en asentarse.\n\nNo hay una decisión correcta rápida aquí. Date tiempo antes de decidir nada grande, y si puedes, apóyate también en terapia de pareja o individual — esto suele necesitar más que autoayuda.',
+  ],
+  sexualidad: [
+    'La sexualidad conecta con autoestima, confianza y vínculo, así que cuando algo ahí no fluye, suele afectar más de lo esperado.\n\nEsto lo trabajan mejor terapeutas especializados en el tema; yo puedo acompañarte en la parte de ansiedad o autoexigencia alrededor, pero no en lo específico.',
+  ],
+  redesSociales: [
+    'Las redes muestran highlights, no vidas completas — comparar tu detrás de cámaras con el resultado editado de otros siempre sale perdiendo.\n\nTe propongo un experimento: un día sin abrir redes y nota cómo cambia tu ánimo. La diferencia suele sorprender.',
+  ],
+  workaholism: [
+    'No parar de trabajar a veces es ambición, y a veces es evitar quedarte a solas con lo que sientes cuando paras.\n\nTe propongo notar qué aparece los primeros 10 minutos después de dejar de trabajar. Si es incomodidad fuerte, ahí hay algo que vale la pena mirar.',
+  ],
+  vacaciones: [
+    'Cuesta desconectar de verdad cuando el cuerpo lleva meses en modo alerta — el "apagado" también hay que entrenarlo.\n\nLos primeros días de descanso suelen sentirse raros, casi culposos. Es normal. Dale un par de días al cuerpo para creerse que puede bajar revoluciones.',
+  ],
+  viajar: [
+    'Viajar saca de la rutina y del piloto automático — por eso a veces trae claridad que en casa cuesta encontrar.\n\nSi puedes, aprovecha esos momentos fuera de contexto para hacerte las preguntas grandes que en el día a día no te da tiempo a mirar.',
+  ],
+  extranjero: [
+    'Mudarte a otro país suma cambio de idioma, cultura y redes de apoyo, todo junto — el cansancio que sientes tiene motivos reales, no es flojera.\n\nTe recomiendo no exigirte "adaptarte rápido". La adaptación real suele tardar más de lo que uno cree, y eso está bien.',
+  ],
+  soledadPareja: [
+    'Se puede estar en pareja y sentirse muy solo si la conexión real (no solo la convivencia) se ha ido apagando.\n\nTe propongo nombrarlo directamente con tu pareja, desde "siento que nos hemos distanciado" en vez de acusación. Y si no consiguen reconectar solos, terapia de pareja no es un fracaso, es una herramienta más.',
+  ],
+  crisisIdentidad: [
+    'No saber quién eres ahora mismo suele pasar en las transiciones grandes de la vida — no es que te hayas perdido, es que la versión anterior de ti ya no encaja del todo.\n\nTe propongo, en vez de buscar la respuesta completa ya, ir probando: qué te gusta ahora, qué ya no. La identidad se construye viviendo, no pensándola desde el sofá.',
+  ],
+  cambioEstacional: [
+    'Con menos luz y más frío, el ánimo de mucha gente baja de forma real, no es solo "pereza de invierno".\n\nTe recomiendo priorizar luz natural por la mañana si puedes, y mantener aunque sea la práctica mínima de aquí en esos meses — es cuando más ayuda, aunque menos ganas dé.',
+  ],
+  tecnologiaDesconexion: [
+    'La dependencia del móvil no es solo falta de voluntad, está diseñada así a propósito — competir contra eso sin ayuda es cuesta arriba.\n\nTe propongo fricción, no fuerza de voluntad: deja el móvil fuera del alcance en momentos concretos (comidas, antes de dormir) en vez de prometerte "usarlo menos" en general.',
+  ],
+  escuchaActiva: [
+    'Comunicarse bien no es hablar mejor, es escuchar mejor — la mayoría de conflictos crecen porque respondemos antes de haber entendido de verdad.\n\nTe propongo, en tu próxima conversación difícil, repetir con tus palabras lo que la otra persona dijo antes de responder. Cambia mucho el tono de la charla.',
+  ],
+  asertividad: [
+    'Ser asertivo no es ser agresivo ni tampoco callarte — es decir lo que piensas con claridad y respeto, sin pedir perdón por tener una opinión.\n\n**Frase útil:** "Entiendo tu punto, y yo lo veo distinto porque..." Afirma sin atacar.',
+  ],
+  crisisEmocional: [
+    'Lo que me cuentas suena serio, y quiero que sepas que no estás solo con esto — pero esto necesita más apoyo del que yo puedo darte aquí.\n\nSi en algún momento sientes que puedes hacerte daño, por favor contacta ya con la línea 024 (atención a la conducta suicida, gratuita, 24h en España) o llama al 112 si es una emergencia. Hablar con un profesional o con alguien de confianza ahora mismo es lo más importante que puedes hacer.',
+  ],
 }
 
 // Evita repetir literalmente una respuesta que ya diste hace poco en esta misma conversación
@@ -306,6 +456,56 @@ function getSmartResponse(input: string, progressSummary: string, history: { rol
     [['lo logré', 'lo logre', 'lo conseguí', 'lo he conseguido', 'terminé el reto', 'completé el programa'], 'celebrarLogro'],
     [['he recaído', 'volví a las andadas', 'lo dejé y volví a empezar', 'perdí la racha'], 'recaida'],
     [['quiero contarte mi progreso', 'te cuento cómo voy', 'mira mi avance'], 'compartirProgreso'],
+    [['hacer amigos', 'socializar', 'no tengo amigos', 'conocer gente nueva'], 'relacionesSociales'],
+    [['no sé qué decidir', 'no se que decidir', 'tomar una decisión', 'indecisión', 'indecision'], 'ansiedadDecisiones'],
+    [['cambio grande en mi vida', 'todo está cambiando', 'mi vida ha cambiado'], 'cambioVida'],
+    [['mudanza', 'mudarme', 'cambio de ciudad', 'nueva ciudad'], 'mudanza'],
+    [['ansiedad financiera', 'problemas económicos', 'no llego a fin de mes'], 'finanzas'],
+    [['deuda', 'debo dinero', 'préstamo', 'prestamo'], 'deudas'],
+    [['nuevo trabajo', 'cambié de trabajo', 'empiezo un trabajo', 'entrevista de trabajo'], 'trabajoNuevo'],
+    [['desempleo', 'sin trabajo', 'me despidieron', 'busco trabajo', 'perdí mi trabajo'], 'desempleo'],
+    [['síndrome del impostor', 'sindrome del impostor', 'no merezco esto', 'no soy suficientemente bueno'], 'sindromeImpostor'],
+    [['bloqueo creativo', 'no tengo ideas', 'falta de inspiración', 'me bloqueo al crear'], 'bloqueoCreativo'],
+    [['examen', 'exámenes', 'oposición', 'oposicion', 'estudiar para'], 'examenes'],
+    [['ser padre', 'ser madre', 'mis hijos', 'criar a mi hijo', 'crianza'], 'crianza'],
+    [['mi hijo adolescente', 'mi hija adolescente', 'adolescente en casa'], 'hijosAdolescentes'],
+    [['divorcio', 'me separo', 'separación de mi pareja', 'separacion de mi pareja'], 'divorcio'],
+    [['ruptura', 'terminé con mi pareja', 'termine con mi pareja', 'me dejaron', 'corté con'], 'ruptura'],
+    [['me rechazaron', 'no me eligieron', 'no me seleccionaron'], 'rechazo'],
+    [['fracasé', 'fracase', 'he fallado', 'fracaso'], 'fracaso'],
+    [['tuve éxito', 'tuve exito', 'lo conseguí en el trabajo', 'me ascendieron'], 'ambicion'],
+    [['sentido de mi vida', 'propósito', 'proposito', 'para qué vivo', 'para que vivo'], 'proposito'],
+    [['vacío', 'vacio', 'nada tiene sentido', 'todo me da igual'], 'vacioExistencial'],
+    [['aburrido', 'aburrimiento', 'me aburro'], 'aburrimiento'],
+    [['todos los días iguales', 'rutina monótona', 'rutina monotona', 'siempre lo mismo'], 'rutinaMonotona'],
+    [['poner límites', 'poner limites', 'no sé decir que no', 'no se decir que no'], 'limites'],
+    [['no llego a todo', 'demasiadas tareas', 'sobrecargado', 'sobrecargada', 'no doy abasto'], 'sobrecarga'],
+    [['nostalgia', 'echo de menos', 'añoro', 'anoro'], 'nostalgia'],
+    [['me arrepiento', 'ojalá hubiera', 'ojala hubiera', 'arrepentimiento'], 'arrepentimiento'],
+    [['cambiar de carrera', 'reinventarme profesionalmente', 'cambiar de profesión', 'cambiar de profesion'], 'cambioCarrera'],
+    [['montar un negocio', 'emprender', 'mi propia empresa', 'emprendimiento'], 'emprender'],
+    [['dolor físico', 'dolor fisico', 'mi salud', 'estoy enfermo', 'estoy enferma'], 'saludFisica'],
+    [['hacer deporte', 'ejercicio físico', 'ejercicio fisico', 'entrenar el cuerpo', 'ir al gimnasio'], 'ejercicioFisico'],
+    [['cómo como', 'como como', 'mi alimentación', 'mi alimentacion', 'mi dieta'], 'alimentacion'],
+    [['no me gusta mi cuerpo', 'imagen corporal', 'mi cuerpo no me gusta'], 'imagenCorporal'],
+    [['hacerme mayor', 'envejecer', 'me hago viejo', 'me hago vieja'], 'envejecer'],
+    [['vergüenza de ir al psicólogo', 'verguenza de ir al psicologo', 'qué van a pensar si voy a terapia'], 'estigmaSaludMental'],
+    [['pelea con mi familia', 'discutí con mis padres', 'discuti con mis padres', 'conflicto familiar'], 'conflictoFamiliar'],
+    [['celos', 'celoso', 'celosa', 'desconfío de mi pareja'], 'celosPareja'],
+    [['me engañaron', 'infidelidad', 'me fue infiel', 'engaño de pareja'], 'infidelidad'],
+    [['mi sexualidad', 'intimidad con mi pareja', 'vida sexual'], 'sexualidad'],
+    [['redes sociales', 'instagram me hace sentir', 'comparo mi vida en redes', 'fomo'], 'redesSociales'],
+    [['no desconecto del trabajo', 'trabajo todo el día', 'trabajo todo el dia', 'adicto al trabajo', 'adicta al trabajo'], 'workaholism'],
+    [['no sé desconectar', 'no se desconectar', 'vacaciones', 'descansar de verdad'], 'vacaciones'],
+    [['viajar', 'mi viaje', 'cambio de aires'], 'viajar'],
+    [['vivir en otro país', 'vivir en otro pais', 'expatriado', 'expatriada', 'mudarme al extranjero'], 'extranjero'],
+    [['solo en mi relación', 'sola en mi relación', 'solo en mi relacion', 'sola en mi relacion', 'distanciados en pareja'], 'soledadPareja'],
+    [['no sé quién soy', 'no se quien soy', 'crisis de identidad', 'ya no me reconozco'], 'crisisIdentidad'],
+    [['depresión estacional', 'depresion estacional', 'el invierno me afecta', 'me afecta el cambio de estación'], 'cambioEstacional'],
+    [['dependencia del móvil', 'dependencia del movil', 'desconexión digital', 'desconexion digital'], 'tecnologiaDesconexion'],
+    [['cómo escuchar mejor', 'como escuchar mejor', 'escucha activa', 'comunicarme mejor'], 'escuchaActiva'],
+    [['ser asertivo', 'ser asertiva', 'asertividad', 'no sé cómo decir lo que pienso'], 'asertividad'],
+    [['hacerme daño', 'no quiero vivir', 'quitarme la vida', 'suicid', 'autolesion', 'autolesión', 'no aguanto más', 'no aguanto mas', 'quiero desaparecer'], 'crisisEmocional'],
   ]
 
   // Puntúa cada categoría: coincidencias en el mensaje actual pesan el doble que
