@@ -99,7 +99,7 @@ export default function EmpiezaPage() {
       <section className="relative py-3 md:py-6">
         <Container>
           <p className="text-center text-amber-400/95 text-[11px] font-semibold tracking-wide uppercase mb-3">
-            Premium con cupos controlados · Mentoría en lista de espera
+            Premium con cupos controlados · Mentoría ya disponible
           </p>
 
           <div className="max-w-md mx-auto flex flex-col gap-3">
