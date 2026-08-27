@@ -5,13 +5,45 @@ import { useRouter } from 'next/navigation'
 import { useAdmin } from '@/context/AdminContext'
 import Container from '@/components/Container'
 import AdminUsersPanel from '@/components/admin/AdminUsersPanel'
-import { ToastProvider } from '@/components/admin/Toast'
+import { ToastProvider, useToast } from '@/components/admin/Toast'
 import {
   Users, Mail, Phone, MessageSquare, BarChart3, LogOut,
   Loader2, Trash2, UserCheck, Crown, Download, RefreshCw,
   PhoneCall, PhoneMissed, Star, BookOpen, Map as MapIcon, Activity, Calendar, ClipboardList, ExternalLink, Pencil, X, Music,
-  TrendingUp, Wallet, UserPlus
+  TrendingUp, Wallet, UserPlus, Copy, Check
 } from 'lucide-react'
+
+/** URL fija de la landing de captación (la misma que se usa como fallback en robots.ts/sitemap.ts). */
+const LANDING_URL = 'https://www.berzosaneuro.com/empieza'
+
+/** Botón para copiar el link de la landing — pensado para pegarlo directo en Ads. */
+function CopyLandingLinkButton() {
+  const { toast } = useToast()
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(LANDING_URL)
+      setCopied(true)
+      toast('Enlace de la landing copiado')
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      toast('No se pudo copiar. Copia manualmente: ' + LANDING_URL, 'error')
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="flex items-center gap-2 px-3 py-2.5 rounded-xl glass text-accent-blue hover:text-accent-blue-hover transition-colors"
+      title="Copiar enlace de la landing (para Ads)"
+    >
+      {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+      <span className="hidden sm:inline text-sm">{copied ? 'Copiado' : 'Copiar link'}</span>
+    </button>
+  )
+}
 
 type Tab = 'resumen' | 'usuarios' | 'payments' | 'audios' | 'biblioteca' | 'suscriptores' | 'clientes' | 'leads' | 'contactos' | 'llamadas' | 'comunidad'
   | 'diario' | 'mapa' | 'neuroscore' | 'programa' | 'test'
@@ -460,6 +492,7 @@ export default function AdminPage() {
                 <ExternalLink className="w-4 h-4" />
                 <span className="hidden sm:inline text-sm">Landing</span>
               </a>
+              <CopyLandingLinkButton />
               {supabaseDashboardUrl && (
                 <a
                   href={supabaseDashboardUrl}
