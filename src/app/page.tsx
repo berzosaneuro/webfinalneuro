@@ -423,7 +423,7 @@ export default function Home() {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-heading font-semibold text-white text-base mb-0.5">Premium</h3>
-                      <p className="text-text-secondary text-xs">Meditaciones profundas, 21 días, IA Coach y más · desde 4,99 &euro;/mes</p>
+                      <p className="text-text-secondary text-xs">Meditaciones profundas, 21 días, Círculos y más · desde 4,99 &euro;/mes</p>
                     </div>
                     <ChevronRight className="w-5 h-5 text-text-muted shrink-0" />
                   </div>

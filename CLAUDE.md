@@ -43,7 +43,6 @@ El idioma de la app y todo su contenido es **español**. Mantén siempre el espa
 │   │   ├── globals.css         # Estilos globales + variables CSS
 │   │   │
 │   │   ├── api/                # Route Handlers (API)
-│   │   │   ├── ia-coach/       # IA Coach (Claude API + fallback local)
 │   │   │   ├── community/      # Posts de comunidad
 │   │   │   ├── contact/        # Formulario de contacto
 │   │   │   ├── leads/          # Captación de leads
@@ -69,7 +68,6 @@ El idioma de la app y todo su contenido es **español**. Mantén siempre el espa
 │   │   ├── mapa/               # Mapa de consciencia (radar)
 │   │   ├── sos/                # Respiración de emergencia
 │   │   ├── test/               # Test de ruido mental
-│   │   ├── ia-coach/           # Chat con IA Coach
 │   │   ├── comunidad/          # Foro comunitario (4 canales)
 │   │   ├── circulos/           # Círculos de práctica
 │   │   ├── leaderboard/        # Ranking de usuarios
@@ -329,20 +327,6 @@ export async function GET() {
 
 ---
 
-## IA Coach (`/api/ia-coach`)
-
-El endpoint usa Claude como backend primario con fallback a respuestas locales inteligentes:
-
-1. Si `ANTHROPIC_API_KEY` está configurada → usa `claude-sonnet-4-5-20250929`
-2. Si no → detecta palabras clave y devuelve respuestas predefinidas en español
-
-Para activar la IA real añade en `.env.local`:
-```
-ANTHROPIC_API_KEY=tu-api-key
-```
-
----
-
 ## Convenciones de desarrollo
 
 ### Nombrado de archivos
@@ -402,9 +386,6 @@ Copiar `.env.local.example` a `.env.local` y rellenar:
 # Supabase (requerido para persistencia de datos)
 NEXT_PUBLIC_SUPABASE_URL=https://TU-PROYECTO.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key-aqui
-
-# Anthropic (opcional — activa IA real en /ia-coach)
-ANTHROPIC_API_KEY=tu-api-key-aqui
 ```
 
 El `.env.local` está en `.gitignore`. **Nunca commitear credenciales reales.**

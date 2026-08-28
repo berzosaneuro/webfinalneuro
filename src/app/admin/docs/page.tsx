@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAdmin } from '@/context/AdminContext'
 import Link from 'next/link'
-import { ArrowLeft, BookOpen, Volume2, Bot, Activity, Route, Layers } from 'lucide-react'
+import { ArrowLeft, BookOpen, Volume2, Activity, Route, Layers } from 'lucide-react'
 
 export default function AdminDocsPage() {
   const { isAdmin } = useAdmin()
@@ -78,23 +78,6 @@ export default function AdminDocsPage() {
             </p>
           </section>
 
-          {/* Asistente */}
-          <section className="glass rounded-2xl p-6">
-            <h2 className="font-heading font-semibold text-white flex items-center gap-2 mb-4">
-              <Bot className="w-5 h-5 text-accent-blue" />
-              Asistente &quot;Habla con Elías&quot;
-            </h2>
-            <p className="text-text-secondary text-sm leading-relaxed mb-3">
-              Orb flotante visible en toda la app. Panel lazy-loaded al hacer clic. API: <code className="text-accent-blue">/api/ia-coach</code>.
-            </p>
-            <ul className="text-text-secondary text-sm space-y-1">
-              <li>Componentes: EliasOrb, EliasChatPanel, EliasAvatar, EliasMessage, EliasSuggestions</li>
-              <li>Claude (Anthropic) si ANTHROPIC_API_KEY está definida; si no, respuestas locales inteligentes</li>
-              <li>Progreso: el panel envía un resumen de localStorage al API para respuestas contextuales</li>
-              <li>No hace llamadas API hasta que el usuario envía un mensaje</li>
-            </ul>
-          </section>
-
           {/* Progreso */}
           <section className="glass rounded-2xl p-6">
             <h2 className="font-heading font-semibold text-white flex items-center gap-2 mb-4">
@@ -159,7 +142,6 @@ export default function AdminDocsPage() {
                 ['/neuroscore', 'NeuroScore'],
                 ['/diario', 'Diario'],
                 ['/test', 'Test Ruido Mental'],
-                ['/ia-coach', 'IA Coach (standalone)'],
                 ['/comunidad', 'Comunidad'],
                 ['/admin', 'Panel Admin'],
               ].map(([path, label]) => (

@@ -6,7 +6,6 @@ import BottomTabBar from '@/components/BottomTabBar'
 import PWARegister from '@/components/PWARegister'
 import FirebaseMessagingRegister from '@/components/FirebaseMessagingRegister'
 import AudioRouteHandler from '@/components/AudioRouteHandler'
-import EliasAssistant from '@/components/elias-assistant/EliasAssistant'
 import { PremiumProvider } from '@/context/PremiumContext'
 import { AdminProvider } from '@/context/AdminContext'
 import { UserProvider } from '@/context/UserContext'
@@ -77,7 +76,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <main className="min-h-screen pb-20 md:pb-0">{children}</main>
                 <Footer />
                 <BottomTabBar />
-                <EliasAssistant />
                 <CookieBanner />
                 <AnalyticsLoader />
               </PremiumProvider>

@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Brain, Headphones, Flame, Sparkles, Wand2 } from 'lucide-react'
+import { Brain, Headphones, Flame, Sparkles } from 'lucide-react'
 
 const tabs = [
   { href: '/', label: 'Inicio', icon: Brain },
   { href: '/meditacion', label: 'Meditar', icon: Headphones },
   { href: '/plan-7-dias', label: 'Reto 7 Días', icon: Sparkles },
   { href: '/retos', label: 'Retos', icon: Flame },
-  { href: '/ia-coach', label: 'IA Coach', icon: Wand2 },
 ]
 
 export default function BottomTabBar() {

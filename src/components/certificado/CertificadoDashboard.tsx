@@ -158,7 +158,7 @@ export default function CertificadoDashboard() {
             <div>
               <p className="text-white text-sm font-semibold">Rol Moderador activado</p>
               <p className="text-text-muted text-xs">
-                Tu insignia de guía certificado está activa en el IA Coach
+                Tu insignia de guía certificado está activa en la comunidad
               </p>
             </div>
           </div>

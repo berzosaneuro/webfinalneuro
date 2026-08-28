@@ -22,7 +22,6 @@ const mainLinks = [
 const moreLinks = [
   { href: '/plan-7-dias', label: 'Reto 7 Días' },
   { href: '/programa', label: 'Curso 21 Días' },
-  { href: '/ia-coach', label: 'IA Coach' },
   { href: '/circulos', label: 'Círculos' },
   { href: '/leaderboard', label: 'Ranking' },
   { href: '/certificacion', label: 'Certificación' },
@@ -53,7 +52,6 @@ const mobileLinks = [
     { href: '/podcast', label: 'NeuroPodcast' },
     { href: '/biblioteca', label: 'Biblioteca' },
     { href: '/despertar', label: 'Despertar' },
-    { href: '/ia-coach', label: 'IA Coach' },
     { href: '/metodo', label: 'El Método' },
   ]},
   { category: 'Comunidad', items: [

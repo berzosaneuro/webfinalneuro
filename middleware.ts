@@ -15,7 +15,6 @@ const SENSITIVE_PREFIXES = [
   '/api/admin/',
   '/api/contact',
   '/api/leads',
-  '/api/ia-coach',
 ]
 
 // Stripe webhook must never be rate-limited (Stripe retries on failure)
@@ -33,7 +32,6 @@ const PUBLIC_API_PREFIXES = [
   '/api/audio-config',
   '/api/fcm-sw-config',
   '/api/debug/',
-  '/api/ia-coach',
 ]
 
 const PUBLIC_POST_ONLY = [
