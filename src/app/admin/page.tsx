@@ -531,7 +531,7 @@ export default function AdminPage() {
 
       {/* Navegacion + contenido */}
       <section className="pb-16">
-        <Container>
+        <Container maxWidthClass={tab === 'redes' ? 'max-w-[1600px]' : 'max-w-6xl'}>
           <div className="lg:grid lg:grid-cols-[240px_1fr] lg:gap-6 lg:items-start">
             {/* Nav movil: selector agrupado */}
             <div className="lg:hidden mb-4">
