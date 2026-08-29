@@ -10,8 +10,12 @@ import {
   Users, Mail, Phone, MessageSquare, BarChart3, LogOut,
   Loader2, Trash2, UserCheck, Crown, Download, RefreshCw,
   PhoneCall, PhoneMissed, Star, BookOpen, Map as MapIcon, Activity, Calendar, ClipboardList, ExternalLink, Pencil, X, Music,
-  TrendingUp, Wallet, UserPlus, Copy, Check
+  TrendingUp, Wallet, UserPlus, Copy, Check, Share2
 } from 'lucide-react'
+
+/** URL del dashboard de contenido de Instagram/Facebook/TikTok (proyecto Vercel aparte).
+ *  Protegido con HTTP Basic Auth propio — el navegador pedirá login la primera vez. */
+const REDES_DASHBOARD_URL = 'https://dashboard.berzosaneuro.com'
 
 /** URL fija de la landing de captación (la misma que se usa como fallback en robots.ts/sitemap.ts). */
 const LANDING_URL = 'https://www.berzosaneuro.com/empieza'
@@ -45,7 +49,7 @@ function CopyLandingLinkButton() {
   )
 }
 
-type Tab = 'resumen' | 'usuarios' | 'payments' | 'audios' | 'biblioteca' | 'suscriptores' | 'clientes' | 'leads' | 'contactos' | 'llamadas' | 'comunidad'
+type Tab = 'resumen' | 'redes' | 'usuarios' | 'payments' | 'audios' | 'biblioteca' | 'suscriptores' | 'clientes' | 'leads' | 'contactos' | 'llamadas' | 'comunidad'
   | 'diario' | 'mapa' | 'neuroscore' | 'programa' | 'test'
 
 type Cliente = {
@@ -421,6 +425,7 @@ export default function AdminPage() {
       label: 'Negocio',
       items: [
         { id: 'resumen', label: 'Resumen', icon: BarChart3, count: 0 },
+        { id: 'redes', label: 'Redes sociales', icon: Share2, count: 0 },
         { id: 'payments', label: 'Pagos', icon: Crown, count: payments.length },
         { id: 'usuarios', label: 'Usuarios', icon: Users, count: usuarios.length },
       ],
@@ -633,6 +638,34 @@ export default function AdminPage() {
                   </div>
                 ))
               )}
+            </div>
+          )}
+
+          {/* REDES SOCIALES — dashboard de contenido IG/FB/TikTok, proyecto Vercel aparte */}
+          {tab === 'redes' && (
+            <div className="space-y-3 animate-fade-in">
+              <div className="glass rounded-2xl p-4 flex items-center justify-between gap-3">
+                <p className="text-text-secondary text-xs leading-relaxed">
+                  Dashboard de contenido de Instagram, Facebook y TikTok, con datos reales sincronizados dos veces al día.
+                  Protegido con su propio usuario/contraseña — puede pedir login la primera vez.
+                </p>
+                <a
+                  href={REDES_DASHBOARD_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl glass text-accent-blue hover:text-accent-blue-hover transition-colors text-xs whitespace-nowrap"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Abrir en pestaña nueva
+                </a>
+              </div>
+              <div className="glass rounded-2xl overflow-hidden" style={{ height: 'calc(100vh - 220px)', minHeight: 600 }}>
+                <iframe
+                  src={REDES_DASHBOARD_URL}
+                  title="Dashboard de redes sociales"
+                  className="w-full h-full border-0"
+                  loading="lazy"
+                />
+              </div>
             </div>
           )}
 
