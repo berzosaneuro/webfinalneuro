@@ -10,12 +10,18 @@ import {
   Users, Mail, Phone, MessageSquare, BarChart3, LogOut,
   Loader2, Trash2, UserCheck, Crown, Download, RefreshCw,
   PhoneCall, PhoneMissed, Star, BookOpen, Map as MapIcon, Activity, Calendar, ClipboardList, ExternalLink, Pencil, X, Music,
-  TrendingUp, Wallet, UserPlus, Copy, Check, Share2
+  TrendingUp, Wallet, UserPlus, Copy, Check, Share2, Brain
 } from 'lucide-react'
 
-/** URL del dashboard de contenido de Instagram/Facebook/TikTok (proyecto Vercel aparte).
- *  Protegido con HTTP Basic Auth propio — el navegador pedirá login la primera vez. */
-const REDES_DASHBOARD_URL = 'https://dashboard.berzosaneuro.com'
+/** Dashboard de métricas IG/FB/TikTok (proyecto Vercel aparte). Acceso por token:
+ *  `embed=1` evita la redirección para que cargue dentro del iframe; el enlace
+ *  "abrir en pestaña" usa la versión limpia que deja una cookie de 1 año. */
+const REDES_DASHBOARD_EMBED = 'https://dashboard.berzosaneuro.com/?t=OlSxJ48XX1DXXKwM8tZs-qm9&embed=1'
+const REDES_DASHBOARD_LINK = 'https://dashboard.berzosaneuro.com/?t=OlSxJ48XX1DXXKwM8tZs-qm9'
+
+/** El "Cerebro": estudio que genera y publica el contenido (carruseles, reels,
+ *  historias). Proyecto Vercel aparte, sin login propio. */
+const ESTUDIO_URL = 'https://cerebroberzosaneuro.vercel.app'
 
 /** URL fija de la landing de captación (la misma que se usa como fallback en robots.ts/sitemap.ts). */
 const LANDING_URL = 'https://www.berzosaneuro.com/empieza'
@@ -49,7 +55,7 @@ function CopyLandingLinkButton() {
   )
 }
 
-type Tab = 'resumen' | 'redes' | 'usuarios' | 'payments' | 'audios' | 'biblioteca' | 'suscriptores' | 'clientes' | 'leads' | 'contactos' | 'llamadas' | 'comunidad'
+type Tab = 'resumen' | 'redes' | 'estudio' | 'usuarios' | 'payments' | 'audios' | 'biblioteca' | 'suscriptores' | 'clientes' | 'leads' | 'contactos' | 'llamadas' | 'comunidad'
   | 'diario' | 'mapa' | 'neuroscore' | 'programa' | 'test'
 
 type Cliente = {
@@ -426,6 +432,7 @@ export default function AdminPage() {
       items: [
         { id: 'resumen', label: 'Resumen', icon: BarChart3, count: 0 },
         { id: 'redes', label: 'Redes sociales', icon: Share2, count: 0 },
+        { id: 'estudio', label: 'Estudio de contenido', icon: Brain, count: 0 },
         { id: 'payments', label: 'Pagos', icon: Crown, count: payments.length },
         { id: 'usuarios', label: 'Usuarios', icon: Users, count: usuarios.length },
       ],
@@ -531,7 +538,7 @@ export default function AdminPage() {
 
       {/* Navegacion + contenido */}
       <section className="pb-16">
-        <Container maxWidthClass={tab === 'redes' ? 'max-w-[1600px]' : 'max-w-6xl'}>
+        <Container maxWidthClass={tab === 'redes' || tab === 'estudio' ? 'max-w-[1600px]' : 'max-w-6xl'}>
           <div className="lg:grid lg:grid-cols-[240px_1fr] lg:gap-6 lg:items-start">
             {/* Nav movil: selector agrupado */}
             <div className="lg:hidden mb-4">
@@ -641,16 +648,15 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* REDES SOCIALES — dashboard de contenido IG/FB/TikTok, proyecto Vercel aparte */}
+          {/* REDES SOCIALES — dashboard de métricas IG/FB/TikTok, proyecto Vercel aparte */}
           {tab === 'redes' && (
             <div className="space-y-3 animate-fade-in">
               <div className="glass rounded-2xl p-4 flex items-center justify-between gap-3">
                 <p className="text-text-secondary text-xs leading-relaxed">
-                  Dashboard de contenido de Instagram, Facebook y TikTok, con datos reales sincronizados dos veces al día.
-                  Protegido con su propio usuario/contraseña — puede pedir login la primera vez.
+                  Métricas reales de Instagram, Facebook y TikTok, sincronizadas dos veces al día.
                 </p>
                 <a
-                  href={REDES_DASHBOARD_URL}
+                  href={REDES_DASHBOARD_LINK}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl glass text-accent-blue hover:text-accent-blue-hover transition-colors text-xs whitespace-nowrap"
@@ -660,8 +666,36 @@ export default function AdminPage() {
               </div>
               <div className="glass rounded-2xl overflow-hidden" style={{ height: 'calc(100vh - 220px)', minHeight: 600 }}>
                 <iframe
-                  src={REDES_DASHBOARD_URL}
+                  src={REDES_DASHBOARD_EMBED}
                   title="Dashboard de redes sociales"
+                  className="w-full h-full border-0"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ESTUDIO DE CONTENIDO — el "Cerebro" que genera y publica, proyecto Vercel aparte */}
+          {tab === 'estudio' && (
+            <div className="space-y-3 animate-fade-in">
+              <div className="glass rounded-2xl p-4 flex items-center justify-between gap-3">
+                <p className="text-text-secondary text-xs leading-relaxed">
+                  El Cerebro: genera y publica los carruseles, reels e historias de forma automática.
+                  Aquí puedes ver el calendario, aprobar publicaciones y ajustar la automatización.
+                </p>
+                <a
+                  href={ESTUDIO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl glass text-accent-blue hover:text-accent-blue-hover transition-colors text-xs whitespace-nowrap"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Abrir en pestaña nueva
+                </a>
+              </div>
+              <div className="glass rounded-2xl overflow-hidden" style={{ height: 'calc(100vh - 220px)', minHeight: 600 }}>
+                <iframe
+                  src={ESTUDIO_URL}
+                  title="Estudio de contenido"
                   className="w-full h-full border-0"
                   loading="lazy"
                 />
