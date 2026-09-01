@@ -40,8 +40,7 @@ export default async function Image() {
           justifyContent: 'center',
           padding: '90px',
           fontFamily: fonts.length ? 'Poppins, sans-serif' : 'sans-serif',
-          background:
-            'radial-gradient(1200px 600px at 15% 0%, #3B1D7A 0%, #150A2E 45%, #0A0616 100%)',
+          background: 'linear-gradient(135deg, #3B1D7A 0%, #1A0E3A 50%, #0A0616 100%)',
           color: '#F3EEFF',
         }}
       >
