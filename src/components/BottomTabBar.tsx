@@ -14,6 +14,9 @@ const tabs = [
 export default function BottomTabBar() {
   const pathname = usePathname()
 
+  // el panel de administración no es la app de consumidor — sin barra inferior
+  if (pathname.startsWith('/admin')) return null
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 tab-bar md:hidden">
       <ul className="flex items-stretch">
