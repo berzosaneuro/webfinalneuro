@@ -432,7 +432,7 @@ export default function AdminPage() {
       items: [
         { id: 'resumen', label: 'Resumen', icon: BarChart3, count: 0 },
         { id: 'redes', label: 'Redes sociales', icon: Share2, count: 0 },
-        { id: 'estudio', label: 'Estudio de contenido', icon: Brain, count: 0 },
+        { id: 'estudio', label: 'Cerebro Neuro', icon: Brain, count: 0 },
         { id: 'payments', label: 'Pagos', icon: Crown, count: payments.length },
         { id: 'usuarios', label: 'Usuarios', icon: Users, count: usuarios.length },
       ],
@@ -664,7 +664,7 @@ export default function AdminPage() {
                   <ExternalLink className="w-3.5 h-3.5" /> Abrir en pestaña nueva
                 </a>
               </div>
-              <div className="glass rounded-2xl overflow-hidden" style={{ height: 'calc(100vh - 220px)', minHeight: 600 }}>
+              <div className="glass rounded-2xl overflow-hidden" style={{ height: 'calc(100vh - 150px)', minHeight: 640 }}>
                 <iframe
                   src={REDES_DASHBOARD_EMBED}
                   title="Dashboard de redes sociales"
@@ -675,13 +675,13 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* ESTUDIO DE CONTENIDO — el "Cerebro" que genera y publica, proyecto Vercel aparte */}
+          {/* CEREBRO NEURO — el estudio que genera y publica, proyecto Vercel aparte */}
           {tab === 'estudio' && (
             <div className="space-y-3 animate-fade-in">
               <div className="glass rounded-2xl p-4 flex items-center justify-between gap-3">
                 <p className="text-text-secondary text-xs leading-relaxed">
-                  El Cerebro: genera y publica los carruseles, reels e historias de forma automática.
-                  Aquí puedes ver el calendario, aprobar publicaciones y ajustar la automatización.
+                  Cerebro Neuro: genera y publica los carruseles, reels e historias de forma automática.
+                  Calendario, aprobar publicaciones y ajustar la automatización.
                 </p>
                 <a
                   href={ESTUDIO_URL}
@@ -692,7 +692,7 @@ export default function AdminPage() {
                   <ExternalLink className="w-3.5 h-3.5" /> Abrir en pestaña nueva
                 </a>
               </div>
-              <div className="glass rounded-2xl overflow-hidden" style={{ height: 'calc(100vh - 220px)', minHeight: 600 }}>
+              <div className="glass rounded-2xl overflow-hidden" style={{ height: 'calc(100vh - 150px)', minHeight: 640 }}>
                 <iframe
                   src={ESTUDIO_URL}
                   title="Estudio de contenido"
