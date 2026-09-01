@@ -19,6 +19,7 @@ import AnalyticsLoader from '@/components/AnalyticsLoader'
 const loveThemeBootScript = `(function(){try{var k=localStorage.getItem(${JSON.stringify(LOVE_THEME_HINT_STORAGE_KEY)});if(k===${JSON.stringify(LOVE_THEME_HINT_VALUE)}){document.documentElement.setAttribute("data-theme","love");}}catch(e){}})();`
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.berzosaneuro.com'),
   title: 'Berzosa Neuro — Método N.E.U.R.O.',
   description: 'Menos ruido mental, más claridad cada día. Método N.E.U.R.O.: pasos que uso y enseño, en el móvil, sin rodeos.',
   manifest: '/manifest.json',
