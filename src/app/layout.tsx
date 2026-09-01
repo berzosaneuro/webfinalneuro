@@ -74,7 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <FirebaseMessagingRegister />
                 <AudioRouteHandler />
                 <Navbar />
-                <main className="min-h-screen pb-20 md:pb-0">{children}</main>
+                <main className="min-h-screen main-with-tabbar md:pb-0">{children}</main>
                 <Footer />
                 <BottomTabBar />
                 <CookieBanner />

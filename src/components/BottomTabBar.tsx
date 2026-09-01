@@ -16,30 +16,45 @@ export default function BottomTabBar() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 tab-bar md:hidden">
-      <div className="flex items-center justify-around px-2 pt-2">
+      <ul className="flex items-stretch">
         {tabs.map((tab) => {
-          const isActive = pathname === tab.href || (tab.href !== '/' && pathname.startsWith(tab.href))
+          const isActive =
+            pathname === tab.href || (tab.href !== '/' && pathname.startsWith(tab.href))
+          const Icon = tab.icon
 
           return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all duration-200 active:scale-90 min-w-[56px] ${
-                isActive ? 'text-accent-blue' : 'text-text-secondary'
-              }`}
-            >
-              <div className={`relative p-1.5 rounded-xl transition-all duration-200 ${
-                isActive ? 'bg-accent-blue/10' : ''
-              }`}>
-                <tab.icon className="w-5 h-5" strokeWidth={isActive ? 2.2 : 1.5} />
-              </div>
-              <span className={`text-[10px] font-medium ${isActive ? 'font-semibold' : ''}`}>
-                {tab.label}
-              </span>
-            </Link>
+            <li key={tab.href} className="flex-1">
+              <Link
+                href={tab.href}
+                aria-current={isActive ? 'page' : undefined}
+                className="group flex h-full flex-col items-center justify-center gap-1 px-1 py-2 min-h-[52px] tap-transparent"
+              >
+                <span
+                  className={`flex items-center justify-center rounded-full px-4 py-1 transition-colors duration-200 ${
+                    isActive ? 'bg-accent-blue/15' : 'bg-transparent group-active:bg-white/5'
+                  }`}
+                >
+                  <Icon
+                    className={`w-[22px] h-[22px] transition-colors duration-200 ${
+                      isActive ? 'text-accent-blue' : 'text-text-secondary'
+                    }`}
+                    strokeWidth={isActive ? 2.3 : 1.8}
+                  />
+                </span>
+                <span
+                  className={`text-[10.5px] leading-none tracking-tight transition-colors duration-200 ${
+                    isActive
+                      ? 'font-semibold text-accent-blue'
+                      : 'font-medium text-text-secondary'
+                  }`}
+                >
+                  {tab.label}
+                </span>
+              </Link>
+            </li>
           )
         })}
-      </div>
+      </ul>
     </nav>
   )
 }
