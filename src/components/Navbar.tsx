@@ -218,8 +218,15 @@ export default function Navbar() {
         {/* Mobile dropdown */}
         {open && (
           <div
-            className="nav-mobile-sheet absolute top-full left-0 right-0 z-40 animate-slide-up max-h-[85vh] overflow-y-auto overscroll-contain pb-8"
-            style={{ scrollbarWidth: 'none', background: 'linear-gradient(180deg, #080B16 0%, #0a0e1a 100%)', borderBottom: '1px solid rgba(124,58,237,0.15)', boxShadow: '0 20px 60px -20px rgba(0,0,0,0.6)' }}
+            className="nav-mobile-sheet absolute top-full left-0 right-0 z-40 animate-slide-up overflow-y-auto overscroll-contain"
+            style={{
+              scrollbarWidth: 'none',
+              maxHeight: 'calc(100dvh - 64px)',
+              paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 104px)',
+              background: 'linear-gradient(180deg, #080B16 0%, #0a0e1a 100%)',
+              borderBottom: '1px solid rgba(124,58,237,0.15)',
+              boxShadow: '0 20px 60px -20px rgba(0,0,0,0.6)',
+            }}
           >
             <div className="p-4 space-y-5">
               {mobileLinks.map((group) => {
